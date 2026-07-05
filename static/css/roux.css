@@ -91,3 +91,69 @@
     border-bottom: 1px solid var(--pico-muted-border-color);
   }
 }
+
+/* Page builder */
+.page-builder-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr 320px;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.sortable-blocks {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.block-item {
+  cursor: default;
+  border: 1px solid var(--pico-muted-border-color);
+  border-radius: var(--pico-border-radius);
+  padding: 0.75rem;
+}
+
+.block-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.drag-handle {
+  cursor: grab;
+  font-size: 1.2rem;
+  color: var(--pico-muted-color);
+  user-select: none;
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+}
+
+.block-ghost {
+  opacity: 0.4;
+}
+
+.page-builder-editor {
+  position: sticky;
+  top: 1rem;
+  background: var(--pico-card-background-color);
+  border: 1px solid var(--pico-muted-border-color);
+  border-radius: var(--pico-border-radius);
+  padding: 1rem;
+  min-height: 200px;
+}
+
+.editor-placeholder {
+  color: var(--pico-muted-color);
+  font-style: italic;
+}
+
+.compliant { color: var(--pico-ins-color); }
+.non-compliant { color: var(--pico-del-color); }
+
+@media (max-width: 1100px) {
+  .page-builder-layout {
+    grid-template-columns: 1fr;
+  }
+}

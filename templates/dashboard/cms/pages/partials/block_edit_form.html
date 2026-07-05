@@ -1,5 +1,18 @@
-<form method="post" action="{% url 'dashboard:block_edit' block.pk %}" hx-post="{% url 'dashboard:block_edit' block.pk %}" hx-target="#block-{{ block.pk }}" hx-swap="outerHTML">
+<form method="post" action="{% url 'dashboard:block_edit' block.pk %}"
+      hx-post="{% url 'dashboard:block_edit' block.pk %}"
+      hx-target="#block-{{ block.pk }}" hx-swap="outerHTML">
   {% csrf_token %}
-  {{ form.as_p }}
+  <fieldset>
+    <legend>Edit {{ block.get_block_type_display }}</legend>
+    {{ meta_form.as_p }}
+    {% if content_form %}
+      <h4>Content</h4>
+      {{ content_form.as_p }}
+    {% else %}
+      <label>Content (JSON)
+        <textarea name="content" rows="10">{{ raw_content }}</textarea>
+      </label>
+    {% endif %}
+  </fieldset>
   <button type="submit">Save Block</button>
 </form>

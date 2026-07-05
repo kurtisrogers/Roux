@@ -1,0 +1,7 @@
+Hello {{ parent.first_name }},
+
+{{ booking.child.first_name }} has been checked out from {{ booking.session.session_type.name }}.
+
+We hope they had a great time!
+
+Roux Wraparound Care

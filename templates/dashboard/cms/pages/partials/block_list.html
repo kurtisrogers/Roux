@@ -1,5 +1,7 @@
+<div id="sortable-blocks" class="sortable-blocks" data-page-id="{{ page.pk }}" data-reorder-url="{% url 'dashboard:block_reorder' page.pk %}">
 {% for block in blocks %}
   {% include "dashboard/cms/pages/partials/block_item.html" %}
 {% empty %}
-<p>No blocks yet. Add one above.</p>
+<p class="empty-blocks-msg">No blocks yet. Add one above.</p>
 {% endfor %}
+</div>

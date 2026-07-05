@@ -3,6 +3,7 @@ Django settings for Roux – UK wraparound care platform.
 """
 
 import os
+from datetime import timedelta
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -33,12 +34,17 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django.contrib.humanize",
     "django_htmx",
+    "rest_framework",
+    "rest_framework_simplejwt",
     "accounts",
     "organisations",
     "bookings",
     "cms",
     "billing",
     "finance",
+    "notifications",
+    "ofsted",
+    "api",
     "dashboard",
     "public_site",
 ]
@@ -171,3 +177,29 @@ XERO_SCOPES = [
 
 # Roux platform defaults
 DEFAULT_ORGANISATION_SLUG = os.getenv("DEFAULT_ORGANISATION_SLUG", "demo-club")
+
+# Email
+EMAIL_BACKEND = os.getenv(
+    "EMAIL_BACKEND",
+    "django.core.mail.backends.console.EmailBackend",
+)
+DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "noreply@roux.example")
+SERVER_EMAIL = DEFAULT_FROM_EMAIL
+
+# Django REST Framework
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
+    ],
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
+    ],
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 25,
+}
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(hours=1),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
+}

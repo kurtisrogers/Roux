@@ -15,6 +15,7 @@ from accounts.models import User
 from billing.models import Payment, Subscription
 from billing.services import stripe_service
 from bookings.models import Attendance, Booking, Child, Session, SessionType
+from cms.block_forms import get_content_form
 from cms.models import ContactSubmission, NavigationItem, Page, PageBlock, SiteSettings
 from dashboard.forms import (
     BookingForm,
@@ -395,18 +396,41 @@ def block_add(request, page_pk):
 def block_edit(request, pk):
     org = _org_or_403(request)
     block = get_object_or_404(PageBlock, pk=pk, page__organisation=org)
+    content_form = get_content_form(block.block_type, content=block.content)
+    meta_form = PageBlockForm(instance=block)
+
     if request.method == "POST":
-        form = PageBlockForm(request.POST, instance=block)
-        if form.is_valid():
-            try:
-                block.content = json.loads(form.cleaned_data["content"])
-            except json.JSONDecodeError:
-                messages.error(request, "Invalid JSON in block content.")
+        meta_form = PageBlockForm(request.POST, instance=block)
+        content_form = get_content_form(block.block_type, data=request.POST) if content_form else None
+
+        meta_valid = meta_form.is_valid()
+        content_valid = content_form.is_valid() if content_form else True
+
+        if meta_valid and content_valid:
+            block.block_type = meta_form.cleaned_data["block_type"]
+            block.is_visible = meta_form.cleaned_data["is_visible"]
+            if content_form:
+                block.content = content_form.to_content()
             else:
-                block.block_type = form.cleaned_data["block_type"]
-                block.is_visible = form.cleaned_data["is_visible"]
-                block.save()
-                messages.success(request, "Block updated.")
+                try:
+                    block.content = json.loads(request.POST.get("content", "{}"))
+                except json.JSONDecodeError:
+                    messages.error(request, "Invalid JSON in block content.")
+                    if request.htmx:
+                        return render(
+                            request,
+                            "dashboard/cms/pages/partials/block_edit_form.html",
+                            {
+                                "meta_form": meta_form,
+                                "content_form": content_form,
+                                "block": block,
+                                "page": block.page,
+                                "raw_content": json.dumps(block.content, indent=2),
+                            },
+                        )
+                    return redirect("dashboard:page_edit", pk=block.page_id)
+            block.save()
+            messages.success(request, "Block updated.")
             if request.htmx:
                 return render(
                     request,
@@ -414,19 +438,17 @@ def block_edit(request, pk):
                     {"block": block, "page": block.page},
                 )
             return redirect("dashboard:page_edit", pk=block.page_id)
-    else:
-        form = PageBlockForm(
-            instance=block,
-            initial={
-                "content": json.dumps(block.content, indent=2),
-                "block_type": block.block_type,
-                "is_visible": block.is_visible,
-            },
-        )
+
     return render(
         request,
         "dashboard/cms/pages/partials/block_edit_form.html",
-        {"form": form, "block": block, "page": block.page},
+        {
+            "meta_form": meta_form,
+            "content_form": content_form,
+            "block": block,
+            "page": block.page,
+            "raw_content": json.dumps(block.content, indent=2),
+        },
     )
 
 
@@ -457,7 +479,16 @@ def block_delete(request, pk):
 def block_reorder(request, page_pk):
     org = _org_or_403(request)
     page = get_object_or_404(Page, pk=page_pk, organisation=org)
-    order = request.POST.getlist("block_order")
+
+    if request.content_type == "application/json":
+        try:
+            data = json.loads(request.body)
+            order = data.get("block_order", [])
+        except json.JSONDecodeError:
+            return HttpResponseBadRequest("Invalid JSON")
+    else:
+        order = request.POST.getlist("block_order")
+
     for index, block_id in enumerate(order):
         PageBlock.objects.filter(pk=block_id, page=page).update(order=index)
     return HttpResponse(status=204)

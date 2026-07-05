@@ -85,6 +85,10 @@ def handle_checkout_completed(session_data: dict) -> None:
         booking.status = booking.Status.CONFIRMED
         booking.save(update_fields=["payment_status", "status"])
 
+        from notifications.services import notify_payment_received
+
+        notify_payment_received(booking, payment)
+
 
 def create_org_subscription_checkout(organisation, request) -> str:
     """Create Stripe Checkout for organisation SaaS subscription."""

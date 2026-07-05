@@ -1,8 +1,11 @@
 {% extends "base/dashboard.html" %}
 {% block page_title %}Edit {{ page.title }}{% endblock %}
+{% block extra_head %}
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.6/Sortable.min.js"></script>
+{% endblock %}
 {% block content %}
-<div class="grid" x-data="pageBuilder()">
-  <section>
+<div class="page-builder-layout">
+  <section class="page-builder-sidebar">
     <h1>Edit Page</h1>
     <form method="post">
       {% csrf_token %}
@@ -10,10 +13,12 @@
       <button type="submit">Save Page</button>
     </form>
     <p><a href="{% if page.is_homepage %}{% url 'public:home' %}{% else %}{% url 'public:page' page.slug %}{% endif %}" target="_blank">Preview ↗</a></p>
-  </section>
-  <section>
-    <h2>Page Builder</h2>
-    <form method="post" action="{% url 'dashboard:block_add' page.pk %}" hx-post="{% url 'dashboard:block_add' page.pk %}" hx-target="#block-list" hx-swap="innerHTML">
+
+    <hr>
+    <h2>Add Block</h2>
+    <form method="post" action="{% url 'dashboard:block_add' page.pk %}"
+          hx-post="{% url 'dashboard:block_add' page.pk %}"
+          hx-target="#sortable-blocks" hx-swap="outerHTML">
       {% csrf_token %}
       <label>Add block
         <select name="block_type">
@@ -24,18 +29,20 @@
       </label>
       <button type="submit">Add Block</button>
     </form>
+  </section>
+
+  <section class="page-builder-canvas">
+    <h2>Page Builder <small>— drag blocks to reorder</small></h2>
     <div id="block-list">
       {% include "dashboard/cms/pages/partials/block_list.html" %}
     </div>
   </section>
+
+  <aside class="page-builder-editor" id="block-edit-panel">
+    <p class="editor-placeholder">Select a block to edit its content.</p>
+  </aside>
 </div>
 {% endblock %}
 {% block extra_js %}
-<script>
-function pageBuilder() {
-  return {
-    editingBlock: null,
-  };
-}
-</script>
+<script src="/static/js/page-builder.js"></script>
 {% endblock %}

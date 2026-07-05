@@ -1,0 +1,8 @@
+<p>Hello {{ staff.first_name }},</p>
+<p>Reminder: you are assigned to a session tomorrow.</p>
+<ul>
+  <li><strong>Session:</strong> {{ session.session_type.name }}</li>
+  <li><strong>Date:</strong> {{ session.date|date:"l j F Y" }}</li>
+  <li><strong>Time:</strong> {{ session.start_time|time:"H:i" }} – {{ session.end_time|time:"H:i" }}</li>
+  <li><strong>Site:</strong> {{ session.site.name }}</li>
+</ul>

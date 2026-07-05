@@ -1,0 +1,4 @@
+<p>Hello {{ parent.first_name }},</p>
+<p>We have received your payment of <strong>£{{ payment.amount }}</strong>.</p>
+<p>{{ booking.child.full_name }} – {{ booking.session.session_type.name }} on {{ booking.session.date|date:"l j F Y" }}</p>
+<p>Your booking is now fully confirmed.</p>

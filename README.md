@@ -4,8 +4,9 @@ Roux is a Django SaaS platform for UK wraparound care providers (breakfast clubs
 
 ## Tech Stack
 
-- **Backend:** Django 5+
-- **Frontend:** [Pico CSS](https://picocss.com/), [HTMX](https://htmx.org/), [Alpine.js](https://alpinejs.dev/)
+- **Backend:** Django 5+, Django REST Framework
+- **Frontend:** [Pico CSS](https://picocss.com/), [HTMX](https://htmx.org/), [Alppine.js](https://alpinejs.dev/), [SortableJS](https://sortablejs.github.io/Sortable/)
+- **Mobile API:** JWT authentication via djangorestframework-simplejwt
 - **Payments:** Stripe (parent session payments + org subscriptions)
 - **Accounting:** Xero (invoice sync)
 - **Database:** SQLite (dev) / PostgreSQL (production)
@@ -22,10 +23,35 @@ Roux is a Django SaaS platform for UK wraparound care providers (breakfast clubs
 
 ### Customer Website (CMS)
 - Pages edited entirely from the dashboard
-- Block-based page builder (hero, rich text, features, CTA, FAQ, testimonials, session list, pricing, contact form)
+- **Drag-and-drop page builder** with SortableJS — reorder blocks visually
+- **Visual block editors** for hero, rich text, CTA, FAQ, features, and more
+- Block types: hero, rich text, features, CTA, FAQ, testimonials, session list, pricing, contact form
 - Site settings (logo, colours, contact info, footer)
 - Navigation management
 - Parent registration and online session booking
+
+### Email Notifications
+- Booking confirmation emails to parents
+- Payment received confirmations
+- Check-in and check-out notifications
+- Staff session reminders (`python manage.py send_session_reminders`)
+- Console backend in dev; configure SMTP in production
+
+### Mobile API (`/api/v1/`)
+- JWT token auth: `POST /api/v1/auth/token/`
+- `GET /api/v1/me/` — current user profile
+- `GET /api/v1/sessions/` — list and upcoming sessions
+- `GET/POST /api/v1/children/` — manage children
+- `GET/POST /api/v1/bookings/` — create and view bookings
+- `POST /api/v1/bookings/{id}/cancel/` — cancel a booking
+
+### Ofsted & Compliance
+- Incident logging (accidents, safeguarding, behaviour, medication)
+- UK EYFS staff:child ratio checks per session
+- Live ratio overview for today's sessions
+- Monthly compliance reports
+- CSV export for incidents and ratio checks
+- Ofsted-notifiable incident flagging
 
 ### Integrations
 - **Stripe:** Checkout for session payments; subscription billing for organisations; webhook handling

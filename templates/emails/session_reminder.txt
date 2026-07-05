@@ -1,0 +1,10 @@
+Hello {{ staff.first_name }},
+
+Reminder: you are assigned to a session tomorrow.
+
+Session: {{ session.session_type.name }}
+Date: {{ session.date|date:"l j F Y" }}
+Time: {{ session.start_time|time:"H:i" }} – {{ session.end_time|time:"H:i" }}
+Site: {{ session.site.name }}
+
+Roux Wraparound Care

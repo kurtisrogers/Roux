@@ -1,13 +1,14 @@
-<article class="block-item" id="block-{{ block.pk }}">
-  <header>
+<article class="block-item" id="block-{{ block.pk }}" data-block-id="{{ block.pk }}">
+  <header class="block-header">
+    <span class="drag-handle" title="Drag to reorder">⠿</span>
     <strong>{{ block.get_block_type_display }}</strong>
-    <small>Order: {{ block.order }}</small>
+    {% if not block.is_visible %}<small>(hidden)</small>{% endif %}
   </header>
-  <div hx-get="{% url 'dashboard:block_edit' block.pk %}" hx-trigger="click" hx-target="#block-edit-panel" hx-swap="innerHTML">
+  <div class="block-preview" hx-get="{% url 'dashboard:block_edit' block.pk %}" hx-trigger="click" hx-target="#block-edit-panel" hx-swap="innerHTML">
     <pre>{{ block.content|truncatechars:120 }}</pre>
   </div>
   <footer>
-    <button hx-get="{% url 'dashboard:block_edit' block.pk %}" hx-target="#block-edit-panel" hx-swap="innerHTML" class="outline">Edit</button>
-    <button hx-post="{% url 'dashboard:block_delete' block.pk %}" hx-target="#block-list" hx-swap="innerHTML" hx-confirm="Delete this block?" class="secondary">Delete</button>
+    <button type="button" hx-get="{% url 'dashboard:block_edit' block.pk %}" hx-target="#block-edit-panel" hx-swap="innerHTML" class="outline">Edit</button>
+    <button hx-post="{% url 'dashboard:block_delete' block.pk %}" hx-target="#sortable-blocks" hx-swap="outerHTML" hx-confirm="Delete this block?" class="secondary">Delete</button>
   </footer>
 </article>

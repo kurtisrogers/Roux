@@ -1,0 +1,11 @@
+<p>Hello {{ parent.first_name }},</p>
+<p>Your booking has been <strong>confirmed</strong>.</p>
+<ul>
+  <li><strong>Child:</strong> {{ booking.child.full_name }}</li>
+  <li><strong>Session:</strong> {{ booking.session.session_type.name }}</li>
+  <li><strong>Date:</strong> {{ booking.session.date|date:"l j F Y" }}</li>
+  <li><strong>Time:</strong> {{ booking.session.start_time|time:"H:i" }} – {{ booking.session.end_time|time:"H:i" }}</li>
+  <li><strong>Location:</strong> {{ booking.session.site.name }}</li>
+  <li><strong>Amount:</strong> £{{ booking.price }}</li>
+</ul>
+<p>Thank you for booking with us.</p>
