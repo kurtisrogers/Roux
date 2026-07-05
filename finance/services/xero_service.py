@@ -1,5 +1,4 @@
 import base64
-import hashlib
 import logging
 import secrets
 from datetime import timedelta
@@ -75,9 +74,7 @@ def refresh_access_token(connection: XeroConnection) -> XeroConnection:
     data = response.json()
     connection.access_token = data["access_token"]
     connection.refresh_token = data.get("refresh_token", connection.refresh_token)
-    connection.token_expires_at = timezone.now() + timedelta(
-        seconds=data.get("expires_in", 1800)
-    )
+    connection.token_expires_at = timezone.now() + timedelta(seconds=data.get("expires_in", 1800))
     connection.save()
     return connection
 
@@ -114,9 +111,8 @@ def save_connection(organisation, token_data: dict) -> XeroConnection:
 
 
 def _ensure_valid_token(connection: XeroConnection) -> XeroConnection:
-    if (
-        connection.token_expires_at
-        and connection.token_expires_at <= timezone.now() + timedelta(minutes=5)
+    if connection.token_expires_at and connection.token_expires_at <= timezone.now() + timedelta(
+        minutes=5
     ):
         return refresh_access_token(connection)
     return connection
@@ -132,9 +128,7 @@ def create_invoice_for_payment(payment) -> XeroInvoice:
         payment=payment,
         booking=payment.booking,
         contact_name=(
-            payment.booking.child.parent.get_full_name()
-            if payment.booking
-            else "Customer"
+            payment.booking.child.parent.get_full_name() if payment.booking else "Customer"
         ),
         amount=payment.amount,
         status=XeroInvoice.Status.DRAFT,

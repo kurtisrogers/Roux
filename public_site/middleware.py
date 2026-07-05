@@ -1,13 +1,10 @@
 from django.conf import settings
 from django.utils.functional import SimpleLazyObject
-
 from organisations.models import Organisation
 
 
 def _get_organisation(request):
-    slug = request.GET.get("org") or getattr(
-        settings, "DEFAULT_ORGANISATION_SLUG", "demo-club"
-    )
+    slug = request.GET.get("org") or getattr(settings, "DEFAULT_ORGANISATION_SLUG", "demo-club")
     host = request.get_host().split(":")[0]
 
     # Subdomain routing: {slug}.roux.app
@@ -16,9 +13,7 @@ def _get_organisation(request):
         slug = parts[0]
 
     try:
-        return Organisation.objects.select_related("site_settings").get(
-            slug=slug, is_active=True
-        )
+        return Organisation.objects.select_related("site_settings").get(slug=slug, is_active=True)
     except Organisation.DoesNotExist:
         return Organisation.objects.filter(is_active=True).first()
 

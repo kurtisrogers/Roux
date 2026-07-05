@@ -1,9 +1,10 @@
+from accounts.models import User
+from bookings.models import Booking, Child, Session
 from rest_framework import permissions, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from accounts.models import User
 from api.serializers import (
     BookingSerializer,
     ChildSerializer,
@@ -11,7 +12,6 @@ from api.serializers import (
     SessionSerializer,
     UserSerializer,
 )
-from bookings.models import Booking, Child, Session
 
 
 class IsParentOrStaff(permissions.BasePermission):

@@ -1,7 +1,6 @@
+from bookings.models import Attendance, Booking
 from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
-
-from bookings.models import Attendance, Booking
 
 
 @receiver(pre_save, sender=Booking)

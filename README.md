@@ -105,6 +105,31 @@ Visit http://localhost:8000 for the public site and http://localhost:8000/dashbo
 2. Set redirect URI to `http://localhost:8000/dashboard/finance/xero/callback/`
 3. Add credentials to `.env`
 
+### Email (production)
+
+```env
+EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend
+EMAIL_HOST=smtp.example.com
+EMAIL_PORT=587
+EMAIL_USE_TLS=True
+EMAIL_HOST_USER=your@email.com
+EMAIL_HOST_PASSWORD=your-password
+DEFAULT_FROM_EMAIL=noreply@yourclub.example
+```
+
+### Mobile API
+
+```bash
+# Obtain JWT token
+curl -X POST http://localhost:8000/api/v1/auth/token/ \
+  -H "Content-Type: application/json" \
+  -d '{"username": "parent1", "password": "parent123"}'
+
+# Use token
+curl http://localhost:8000/api/v1/sessions/upcoming/ \
+  -H "Authorization: Bearer <access_token>"
+```
+
 ## Project Structure
 
 ```
@@ -115,6 +140,9 @@ roux/
 ├── cms/               # Site settings, pages, page builder blocks
 ├── billing/           # Stripe payments and subscriptions
 ├── finance/           # Xero integration
+├── notifications/     # Email notifications and signals
+├── ofsted/            # Incident logging, ratio checks, reports
+├── api/               # REST API for mobile apps
 ├── dashboard/         # Staff/admin dashboard views
 ├── public_site/       # Customer-facing website
 ├── config/            # Django settings and URLs
@@ -137,15 +165,53 @@ roux/
 
 The app is designed for extension:
 
-- **New block types:** Add to `PageBlock.BlockType` and implement in `cms/block_renderer.py`
+- **New block types:** Add to `PageBlock.BlockType`, a form in `cms/block_forms.py`, and render in `cms/block_renderer.py`
 - **New roles:** Extend `User.Role` and update `accounts/decorators.py`
 - **New integrations:** Add apps under `billing/` or `finance/` following the service pattern
-- **API layer:** Add Django REST Framework when mobile apps are needed
+- **New API endpoints:** Add serializers and viewsets in `api/`
+- **New notification types:** Add templates in `templates/emails/` and call from `notifications/services.py`
 
 ## Running Tests
 
 ```bash
-python manage.py test
+# Install dev dependencies
+pip install -r requirements.txt -r requirements-dev.txt
+
+# Unit & integration tests
+pytest
+
+# With coverage
+pytest --cov --cov-report=term-missing
+
+# Playwright BDD e2e tests
+playwright install chromium
+DJANGO_ALLOW_ASYNC_UNSAFE=1 pytest e2e/ -m e2e --browser chromium
+```
+
+## Pre-commit
+
+```bash
+pip install pre-commit
+pre-commit install
+pre-commit run --all-files
+```
+
+Hooks include: ruff lint/format, YAML/TOML checks, Django system check, and migration drift detection.
+
+## GitHub Pages Landing Site
+
+The marketing landing page lives in `landing/` and deploys automatically to GitHub Pages on push to `main`.
+
+Enable GitHub Pages in repository settings: **Source → GitHub Actions**.
+
+## AWS Deployment (SST)
+
+See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for full staging/production deployment instructions.
+
+```bash
+npm install
+npm run deploy:staging      # staging environment
+npm run deploy:production   # production (manual approval recommended)
 ```
 
 ## Licence

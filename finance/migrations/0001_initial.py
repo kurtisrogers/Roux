@@ -5,50 +5,105 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
-        ('billing', '0001_initial'),
-        ('bookings', '0001_initial'),
-        ('organisations', '0001_initial'),
+        ("billing", "0001_initial"),
+        ("bookings", "0001_initial"),
+        ("organisations", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='XeroConnection',
+            name="XeroConnection",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('tenant_id', models.CharField(blank=True, max_length=255)),
-                ('tenant_name', models.CharField(blank=True, max_length=255)),
-                ('access_token', models.TextField(blank=True)),
-                ('refresh_token', models.TextField(blank=True)),
-                ('token_expires_at', models.DateTimeField(blank=True, null=True)),
-                ('is_connected', models.BooleanField(default=False)),
-                ('auto_sync_invoices', models.BooleanField(default=True)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('organisation', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='xero_connection', to='organisations.organisation')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("tenant_id", models.CharField(blank=True, max_length=255)),
+                ("tenant_name", models.CharField(blank=True, max_length=255)),
+                ("access_token", models.TextField(blank=True)),
+                ("refresh_token", models.TextField(blank=True)),
+                ("token_expires_at", models.DateTimeField(blank=True, null=True)),
+                ("is_connected", models.BooleanField(default=False)),
+                ("auto_sync_invoices", models.BooleanField(default=True)),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "organisation",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="xero_connection",
+                        to="organisations.organisation",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='XeroInvoice',
+            name="XeroInvoice",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('xero_invoice_id', models.CharField(blank=True, max_length=255)),
-                ('invoice_number', models.CharField(blank=True, max_length=50)),
-                ('contact_name', models.CharField(blank=True, max_length=200)),
-                ('amount', models.DecimalField(decimal_places=2, max_digits=10)),
-                ('status', models.CharField(choices=[('draft', 'Draft'), ('submitted', 'Submitted'), ('authorised', 'Authorised'), ('paid', 'Paid'), ('voided', 'Voided'), ('error', 'Error')], default='draft', max_length=20)),
-                ('sync_error', models.TextField(blank=True)),
-                ('last_synced_at', models.DateTimeField(blank=True, null=True)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('booking', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='xero_invoices', to='bookings.booking')),
-                ('organisation', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='xero_invoices', to='organisations.organisation')),
-                ('payment', models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='xero_invoice', to='billing.payment')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("xero_invoice_id", models.CharField(blank=True, max_length=255)),
+                ("invoice_number", models.CharField(blank=True, max_length=50)),
+                ("contact_name", models.CharField(blank=True, max_length=200)),
+                ("amount", models.DecimalField(decimal_places=2, max_digits=10)),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("draft", "Draft"),
+                            ("submitted", "Submitted"),
+                            ("authorised", "Authorised"),
+                            ("paid", "Paid"),
+                            ("voided", "Voided"),
+                            ("error", "Error"),
+                        ],
+                        default="draft",
+                        max_length=20,
+                    ),
+                ),
+                ("sync_error", models.TextField(blank=True)),
+                ("last_synced_at", models.DateTimeField(blank=True, null=True)),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                (
+                    "booking",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="xero_invoices",
+                        to="bookings.booking",
+                    ),
+                ),
+                (
+                    "organisation",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="xero_invoices",
+                        to="organisations.organisation",
+                    ),
+                ),
+                (
+                    "payment",
+                    models.OneToOneField(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="xero_invoice",
+                        to="billing.payment",
+                    ),
+                ),
             ],
             options={
-                'ordering': ['-created_at'],
+                "ordering": ["-created_at"],
             },
         ),
     ]

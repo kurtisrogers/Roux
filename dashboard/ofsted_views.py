@@ -1,16 +1,13 @@
-import csv
-from datetime import date, timedelta
+from datetime import date
 
+from accounts.decorators import dashboard_required, role_required
+from accounts.models import User
+from bookings.models import Booking, Session
 from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views.decorators.http import require_POST
-
-from accounts.decorators import dashboard_required, role_required
-from accounts.models import User
-from bookings.models import Booking, Session
-from dashboard.mixins import dashboard_context, resolve_organisation
 from ofsted.forms import IncidentForm
 from ofsted.models import Incident, OfstedReport, RatioCheck
 from ofsted.ratios import analyse_session_ratio
@@ -20,6 +17,8 @@ from ofsted.services import (
     export_ratio_checks_csv,
     generate_monthly_report,
 )
+
+from dashboard.mixins import dashboard_context, resolve_organisation
 
 
 def _org_or_403(request):
@@ -50,9 +49,7 @@ def ofsted_dashboard(request):
     reports = OfstedReport.objects.filter(organisation=org)[:5] if org else []
 
     non_compliant = (
-        RatioCheck.objects.filter(session__organisation=org, compliant=False).count()
-        if org
-        else 0
+        RatioCheck.objects.filter(session__organisation=org, compliant=False).count() if org else 0
     )
 
     return render(
@@ -115,7 +112,9 @@ def ratio_check_session(request, session_pk):
     session = get_object_or_404(Session, pk=session_pk, organisation=org)
     check = check_session_ratio(session, checked_by=request.user)
     if check.compliant:
-        messages.success(request, f"Ratio compliant: {check.staff_count} staff for {check.child_count} children.")
+        messages.success(
+            request, f"Ratio compliant: {check.staff_count} staff for {check.child_count} children."
+        )
     else:
         messages.warning(
             request,
@@ -129,11 +128,15 @@ def ratio_check_session(request, session_pk):
 def ratio_overview(request):
     org = _org_or_403(request)
     today = timezone.now().date()
-    sessions = Session.objects.filter(
-        organisation=org,
-        date=today,
-        status__in=[Session.Status.SCHEDULED, Session.Status.IN_PROGRESS],
-    ).select_related("session_type", "site").prefetch_related("staff", "bookings__child")
+    sessions = (
+        Session.objects.filter(
+            organisation=org,
+            date=today,
+            status__in=[Session.Status.SCHEDULED, Session.Status.IN_PROGRESS],
+        )
+        .select_related("session_type", "site")
+        .prefetch_related("staff", "bookings__child")
+    )
 
     session_ratios = []
     for session in sessions:
@@ -161,7 +164,9 @@ def generate_report(request):
     period_start = date.fromisoformat(request.POST.get("period_start"))
     period_end = date.fromisoformat(request.POST.get("period_end"))
     report = generate_monthly_report(org, period_start, period_end, user=request.user)
-    messages.success(request, f"Report generated: {report.data['compliance_rate']}% ratio compliance.")
+    messages.success(
+        request, f"Report generated: {report.data['compliance_rate']}% ratio compliance."
+    )
     return redirect("dashboard:ofsted_dashboard")
 
 
@@ -169,11 +174,15 @@ def generate_report(request):
 @role_required(User.Role.SUPER_ADMIN, User.Role.ORG_ADMIN, User.Role.SITE_MANAGER)
 def export_incidents(request):
     org = _org_or_403(request)
-    period_start = date.fromisoformat(request.GET.get("start", str(timezone.now().date().replace(day=1))))
+    period_start = date.fromisoformat(
+        request.GET.get("start", str(timezone.now().date().replace(day=1)))
+    )
     period_end = date.fromisoformat(request.GET.get("end", str(timezone.now().date())))
     csv_content = export_incidents_csv(org, period_start, period_end)
     response = HttpResponse(csv_content, content_type="text/csv")
-    response["Content-Disposition"] = f'attachment; filename="incidents_{period_start}_{period_end}.csv"'
+    response["Content-Disposition"] = (
+        f'attachment; filename="incidents_{period_start}_{period_end}.csv"'
+    )
     return response
 
 
@@ -181,9 +190,13 @@ def export_incidents(request):
 @role_required(User.Role.SUPER_ADMIN, User.Role.ORG_ADMIN, User.Role.SITE_MANAGER)
 def export_ratios(request):
     org = _org_or_403(request)
-    period_start = date.fromisoformat(request.GET.get("start", str(timezone.now().date().replace(day=1))))
+    period_start = date.fromisoformat(
+        request.GET.get("start", str(timezone.now().date().replace(day=1)))
+    )
     period_end = date.fromisoformat(request.GET.get("end", str(timezone.now().date())))
     csv_content = export_ratio_checks_csv(org, period_start, period_end)
     response = HttpResponse(csv_content, content_type="text/csv")
-    response["Content-Disposition"] = f'attachment; filename="ratio_checks_{period_start}_{period_end}.csv"'
+    response["Content-Disposition"] = (
+        f'attachment; filename="ratio_checks_{period_start}_{period_end}.csv"'
+    )
     return response

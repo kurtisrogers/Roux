@@ -1,5 +1,4 @@
 import logging
-from decimal import Decimal
 
 import stripe
 from django.conf import settings
@@ -35,8 +34,7 @@ def create_booking_checkout_session(booking, request) -> str:
                     "product_data": {
                         "name": f"{session_type.name} – {booking.session.date}",
                         "description": (
-                            f"{booking.child.full_name} – "
-                            f"{booking.session.site.name}"
+                            f"{booking.child.full_name} – " f"{booking.session.site.name}"
                         ),
                     },
                 },

@@ -6,73 +6,188 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
-        ('bookings', '0001_initial'),
-        ('organisations', '0001_initial'),
+        ("bookings", "0001_initial"),
+        ("organisations", "0001_initial"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Incident',
+            name="Incident",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('incident_type', models.CharField(choices=[('accident', 'Accident / Injury'), ('safeguarding', 'Safeguarding Concern'), ('behaviour', 'Behaviour Incident'), ('medication', 'Medication Administered'), ('other', 'Other')], max_length=20)),
-                ('severity', models.CharField(choices=[('low', 'Low'), ('medium', 'Medium'), ('high', 'High'), ('critical', 'Critical')], default='low', max_length=20)),
-                ('occurred_at', models.DateTimeField()),
-                ('location', models.CharField(blank=True, max_length=200)),
-                ('description', models.TextField()),
-                ('action_taken', models.TextField(blank=True)),
-                ('parent_notified', models.BooleanField(default=False)),
-                ('parent_notified_at', models.DateTimeField(blank=True, null=True)),
-                ('ofsted_notifiable', models.BooleanField(default=False, help_text='Mark if this incident must be reported to Ofsted.')),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('child', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='incidents', to='bookings.child')),
-                ('organisation', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='incidents', to='organisations.organisation')),
-                ('reported_by', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='incidents_reported', to=settings.AUTH_USER_MODEL)),
-                ('session', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='incidents', to='bookings.session')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                (
+                    "incident_type",
+                    models.CharField(
+                        choices=[
+                            ("accident", "Accident / Injury"),
+                            ("safeguarding", "Safeguarding Concern"),
+                            ("behaviour", "Behaviour Incident"),
+                            ("medication", "Medication Administered"),
+                            ("other", "Other"),
+                        ],
+                        max_length=20,
+                    ),
+                ),
+                (
+                    "severity",
+                    models.CharField(
+                        choices=[
+                            ("low", "Low"),
+                            ("medium", "Medium"),
+                            ("high", "High"),
+                            ("critical", "Critical"),
+                        ],
+                        default="low",
+                        max_length=20,
+                    ),
+                ),
+                ("occurred_at", models.DateTimeField()),
+                ("location", models.CharField(blank=True, max_length=200)),
+                ("description", models.TextField()),
+                ("action_taken", models.TextField(blank=True)),
+                ("parent_notified", models.BooleanField(default=False)),
+                ("parent_notified_at", models.DateTimeField(blank=True, null=True)),
+                (
+                    "ofsted_notifiable",
+                    models.BooleanField(
+                        default=False, help_text="Mark if this incident must be reported to Ofsted."
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "child",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="incidents",
+                        to="bookings.child",
+                    ),
+                ),
+                (
+                    "organisation",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="incidents",
+                        to="organisations.organisation",
+                    ),
+                ),
+                (
+                    "reported_by",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="incidents_reported",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "session",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="incidents",
+                        to="bookings.session",
+                    ),
+                ),
             ],
             options={
-                'ordering': ['-occurred_at'],
+                "ordering": ["-occurred_at"],
             },
         ),
         migrations.CreateModel(
-            name='OfstedReport',
+            name="OfstedReport",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('report_type', models.CharField(choices=[('monthly', 'Monthly Summary'), ('incident', 'Incident Report'), ('ratio', 'Ratio Compliance'), ('annual', 'Annual Return')], max_length=20)),
-                ('period_start', models.DateField()),
-                ('period_end', models.DateField()),
-                ('generated_at', models.DateTimeField(auto_now_add=True)),
-                ('data', models.JSONField(default=dict)),
-                ('file', models.FileField(blank=True, upload_to='ofsted_reports/')),
-                ('generated_by', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL)),
-                ('organisation', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='ofsted_reports', to='organisations.organisation')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                (
+                    "report_type",
+                    models.CharField(
+                        choices=[
+                            ("monthly", "Monthly Summary"),
+                            ("incident", "Incident Report"),
+                            ("ratio", "Ratio Compliance"),
+                            ("annual", "Annual Return"),
+                        ],
+                        max_length=20,
+                    ),
+                ),
+                ("period_start", models.DateField()),
+                ("period_end", models.DateField()),
+                ("generated_at", models.DateTimeField(auto_now_add=True)),
+                ("data", models.JSONField(default=dict)),
+                ("file", models.FileField(blank=True, upload_to="ofsted_reports/")),
+                (
+                    "generated_by",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "organisation",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="ofsted_reports",
+                        to="organisations.organisation",
+                    ),
+                ),
             ],
             options={
-                'ordering': ['-generated_at'],
+                "ordering": ["-generated_at"],
             },
         ),
         migrations.CreateModel(
-            name='RatioCheck',
+            name="RatioCheck",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('checked_at', models.DateTimeField(auto_now_add=True)),
-                ('child_count', models.PositiveIntegerField()),
-                ('staff_count', models.PositiveIntegerField()),
-                ('required_staff', models.PositiveIntegerField()),
-                ('compliant', models.BooleanField()),
-                ('age_groups', models.JSONField(default=dict)),
-                ('notes', models.TextField(blank=True)),
-                ('checked_by', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL)),
-                ('session', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='ratio_checks', to='bookings.session')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("checked_at", models.DateTimeField(auto_now_add=True)),
+                ("child_count", models.PositiveIntegerField()),
+                ("staff_count", models.PositiveIntegerField()),
+                ("required_staff", models.PositiveIntegerField()),
+                ("compliant", models.BooleanField()),
+                ("age_groups", models.JSONField(default=dict)),
+                ("notes", models.TextField(blank=True)),
+                (
+                    "checked_by",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "session",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="ratio_checks",
+                        to="bookings.session",
+                    ),
+                ),
             ],
             options={
-                'ordering': ['-checked_at'],
+                "ordering": ["-checked_at"],
             },
         ),
     ]

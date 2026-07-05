@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Roux – Wraparound Care Management for UK Schools & Clubs</title>
+  <meta name="description" content="Roux is the modern platform for UK wraparound care. Bookings, Ofsted compliance, parent payments, CMS websites, and more.">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+  <link rel="stylesheet" href="assets/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍲</text></svg>">
+</head>
+<body>
+  <header class="container">
+    <nav>
+      <ul><li><strong>Roux</strong></li></ul>
+      <ul>
+        <li><a href="#features">Features</a></li>
+        <li><a href="#compliance">Ofsted</a></li>
+        <li><a href="https://github.com/kurtisrogers/Roux" target="_blank" rel="noopener">GitHub</a></li>
+        <li><a href="#get-started" role="button">Get Started</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero container">
+      <h1>Wraparound care,<br>beautifully managed</h1>
+      <p class="lead">
+        Roux helps UK breakfast clubs, after-school clubs, and holiday programmes
+        run bookings, payments, Ofsted compliance, and parent-facing websites — all in one platform.
+      </p>
+      <div class="cta-row">
+        <a href="https://github.com/kurtisrogers/Roux" role="button">View on GitHub</a>
+        <a href="#features" role="button" class="outline">Explore features</a>
+      </div>
+    </section>
+
+    <section id="features" class="container">
+      <h2>Everything you need to compete with legacy SaaS</h2>
+      <div class="grid">
+        <article>
+          <h3>📅 Operations Dashboard</h3>
+          <p>Sessions, bookings, check-in/out, multi-site management, and role-based access for your whole team.</p>
+        </article>
+        <article>
+          <h3>🌐 CMS Website Builder</h3>
+          <p>Drag-and-drop page builder with visual editors. Parents book and pay online from your branded site.</p>
+        </article>
+        <article>
+          <h3>💳 Stripe & Xero</h3>
+          <p>Session payments via Stripe Checkout. Automatic invoice sync to Xero for painless accounting.</p>
+        </article>
+        <article>
+          <h3>📋 Ofsted Compliance</h3>
+          <p>Incident logging, UK EYFS staff:child ratio checks, monthly reports, and CSV exports.</p>
+        </article>
+        <article>
+          <h3>📱 Mobile API</h3>
+          <p>JWT-authenticated REST API for iOS and Android apps. Children, sessions, bookings — all covered.</p>
+        </article>
+        <article>
+          <h3>✉️ Parent Notifications</h3>
+          <p>Automatic emails for bookings, payments, check-in, and check-out. Staff session reminders too.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="compliance" class="container highlight">
+      <h2>Built for UK regulation</h2>
+      <p>
+        Statutory staff:child ratios, Ofsted-notifiable incident tracking, emergency contact management,
+        allergy and medical notes — Roux is designed for the realities of UK wraparound care.
+      </p>
+    </section>
+
+    <section class="container tech">
+      <h2>Modern, extensible stack</h2>
+      <p>Django · Pico CSS · HTMX · Alpine.js · Playwright · SST on AWS</p>
+    </section>
+
+    <section id="get-started" class="container">
+      <h2>Get started in minutes</h2>
+      <pre><code>git clone https://github.com/kurtisrogers/Roux.git
+cd Roux
+pip install -r requirements.txt -r requirements-dev.txt
+python manage.py migrate && python manage.py seed_demo
+python manage.py runserver</code></pre>
+      <p>Demo logins: <code>admin</code> / <code>admin123</code> · <code>parent1</code> / <code>parent123</code></p>
+    </section>
+  </main>
+
+  <footer class="container">
+    <small>© 2026 Roux · Open source wraparound care platform · <a href="https://github.com/kurtisrogers/Roux">GitHub</a></small>
+  </footer>
+</body>
+</html>

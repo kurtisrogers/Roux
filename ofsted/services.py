@@ -2,9 +2,8 @@ import csv
 import io
 from datetime import date
 
-from django.utils import timezone
-
 from bookings.models import Booking, Session
+
 from ofsted.models import Incident, OfstedReport, RatioCheck
 from ofsted.ratios import analyse_session_ratio
 
@@ -28,7 +27,9 @@ def check_session_ratio(session, checked_by=None) -> RatioCheck:
     )
 
 
-def generate_monthly_report(organisation, period_start: date, period_end: date, user=None) -> OfstedReport:
+def generate_monthly_report(
+    organisation, period_start: date, period_end: date, user=None
+) -> OfstedReport:
     sessions = Session.objects.filter(
         organisation=organisation,
         date__range=(period_start, period_end),
@@ -55,8 +56,7 @@ def generate_monthly_report(organisation, period_start: date, period_end: date, 
         ).count(),
         "total_incidents": incidents.count(),
         "incidents_by_type": {
-            t: incidents.filter(incident_type=t).count()
-            for t, _ in Incident.Type.choices
+            t: incidents.filter(incident_type=t).count() for t, _ in Incident.Type.choices
         },
         "ofsted_notifiable_incidents": ofsted_notifiable,
         "ratio_checks": ratio_checks.count(),
@@ -86,31 +86,35 @@ def export_incidents_csv(organisation, period_start: date, period_end: date) -> 
 
     output = io.StringIO()
     writer = csv.writer(output)
-    writer.writerow([
-        "Date",
-        "Type",
-        "Severity",
-        "Child",
-        "Location",
-        "Description",
-        "Action Taken",
-        "Parent Notified",
-        "Ofsted Notifiable",
-        "Reported By",
-    ])
+    writer.writerow(
+        [
+            "Date",
+            "Type",
+            "Severity",
+            "Child",
+            "Location",
+            "Description",
+            "Action Taken",
+            "Parent Notified",
+            "Ofsted Notifiable",
+            "Reported By",
+        ]
+    )
     for inc in incidents:
-        writer.writerow([
-            inc.occurred_at.strftime("%Y-%m-%d %H:%M"),
-            inc.get_incident_type_display(),
-            inc.get_severity_display(),
-            inc.child.full_name if inc.child else "",
-            inc.location,
-            inc.description,
-            inc.action_taken,
-            "Yes" if inc.parent_notified else "No",
-            "Yes" if inc.ofsted_notifiable else "No",
-            inc.reported_by.get_full_name() if inc.reported_by else "",
-        ])
+        writer.writerow(
+            [
+                inc.occurred_at.strftime("%Y-%m-%d %H:%M"),
+                inc.get_incident_type_display(),
+                inc.get_severity_display(),
+                inc.child.full_name if inc.child else "",
+                inc.location,
+                inc.description,
+                inc.action_taken,
+                "Yes" if inc.parent_notified else "No",
+                "Yes" if inc.ofsted_notifiable else "No",
+                inc.reported_by.get_full_name() if inc.reported_by else "",
+            ]
+        )
     return output.getvalue()
 
 
@@ -122,27 +126,31 @@ def export_ratio_checks_csv(organisation, period_start: date, period_end: date) 
 
     output = io.StringIO()
     writer = csv.writer(output)
-    writer.writerow([
-        "Date",
-        "Session",
-        "Site",
-        "Children",
-        "Staff",
-        "Required Staff",
-        "Compliant",
-        "Age Groups",
-        "Checked By",
-    ])
+    writer.writerow(
+        [
+            "Date",
+            "Session",
+            "Site",
+            "Children",
+            "Staff",
+            "Required Staff",
+            "Compliant",
+            "Age Groups",
+            "Checked By",
+        ]
+    )
     for check in checks:
-        writer.writerow([
-            check.checked_at.strftime("%Y-%m-%d %H:%M"),
-            str(check.session),
-            check.session.site.name,
-            check.child_count,
-            check.staff_count,
-            check.required_staff,
-            "Yes" if check.compliant else "NO",
-            str(check.age_groups),
-            check.checked_by.get_full_name() if check.checked_by else "",
-        ])
+        writer.writerow(
+            [
+                check.checked_at.strftime("%Y-%m-%d %H:%M"),
+                str(check.session),
+                check.session.site.name,
+                check.child_count,
+                check.staff_count,
+                check.required_staff,
+                "Yes" if check.compliant else "NO",
+                str(check.age_groups),
+                check.checked_by.get_full_name() if check.checked_by else "",
+            ]
+        )
     return output.getvalue()

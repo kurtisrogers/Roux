@@ -1,14 +1,14 @@
 from datetime import date, time
 
-from django.test import TestCase
-from django.utils import timezone
-
 from accounts.models import User
 from bookings.models import Booking, Child, Session, SessionType
+from django.test import TestCase
+from django.utils import timezone
+from organisations.models import Organisation, Site
+
 from ofsted.models import Incident, RatioCheck
 from ofsted.ratios import analyse_session_ratio, required_staff_count
 from ofsted.services import check_session_ratio, generate_monthly_report
-from organisations.models import Organisation, Site
 
 
 class RatioTests(TestCase):
@@ -40,9 +40,7 @@ class OfstedServiceTests(TestCase):
         self.staff = User.objects.create_user(
             username="s", password="pass", role=User.Role.STAFF, organisation=self.org
         )
-        self.st = SessionType.objects.create(
-            organisation=self.org, name="ASC", price="10.00"
-        )
+        self.st = SessionType.objects.create(organisation=self.org, name="ASC", price="10.00")
         self.session = Session.objects.create(
             organisation=self.org,
             site=self.site,

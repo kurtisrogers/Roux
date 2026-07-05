@@ -1,9 +1,8 @@
 """Render CMS page blocks for public and preview views."""
 
+from bookings.models import Session
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
-
-from bookings.models import Session
 
 
 def render_block(block, organisation, request=None):
@@ -130,7 +129,7 @@ def _render_pricing(organisation):
     html = '<section class="pricing-block"><h2>Our Prices</h2><div class="grid">'
     for st in types:
         html += (
-            f'<article><h3>{escape(st.name)}</h3>'
+            f"<article><h3>{escape(st.name)}</h3>"
             f"<p><strong>£{st.price}</strong> per session</p>"
             f"<p>{escape(st.description[:120])}</p></article>"
         )
@@ -141,12 +140,10 @@ def _render_pricing(organisation):
 def _render_faq(content):
     items = content.get("items", [])
     html = '<section class="faq-block"><h2>FAQ</h2>'
-    for i, item in enumerate(items):
+    for item in items:
         q = escape(item.get("question", ""))
         a = escape(item.get("answer", ""))
-        html += (
-            f'<details><summary>{q}</summary><p>{a}</p></details>'
-        )
+        html += f"<details><summary>{q}</summary><p>{a}</p></details>"
     html += "</section>"
     return mark_safe(html)
 

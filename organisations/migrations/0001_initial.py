@@ -5,68 +5,101 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Organisation',
+            name="Organisation",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=200)),
-                ('slug', models.SlugField(max_length=200, unique=True)),
-                ('email', models.EmailField(blank=True, max_length=254)),
-                ('phone', models.CharField(blank=True, max_length=20)),
-                ('address_line1', models.CharField(blank=True, max_length=255)),
-                ('address_line2', models.CharField(blank=True, max_length=255)),
-                ('city', models.CharField(blank=True, max_length=100)),
-                ('county', models.CharField(blank=True, max_length=100)),
-                ('postcode', models.CharField(blank=True, max_length=10)),
-                ('ofsted_number', models.CharField(blank=True, max_length=50)),
-                ('stripe_customer_id', models.CharField(blank=True, max_length=255)),
-                ('is_active', models.BooleanField(default=True)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("name", models.CharField(max_length=200)),
+                ("slug", models.SlugField(max_length=200, unique=True)),
+                ("email", models.EmailField(blank=True, max_length=254)),
+                ("phone", models.CharField(blank=True, max_length=20)),
+                ("address_line1", models.CharField(blank=True, max_length=255)),
+                ("address_line2", models.CharField(blank=True, max_length=255)),
+                ("city", models.CharField(blank=True, max_length=100)),
+                ("county", models.CharField(blank=True, max_length=100)),
+                ("postcode", models.CharField(blank=True, max_length=10)),
+                ("ofsted_number", models.CharField(blank=True, max_length=50)),
+                ("stripe_customer_id", models.CharField(blank=True, max_length=255)),
+                ("is_active", models.BooleanField(default=True)),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
             ],
             options={
-                'ordering': ['name'],
+                "ordering": ["name"],
             },
         ),
         migrations.CreateModel(
-            name='TermDate',
+            name="TermDate",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100)),
-                ('start_date', models.DateField()),
-                ('end_date', models.DateField()),
-                ('is_holiday', models.BooleanField(default=False, help_text='Holiday periods when wraparound care may be unavailable.')),
-                ('organisation', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='term_dates', to='organisations.organisation')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("name", models.CharField(max_length=100)),
+                ("start_date", models.DateField()),
+                ("end_date", models.DateField()),
+                (
+                    "is_holiday",
+                    models.BooleanField(
+                        default=False,
+                        help_text="Holiday periods when wraparound care may be unavailable.",
+                    ),
+                ),
+                (
+                    "organisation",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="term_dates",
+                        to="organisations.organisation",
+                    ),
+                ),
             ],
             options={
-                'ordering': ['start_date'],
+                "ordering": ["start_date"],
             },
         ),
         migrations.CreateModel(
-            name='Site',
+            name="Site",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=200)),
-                ('slug', models.SlugField(max_length=200)),
-                ('address_line1', models.CharField(blank=True, max_length=255)),
-                ('address_line2', models.CharField(blank=True, max_length=255)),
-                ('city', models.CharField(blank=True, max_length=100)),
-                ('postcode', models.CharField(blank=True, max_length=10)),
-                ('phone', models.CharField(blank=True, max_length=20)),
-                ('capacity', models.PositiveIntegerField(default=30)),
-                ('is_active', models.BooleanField(default=True)),
-                ('organisation', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='sites', to='organisations.organisation')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("name", models.CharField(max_length=200)),
+                ("slug", models.SlugField(max_length=200)),
+                ("address_line1", models.CharField(blank=True, max_length=255)),
+                ("address_line2", models.CharField(blank=True, max_length=255)),
+                ("city", models.CharField(blank=True, max_length=100)),
+                ("postcode", models.CharField(blank=True, max_length=10)),
+                ("phone", models.CharField(blank=True, max_length=20)),
+                ("capacity", models.PositiveIntegerField(default=30)),
+                ("is_active", models.BooleanField(default=True)),
+                (
+                    "organisation",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="sites",
+                        to="organisations.organisation",
+                    ),
+                ),
             ],
             options={
-                'ordering': ['name'],
-                'unique_together': {('organisation', 'slug')},
+                "ordering": ["name"],
+                "unique_together": {("organisation", "slug")},
             },
         ),
     ]

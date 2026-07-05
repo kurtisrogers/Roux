@@ -5,95 +5,180 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
-        ('organisations', '0001_initial'),
+        ("organisations", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='ContactSubmission',
+            name="ContactSubmission",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=200)),
-                ('email', models.EmailField(max_length=254)),
-                ('phone', models.CharField(blank=True, max_length=20)),
-                ('message', models.TextField()),
-                ('is_read', models.BooleanField(default=False)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('organisation', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='contact_submissions', to='organisations.organisation')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("name", models.CharField(max_length=200)),
+                ("email", models.EmailField(max_length=254)),
+                ("phone", models.CharField(blank=True, max_length=20)),
+                ("message", models.TextField()),
+                ("is_read", models.BooleanField(default=False)),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                (
+                    "organisation",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="contact_submissions",
+                        to="organisations.organisation",
+                    ),
+                ),
             ],
             options={
-                'ordering': ['-created_at'],
+                "ordering": ["-created_at"],
             },
         ),
         migrations.CreateModel(
-            name='Page',
+            name="Page",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(max_length=200)),
-                ('slug', models.SlugField(max_length=200)),
-                ('meta_description', models.CharField(blank=True, max_length=300)),
-                ('is_homepage', models.BooleanField(default=False)),
-                ('is_published', models.BooleanField(default=False)),
-                ('show_in_nav', models.BooleanField(default=True)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('organisation', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='pages', to='organisations.organisation')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("title", models.CharField(max_length=200)),
+                ("slug", models.SlugField(max_length=200)),
+                ("meta_description", models.CharField(blank=True, max_length=300)),
+                ("is_homepage", models.BooleanField(default=False)),
+                ("is_published", models.BooleanField(default=False)),
+                ("show_in_nav", models.BooleanField(default=True)),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "organisation",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="pages",
+                        to="organisations.organisation",
+                    ),
+                ),
             ],
             options={
-                'ordering': ['title'],
-                'unique_together': {('organisation', 'slug')},
+                "ordering": ["title"],
+                "unique_together": {("organisation", "slug")},
             },
         ),
         migrations.CreateModel(
-            name='NavigationItem',
+            name="NavigationItem",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('label', models.CharField(max_length=100)),
-                ('external_url', models.URLField(blank=True)),
-                ('order', models.PositiveIntegerField(default=0)),
-                ('is_visible', models.BooleanField(default=True)),
-                ('organisation', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='nav_items', to='organisations.organisation')),
-                ('page', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='nav_items', to='cms.page')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("label", models.CharField(max_length=100)),
+                ("external_url", models.URLField(blank=True)),
+                ("order", models.PositiveIntegerField(default=0)),
+                ("is_visible", models.BooleanField(default=True)),
+                (
+                    "organisation",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="nav_items",
+                        to="organisations.organisation",
+                    ),
+                ),
+                (
+                    "page",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="nav_items",
+                        to="cms.page",
+                    ),
+                ),
             ],
             options={
-                'ordering': ['order'],
+                "ordering": ["order"],
             },
         ),
         migrations.CreateModel(
-            name='PageBlock',
+            name="PageBlock",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('block_type', models.CharField(choices=[('hero', 'Hero Banner'), ('rich_text', 'Rich Text'), ('features', 'Feature Grid'), ('cta', 'Call to Action'), ('image_text', 'Image & Text'), ('contact_form', 'Contact Form'), ('session_list', 'Available Sessions'), ('pricing', 'Pricing Table'), ('faq', 'FAQ Accordion'), ('testimonials', 'Testimonials')], max_length=20)),
-                ('order', models.PositiveIntegerField(default=0)),
-                ('content', models.JSONField(default=dict)),
-                ('is_visible', models.BooleanField(default=True)),
-                ('page', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='blocks', to='cms.page')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                (
+                    "block_type",
+                    models.CharField(
+                        choices=[
+                            ("hero", "Hero Banner"),
+                            ("rich_text", "Rich Text"),
+                            ("features", "Feature Grid"),
+                            ("cta", "Call to Action"),
+                            ("image_text", "Image & Text"),
+                            ("contact_form", "Contact Form"),
+                            ("session_list", "Available Sessions"),
+                            ("pricing", "Pricing Table"),
+                            ("faq", "FAQ Accordion"),
+                            ("testimonials", "Testimonials"),
+                        ],
+                        max_length=20,
+                    ),
+                ),
+                ("order", models.PositiveIntegerField(default=0)),
+                ("content", models.JSONField(default=dict)),
+                ("is_visible", models.BooleanField(default=True)),
+                (
+                    "page",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="blocks",
+                        to="cms.page",
+                    ),
+                ),
             ],
             options={
-                'ordering': ['order'],
+                "ordering": ["order"],
             },
         ),
         migrations.CreateModel(
-            name='SiteSettings',
+            name="SiteSettings",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('site_name', models.CharField(blank=True, max_length=200)),
-                ('tagline', models.CharField(blank=True, max_length=300)),
-                ('logo', models.ImageField(blank=True, upload_to='logos/')),
-                ('primary_colour', models.CharField(default='#1a5fb4', max_length=7)),
-                ('contact_email', models.EmailField(blank=True, max_length=254)),
-                ('contact_phone', models.CharField(blank=True, max_length=20)),
-                ('address', models.TextField(blank=True)),
-                ('facebook_url', models.URLField(blank=True)),
-                ('instagram_url', models.URLField(blank=True)),
-                ('twitter_url', models.URLField(blank=True)),
-                ('footer_text', models.TextField(blank=True)),
-                ('google_analytics_id', models.CharField(blank=True, max_length=50)),
-                ('organisation', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='site_settings', to='organisations.organisation')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("site_name", models.CharField(blank=True, max_length=200)),
+                ("tagline", models.CharField(blank=True, max_length=300)),
+                ("logo", models.ImageField(blank=True, upload_to="logos/")),
+                ("primary_colour", models.CharField(default="#1a5fb4", max_length=7)),
+                ("contact_email", models.EmailField(blank=True, max_length=254)),
+                ("contact_phone", models.CharField(blank=True, max_length=20)),
+                ("address", models.TextField(blank=True)),
+                ("facebook_url", models.URLField(blank=True)),
+                ("instagram_url", models.URLField(blank=True)),
+                ("twitter_url", models.URLField(blank=True)),
+                ("footer_text", models.TextField(blank=True)),
+                ("google_analytics_id", models.CharField(blank=True, max_length=50)),
+                (
+                    "organisation",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="site_settings",
+                        to="organisations.organisation",
+                    ),
+                ),
             ],
         ),
     ]

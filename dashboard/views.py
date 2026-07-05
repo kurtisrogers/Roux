@@ -1,39 +1,35 @@
-from datetime import timedelta
 import json
+from datetime import timedelta
 
+from accounts.decorators import dashboard_required, role_required
+from accounts.forms import UserForm
+from accounts.models import User
+from billing.models import Payment
+from billing.services import stripe_service
+from bookings.models import Attendance, Booking, Child, Session, SessionType
+from cms.block_forms import get_content_form
+from cms.models import ContactSubmission, Page, PageBlock, SiteSettings
 from django.contrib import messages
-from django.db.models import Count, Q, Sum
+from django.db.models import Count
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
+from finance.models import XeroConnection, XeroInvoice
+from finance.services import xero_service
+from organisations.models import Organisation, Site
 
-from accounts.decorators import dashboard_required, get_user_organisation, role_required
-from accounts.forms import UserForm
-from accounts.models import User
-from billing.models import Payment, Subscription
-from billing.services import stripe_service
-from bookings.models import Attendance, Booking, Child, Session, SessionType
-from cms.block_forms import get_content_form
-from cms.models import ContactSubmission, NavigationItem, Page, PageBlock, SiteSettings
 from dashboard.forms import (
-    BookingForm,
     ChildForm,
-    NavigationItemForm,
-    OrganisationForm,
     PageBlockForm,
     PageForm,
     SessionForm,
     SessionTypeForm,
     SiteForm,
     SiteSettingsForm,
-    TermDateForm,
 )
 from dashboard.mixins import dashboard_context, resolve_organisation
-from finance.models import XeroConnection, XeroInvoice
-from finance.services import xero_service
-from organisations.models import Organisation, Site, TermDate
 
 
 def _org_or_403(request):
@@ -58,25 +54,21 @@ def home(request):
     if org:
         ctx.update(
             {
-                "today_sessions": Session.objects.filter(
-                    organisation=org, date=today
-                ).count(),
+                "today_sessions": Session.objects.filter(organisation=org, date=today).count(),
                 "week_bookings": Booking.objects.filter(
                     session__organisation=org,
                     session__date__range=(today, week_end),
                     status__in=[Booking.Status.CONFIRMED, Booking.Status.CHECKED_IN],
                 ).count(),
-                "total_children": Child.objects.filter(
-                    organisation=org, is_active=True
-                ).count(),
+                "total_children": Child.objects.filter(organisation=org, is_active=True).count(),
                 "unpaid_bookings": Booking.objects.filter(
                     session__organisation=org,
                     payment_status=Booking.PaymentStatus.UNPAID,
                     status=Booking.Status.CONFIRMED,
                 ).count(),
-                "recent_bookings": Booking.objects.filter(
-                    session__organisation=org
-                ).select_related("child", "session")[:8],
+                "recent_bookings": Booking.objects.filter(session__organisation=org).select_related(
+                    "child", "session"
+                )[:8],
                 "upcoming_sessions": Session.objects.filter(
                     organisation=org,
                     date__gte=today,
@@ -161,9 +153,7 @@ def child_edit(request, pk):
 def session_list(request):
     org = _org_or_403(request)
     sessions = (
-        Session.objects.filter(organisation=org)
-        if org
-        else Session.objects.all()
+        Session.objects.filter(organisation=org) if org else Session.objects.all()
     ).select_related("session_type", "site")
     return render(
         request,
@@ -217,9 +207,7 @@ def session_detail(request, pk):
 @require_POST
 def check_in(request, booking_pk):
     org = _org_or_403(request)
-    booking = get_object_or_404(
-        Booking, pk=booking_pk, session__organisation=org
-    )
+    booking = get_object_or_404(Booking, pk=booking_pk, session__organisation=org)
     attendance, _ = Attendance.objects.get_or_create(booking=booking)
     attendance.checked_in_at = timezone.now()
     attendance.checked_in_by = request.user
@@ -236,9 +224,7 @@ def check_in(request, booking_pk):
 @require_POST
 def check_out(request, booking_pk):
     org = _org_or_403(request)
-    booking = get_object_or_404(
-        Booking, pk=booking_pk, session__organisation=org
-    )
+    booking = get_object_or_404(Booking, pk=booking_pk, session__organisation=org)
     attendance, _ = Attendance.objects.get_or_create(booking=booking)
     attendance.checked_out_at = timezone.now()
     attendance.checked_out_by = request.user
@@ -375,7 +361,7 @@ def block_add(request, page_pk):
     block_type = request.POST.get("block_type", PageBlock.BlockType.RICH_TEXT)
     defaults = _default_block_content(block_type)
     order = page.blocks.count()
-    block = PageBlock.objects.create(
+    PageBlock.objects.create(
         page=page,
         block_type=block_type,
         order=order,
@@ -401,7 +387,9 @@ def block_edit(request, pk):
 
     if request.method == "POST":
         meta_form = PageBlockForm(request.POST, instance=block)
-        content_form = get_content_form(block.block_type, data=request.POST) if content_form else None
+        content_form = (
+            get_content_form(block.block_type, data=request.POST) if content_form else None
+        )
 
         meta_valid = meta_form.is_valid()
         content_valid = content_form.is_valid() if content_form else True
@@ -728,9 +716,7 @@ def stripe_webhook(request):
     sig_header = request.META.get("HTTP_STRIPE_SIGNATURE", "")
 
     try:
-        event = stripe.Webhook.construct_event(
-            payload, sig_header, settings.STRIPE_WEBHOOK_SECRET
-        )
+        event = stripe.Webhook.construct_event(payload, sig_header, settings.STRIPE_WEBHOOK_SECRET)
     except (ValueError, stripe.error.SignatureVerificationError):
         return HttpResponseBadRequest()
 

@@ -1,0 +1,96 @@
+name: Deploy SST (AWS)
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      stage:
+        description: Deployment stage
+        required: true
+        default: staging
+        type: choice
+        options:
+          - staging
+          - production
+
+concurrency:
+  group: sst-${{ github.event.inputs.stage || 'staging' }}
+  cancel-in-progress: false
+
+jobs:
+  deploy-staging:
+    name: Deploy staging
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event.inputs.stage == 'staging')
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-west-2
+
+      - name: Set SST secrets (staging)
+        run: |
+          echo "${{ secrets.DJANGO_SECRET_KEY }}" | npx sst secret set SecretKey --stage staging
+          echo "${{ secrets.STRIPE_SECRET_KEY }}" | npx sst secret set StripeSecretKey --stage staging
+          echo "${{ secrets.STRIPE_WEBHOOK_SECRET }}" | npx sst secret set StripeWebhookSecret --stage staging
+          echo "${{ secrets.XERO_CLIENT_SECRET }}" | npx sst secret set XeroClientSecret --stage staging
+        continue-on-error: true
+
+      - name: Deploy to staging
+        run: npx sst deploy --stage staging
+
+  deploy-production:
+    name: Deploy production
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.stage == 'production'
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-west-2
+
+      - name: Set SST secrets (production)
+        run: |
+          echo "${{ secrets.DJANGO_SECRET_KEY }}" | npx sst secret set SecretKey --stage production
+          echo "${{ secrets.STRIPE_SECRET_KEY }}" | npx sst secret set StripeSecretKey --stage production
+          echo "${{ secrets.STRIPE_WEBHOOK_SECRET }}" | npx sst secret set StripeWebhookSecret --stage production
+          echo "${{ secrets.XERO_CLIENT_SECRET }}" | npx sst secret set XeroClientSecret --stage production
+        continue-on-error: true
+
+      - name: Deploy to production
+        run: npx sst deploy --stage production

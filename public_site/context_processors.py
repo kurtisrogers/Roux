@@ -6,13 +6,9 @@ def site_context(request):
 
     if organisation:
         site_settings = getattr(organisation, "site_settings", None)
-        nav_items = list(
-            organisation.nav_items.filter(is_visible=True).select_related("page")
-        )
+        nav_items = list(organisation.nav_items.filter(is_visible=True).select_related("page"))
         if not nav_items:
-            pages = list(
-                organisation.pages.filter(is_published=True, show_in_nav=True)
-            )
+            pages = list(organisation.pages.filter(is_published=True, show_in_nav=True))
 
     return {
         "current_organisation": organisation,

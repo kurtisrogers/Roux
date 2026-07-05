@@ -1,8 +1,7 @@
-from rest_framework import serializers
-
 from accounts.models import User
 from bookings.models import Booking, Child, Session, SessionType
 from organisations.models import Organisation, Site
+from rest_framework import serializers
 
 
 class UserSerializer(serializers.ModelSerializer):

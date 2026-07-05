@@ -1,12 +1,11 @@
 from datetime import date, time
 
-from django.urls import reverse
-from rest_framework import status
-from rest_framework.test import APITestCase
-
 from accounts.models import User
 from bookings.models import Session, SessionType
+from django.urls import reverse
 from organisations.models import Organisation, Site
+from rest_framework import status
+from rest_framework.test import APITestCase
 
 
 class ApiAuthTests(APITestCase):

@@ -1,13 +1,12 @@
-import json
 from datetime import date, time, timedelta
 
-from django.core.management.base import BaseCommand
-from django.utils import timezone
-
-from accounts.models import User
 from bookings.models import Session, SessionType
 from cms.models import NavigationItem, Page, PageBlock, SiteSettings
+from django.core.management.base import BaseCommand
+from django.utils import timezone
 from organisations.models import Organisation, Site, TermDate
+
+from accounts.models import User
 
 
 class Command(BaseCommand):
@@ -146,39 +145,60 @@ class Command(BaseCommand):
         if created or not page.blocks.exists():
             PageBlock.objects.filter(page=page).delete()
             blocks = [
-                (PageBlock.BlockType.HERO, {
-                    "title": "Oakwood Wraparound Club",
-                    "subtitle": "Ofsted-registered breakfast and after school care in Manchester",
-                    "cta_text": "Book a Session",
-                    "cta_url": "/sessions/",
-                }),
-                (PageBlock.BlockType.FEATURES, {
-                    "items": [
-                        {"title": "Qualified Staff", "description": "DBS-checked, first-aid trained team."},
-                        {"title": "Flexible Booking", "description": "Book individual sessions online."},
-                        {"title": "Healthy Food", "description": "Nutritious breakfast and snacks included."},
-                    ],
-                }),
+                (
+                    PageBlock.BlockType.HERO,
+                    {
+                        "title": "Oakwood Wraparound Club",
+                        "subtitle": "Ofsted-registered breakfast and after school care in Manchester",
+                        "cta_text": "Book a Session",
+                        "cta_url": "/sessions/",
+                    },
+                ),
+                (
+                    PageBlock.BlockType.FEATURES,
+                    {
+                        "items": [
+                            {
+                                "title": "Qualified Staff",
+                                "description": "DBS-checked, first-aid trained team.",
+                            },
+                            {
+                                "title": "Flexible Booking",
+                                "description": "Book individual sessions online.",
+                            },
+                            {
+                                "title": "Healthy Food",
+                                "description": "Nutritious breakfast and snacks included.",
+                            },
+                        ],
+                    },
+                ),
                 (PageBlock.BlockType.SESSION_LIST, {}),
                 (PageBlock.BlockType.PRICING, {}),
-                (PageBlock.BlockType.FAQ, {
-                    "items": [
-                        {
-                            "question": "What time does breakfast club start?",
-                            "answer": "Breakfast club runs from 7:30am until school starts.",
-                        },
-                        {
-                            "question": "Can I book ad-hoc sessions?",
-                            "answer": "Yes, subject to availability. Book online anytime.",
-                        },
-                    ],
-                }),
-                (PageBlock.BlockType.CTA, {
-                    "title": "Join us today",
-                    "text": "Register your child and book your first session.",
-                    "button_text": "Register Now",
-                    "button_url": "/accounts/register/",
-                }),
+                (
+                    PageBlock.BlockType.FAQ,
+                    {
+                        "items": [
+                            {
+                                "question": "What time does breakfast club start?",
+                                "answer": "Breakfast club runs from 7:30am until school starts.",
+                            },
+                            {
+                                "question": "Can I book ad-hoc sessions?",
+                                "answer": "Yes, subject to availability. Book online anytime.",
+                            },
+                        ],
+                    },
+                ),
+                (
+                    PageBlock.BlockType.CTA,
+                    {
+                        "title": "Join us today",
+                        "text": "Register your child and book your first session.",
+                        "button_text": "Register Now",
+                        "button_url": "/accounts/register/",
+                    },
+                ),
             ]
             for order, (block_type, content) in enumerate(blocks):
                 PageBlock.objects.create(

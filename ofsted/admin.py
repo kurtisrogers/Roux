@@ -11,7 +11,14 @@ class IncidentAdmin(admin.ModelAdmin):
 
 @admin.register(RatioCheck)
 class RatioCheckAdmin(admin.ModelAdmin):
-    list_display = ("session", "child_count", "staff_count", "required_staff", "compliant", "checked_at")
+    list_display = (
+        "session",
+        "child_count",
+        "staff_count",
+        "required_staff",
+        "compliant",
+        "checked_at",
+    )
 
 
 @admin.register(OfstedReport)

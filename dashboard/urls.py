@@ -55,7 +55,11 @@ urlpatterns = [
     path("ofsted/incidents/", ofsted_views.incident_list, name="incident_list"),
     path("ofsted/incidents/new/", ofsted_views.incident_create, name="incident_create"),
     path("ofsted/ratios/", ofsted_views.ratio_overview, name="ratio_overview"),
-    path("ofsted/sessions/<int:session_pk>/ratio-check/", ofsted_views.ratio_check_session, name="ratio_check_session"),
+    path(
+        "ofsted/sessions/<int:session_pk>/ratio-check/",
+        ofsted_views.ratio_check_session,
+        name="ratio_check_session",
+    ),
     path("ofsted/reports/generate/", ofsted_views.generate_report, name="generate_report"),
     path("ofsted/export/incidents/", ofsted_views.export_incidents, name="export_incidents"),
     path("ofsted/export/ratios/", ofsted_views.export_ratios, name="export_ratios"),

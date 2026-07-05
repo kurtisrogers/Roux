@@ -1,8 +1,8 @@
+from cms.models import Page
 from django.test import Client, TestCase
+from organisations.models import Organisation
 
 from accounts.models import User
-from cms.models import Page
-from organisations.models import Organisation
 
 
 class PublicSiteTests(TestCase):
