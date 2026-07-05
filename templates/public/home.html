@@ -1,0 +1,12 @@
+{% extends "base/public.html" %}
+{% block content %}
+{% for block_html in rendered_blocks %}
+  {{ block_html|safe }}
+{% empty %}
+  <section>
+    <h1>Welcome to {{ current_organisation.name }}</h1>
+    <p>Your website is being set up. Staff can add pages from the dashboard.</p>
+    <a href="{% url 'public:session_list' %}" role="button">View Sessions</a>
+  </section>
+{% endfor %}
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends "base/dashboard.html" %}
+{% block page_title %}Pages{% endblock %}
+{% block content %}
+<hgroup>
+  <h1>Website Pages</h1>
+  <a href="{% url 'dashboard:page_create' %}" role="button">New Page</a>
+</hgroup>
+<table>
+  <thead><tr><th>Title</th><th>Slug</th><th>Published</th><th>Homepage</th><th></th></tr></thead>
+  <tbody>
+    {% for page in pages %}
+    <tr>
+      <td>{{ page.title }}</td>
+      <td>/{{ page.slug }}/</td>
+      <td>{% if page.is_published %}✓{% else %}—{% endif %}</td>
+      <td>{% if page.is_homepage %}✓{% else %}—{% endif %}</td>
+      <td><a href="{% url 'dashboard:page_edit' page.pk %}">Edit & Build</a></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

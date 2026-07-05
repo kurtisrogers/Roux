@@ -1,0 +1,13 @@
+{% extends "base/public.html" %}
+{% block title %}Login{% endblock %}
+{% block content %}
+<article style="max-width: 28rem; margin: 0 auto;">
+  <h1>Login</h1>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Login</button>
+  </form>
+  <p>Don't have an account? <a href="{% url 'accounts:register' %}">Register</a></p>
+</article>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends "base/dashboard.html" %}
+{% block page_title %}{{ title }}{% endblock %}
+{% block content %}
+<h1>{{ title }}</h1>
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <label for="password">Temporary password
+    <input type="password" name="password" id="password" value="changeme123">
+  </label>
+  <button type="submit">Save</button>
+  <a href="{% url 'dashboard:user_list' %}" role="button" class="secondary">Cancel</a>
+</form>
+{% endblock %}

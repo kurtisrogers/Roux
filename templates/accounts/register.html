@@ -1,0 +1,13 @@
+{% extends "base/public.html" %}
+{% block title %}Register{% endblock %}
+{% block content %}
+<article style="max-width: 32rem; margin: 0 auto;">
+  <h1>Parent Registration</h1>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Create Account</button>
+  </form>
+  <p>Already registered? <a href="{% url 'accounts:login' %}">Login</a></p>
+</article>
+{% endblock %}

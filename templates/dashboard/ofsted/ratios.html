@@ -1,0 +1,37 @@
+{% extends "base/dashboard.html" %}
+{% block page_title %}Staff Ratios – {{ today|date:"j F Y" }}{% endblock %}
+{% block content %}
+<h1>Staff:Child Ratios – {{ today|date:"l j F Y" }}</h1>
+<p>Based on UK EYFS statutory ratios for wraparound care.</p>
+{% if session_ratios %}
+<table>
+  <thead>
+    <tr><th>Session</th><th>Children</th><th>Staff</th><th>Required</th><th>Age Groups</th><th>Status</th><th></th></tr>
+  </thead>
+  <tbody>
+    {% for item in session_ratios %}
+    <tr>
+      <td>{{ item.session.session_type.name }}<br><small>{{ item.session.start_time|time:"H:i" }}</small></td>
+      <td>{{ item.analysis.child_count }}</td>
+      <td>{{ item.analysis.staff_count }}</td>
+      <td>{{ item.analysis.required_staff }}</td>
+      <td>
+        {% for label, count in item.analysis.age_groups.items %}
+          {{ label }}: {{ count }}<br>
+        {% endfor %}
+      </td>
+      <td>{% if item.analysis.compliant %}<span class="compliant">Compliant</span>{% else %}<strong class="non-compliant">NON-COMPLIANT</strong>{% endif %}</td>
+      <td>
+        <form method="post" action="{% url 'dashboard:ratio_check_session' item.session.pk %}">
+          {% csrf_token %}
+          <button type="submit" class="outline">Log Check</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p>No sessions scheduled today.</p>
+{% endif %}
+{% endblock %}

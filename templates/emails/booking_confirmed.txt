@@ -1,0 +1,14 @@
+Hello {{ parent.first_name }},
+
+Your booking has been confirmed.
+
+Child: {{ booking.child.full_name }}
+Session: {{ booking.session.session_type.name }}
+Date: {{ booking.session.date|date:"l j F Y" }}
+Time: {{ booking.session.start_time|time:"H:i" }} – {{ booking.session.end_time|time:"H:i" }}
+Location: {{ booking.session.site.name }}
+Amount: £{{ booking.price }}
+
+Thank you for booking with us.
+
+Roux Wraparound Care

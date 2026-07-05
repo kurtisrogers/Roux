@@ -1,0 +1,21 @@
+{% extends "base/dashboard.html" %}
+{% block page_title %}Users{% endblock %}
+{% block content %}
+<hgroup>
+  <h1>Users</h1>
+  <a href="{% url 'dashboard:user_create' %}" role="button">Add User</a>
+</hgroup>
+<table>
+  <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Active</th></tr></thead>
+  <tbody>
+    {% for u in users %}
+    <tr>
+      <td>{{ u.get_full_name|default:u.username }}</td>
+      <td>{{ u.email }}</td>
+      <td>{{ u.get_role_display }}</td>
+      <td>{% if u.is_active %}✓{% else %}—{% endif %}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

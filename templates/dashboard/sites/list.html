@@ -1,0 +1,21 @@
+{% extends "base/dashboard.html" %}
+{% block page_title %}Sites{% endblock %}
+{% block content %}
+<hgroup>
+  <h1>Sites</h1>
+  <a href="{% url 'dashboard:site_create' %}" role="button">Add Site</a>
+</hgroup>
+<table>
+  <thead><tr><th>Name</th><th>City</th><th>Capacity</th><th>Active</th></tr></thead>
+  <tbody>
+    {% for site in sites %}
+    <tr>
+      <td>{{ site.name }}</td>
+      <td>{{ site.city }}</td>
+      <td>{{ site.capacity }}</td>
+      <td>{% if site.is_active %}✓{% else %}—{% endif %}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

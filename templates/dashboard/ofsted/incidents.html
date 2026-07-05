@@ -1,0 +1,25 @@
+{% extends "base/dashboard.html" %}
+{% block page_title %}Incidents{% endblock %}
+{% block content %}
+<hgroup>
+  <h1>Incident Log</h1>
+  <a href="{% url 'dashboard:incident_create' %}" role="button">Record Incident</a>
+</hgroup>
+<table>
+  <thead>
+    <tr><th>Date</th><th>Type</th><th>Severity</th><th>Child</th><th>Ofsted</th><th>Description</th></tr>
+  </thead>
+  <tbody>
+    {% for inc in incidents %}
+    <tr>
+      <td>{{ inc.occurred_at|date:"j M Y H:i" }}</td>
+      <td>{{ inc.get_incident_type_display }}</td>
+      <td>{{ inc.get_severity_display }}</td>
+      <td>{{ inc.child.full_name|default:"—" }}</td>
+      <td>{% if inc.ofsted_notifiable %}Yes{% else %}—{% endif %}</td>
+      <td>{{ inc.description|truncatewords:15 }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

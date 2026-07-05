@@ -1,0 +1,27 @@
+{% extends "base/dashboard.html" %}
+{% block page_title %}Children{% endblock %}
+{% block content %}
+<hgroup>
+  <h1>Children</h1>
+  <a href="{% url 'dashboard:child_create' %}" role="button">Add Child</a>
+</hgroup>
+<table>
+  <thead>
+    <tr><th>Name</th><th>Parent</th><th>Age</th><th>School Year</th><th>Allergies</th><th></th></tr>
+  </thead>
+  <tbody>
+    {% for child in children %}
+    <tr>
+      <td>{{ child.full_name }}</td>
+      <td>{{ child.parent.get_full_name|default:child.parent.username }}</td>
+      <td>{{ child.age }}</td>
+      <td>{{ child.school_year }}</td>
+      <td>{{ child.allergies|truncatewords:5 }}</td>
+      <td><a href="{% url 'dashboard:child_edit' child.pk %}">Edit</a></td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="6">No children registered.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

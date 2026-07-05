@@ -1,0 +1,29 @@
+{% extends "base/public.html" %}
+{% block title %}Book {{ session.session_type.name }}{% endblock %}
+{% block content %}
+<h1>Book: {{ session.session_type.name }}</h1>
+<p>{{ session.date|date:"l j F Y" }} · {{ session.start_time|time:"H:i" }} – {{ session.end_time|time:"H:i" }}</p>
+<p>{{ session.site.name }} · £{{ session.session_type.price }}</p>
+
+{% if children %}
+<form method="post">
+  {% csrf_token %}
+  <label for="child">Select child
+    <select name="child" id="child" required>
+      {% for child in children %}
+        <option value="{{ child.pk }}">{{ child.full_name }} (age {{ child.age }})</option>
+      {% endfor %}
+    </select>
+  </label>
+  <label for="special_requirements">Special requirements
+    <textarea name="special_requirements" id="special_requirements" rows="3"></textarea>
+  </label>
+  <button type="submit">Proceed to Payment</button>
+</form>
+{% else %}
+<article>
+  <p>You need to add a child before booking.</p>
+  <a href="{% url 'public:add_child' %}" role="button">Add Child</a>
+</article>
+{% endif %}
+{% endblock %}

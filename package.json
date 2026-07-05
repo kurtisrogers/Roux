@@ -1,0 +1,16 @@
+{
+  "name": "roux",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "sst dev",
+    "deploy:staging": "sst deploy --stage staging",
+    "deploy:production": "sst deploy --stage production",
+    "remove:staging": "sst remove --stage staging",
+    "remove:production": "sst remove --stage production"
+  },
+  "devDependencies": {
+    "sst": "^3.4.0"
+  }
+}

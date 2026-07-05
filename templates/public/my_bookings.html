@@ -1,0 +1,28 @@
+{% extends "base/public.html" %}
+{% block title %}My Bookings{% endblock %}
+{% block content %}
+<hgroup>
+  <h1>My Bookings</h1>
+  <p><a href="{% url 'public:add_child' %}">Add a child</a> · <a href="{% url 'public:session_list' %}">Book a session</a></p>
+</hgroup>
+{% if bookings %}
+<table>
+  <thead>
+    <tr><th>Child</th><th>Session</th><th>Date</th><th>Status</th><th>Payment</th></tr>
+  </thead>
+  <tbody>
+    {% for booking in bookings %}
+    <tr>
+      <td>{{ booking.child.full_name }}</td>
+      <td>{{ booking.session.session_type.name }}</td>
+      <td>{{ booking.session.date|date:"j M Y" }}</td>
+      <td>{{ booking.get_status_display }}</td>
+      <td>{{ booking.get_payment_status_display }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p>No bookings yet.</p>
+{% endif %}
+{% endblock %}
