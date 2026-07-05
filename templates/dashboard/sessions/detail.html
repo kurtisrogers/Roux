@@ -1,0 +1,17 @@
+{% extends "base/dashboard.html" %}
+{% block page_title %}{{ session.session_type.name }}{% endblock %}
+{% block content %}
+<h1>{{ session.session_type.name }} – {{ session.date|date:"l j F Y" }}</h1>
+<p>{{ session.site.name }} · {{ session.start_time|time:"H:i" }}–{{ session.end_time|time:"H:i" }}</p>
+<h2>Bookings ({{ bookings|length }}/{{ session.session_type.capacity }})</h2>
+<table>
+  <thead><tr><th>Child</th><th>Parent</th><th>Status</th><th>Payment</th><th>Actions</th></tr></thead>
+  <tbody id="booking-rows">
+    {% for booking in bookings %}
+      {% include "dashboard/partials/booking_row.html" %}
+    {% empty %}
+    <tr><td colspan="5">No bookings.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

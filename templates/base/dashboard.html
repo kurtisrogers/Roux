@@ -1,0 +1,48 @@
+{% extends "base/base.html" %}
+{% block title %}{% block page_title %}Dashboard{% endblock %} – Roux{% endblock %}
+{% block body %}
+<div class="dashboard-layout" x-data="{ sidebarOpen: true }">
+  <aside class="dashboard-sidebar">
+    <header>
+      <strong><a href="{% url 'dashboard:home' %}">Roux</a></strong>
+      {% if organisation %}<small>{{ organisation.name }}</small>{% endif %}
+    </header>
+    <nav>
+      <ul>
+        <li><a href="{% url 'dashboard:home' %}">Overview</a></li>
+        <li><a href="{% url 'dashboard:session_list' %}">Sessions</a></li>
+        <li><a href="{% url 'dashboard:session_type_list' %}">Session Types</a></li>
+        <li><a href="{% url 'dashboard:booking_list' %}">Bookings</a></li>
+        <li><a href="{% url 'dashboard:child_list' %}">Children</a></li>
+        <li><a href="{% url 'dashboard:site_list' %}">Sites</a></li>
+        <li><a href="{% url 'dashboard:user_list' %}">Users</a></li>
+      </ul>
+      <details open>
+        <summary>Website</summary>
+        <ul>
+          <li><a href="{% url 'dashboard:page_list' %}">Pages</a></li>
+          <li><a href="{% url 'dashboard:site_settings' %}">Site Settings</a></li>
+          <li><a href="{% url 'dashboard:contact_list' %}">Contact Messages</a></li>
+          <li><a href="{% url 'public:home' %}" target="_blank">View Site ↗</a></li>
+        </ul>
+      </details>
+      <ul>
+        <li><a href="{% url 'dashboard:billing' %}">Billing (Stripe)</a></li>
+        <li><a href="{% url 'dashboard:finance' %}">Finance (Xero)</a></li>
+      </ul>
+    </nav>
+    <footer>
+      <small>{{ user.get_full_name|default:user.username }} · {{ user.get_role_display }}</small>
+      <a href="{% url 'accounts:logout' %}">Logout</a>
+    </footer>
+  </aside>
+  <main class="dashboard-main container">
+    {% if messages %}
+      {% for message in messages %}
+        <article class="{{ message.tags }}">{{ message }}</article>
+      {% endfor %}
+    {% endif %}
+    {% block content %}{% endblock %}
+  </main>
+</div>
+{% endblock %}

@@ -1,0 +1,20 @@
+<tr id="booking-{{ booking.pk }}">
+  <td>{{ booking.child.full_name }}</td>
+  <td>{{ booking.child.parent.get_full_name|default:booking.child.parent.username }}</td>
+  <td>{{ booking.get_status_display }}</td>
+  <td>{{ booking.get_payment_status_display }}</td>
+  <td>
+    {% if booking.status == "confirmed" or booking.status == "pending" %}
+      <form method="post" action="{% url 'dashboard:check_in' booking.pk %}" hx-post="{% url 'dashboard:check_in' booking.pk %}" hx-target="#booking-{{ booking.pk }}" hx-swap="outerHTML" style="display:inline">
+        {% csrf_token %}
+        <button type="submit" class="outline">Check In</button>
+      </form>
+    {% endif %}
+    {% if booking.status == "checked_in" %}
+      <form method="post" action="{% url 'dashboard:check_out' booking.pk %}" hx-post="{% url 'dashboard:check_out' booking.pk %}" hx-target="#booking-{{ booking.pk }}" hx-swap="outerHTML" style="display:inline">
+        {% csrf_token %}
+        <button type="submit" class="outline">Check Out</button>
+      </form>
+    {% endif %}
+  </td>
+</tr>

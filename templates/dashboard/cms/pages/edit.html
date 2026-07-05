@@ -1,0 +1,41 @@
+{% extends "base/dashboard.html" %}
+{% block page_title %}Edit {{ page.title }}{% endblock %}
+{% block content %}
+<div class="grid" x-data="pageBuilder()">
+  <section>
+    <h1>Edit Page</h1>
+    <form method="post">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit">Save Page</button>
+    </form>
+    <p><a href="{% if page.is_homepage %}{% url 'public:home' %}{% else %}{% url 'public:page' page.slug %}{% endif %}" target="_blank">Preview ↗</a></p>
+  </section>
+  <section>
+    <h2>Page Builder</h2>
+    <form method="post" action="{% url 'dashboard:block_add' page.pk %}" hx-post="{% url 'dashboard:block_add' page.pk %}" hx-target="#block-list" hx-swap="innerHTML">
+      {% csrf_token %}
+      <label>Add block
+        <select name="block_type">
+          {% for value, label in block_types %}
+            <option value="{{ value }}">{{ label }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <button type="submit">Add Block</button>
+    </form>
+    <div id="block-list">
+      {% include "dashboard/cms/pages/partials/block_list.html" %}
+    </div>
+  </section>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+function pageBuilder() {
+  return {
+    editingBlock: null,
+  };
+}
+</script>
+{% endblock %}

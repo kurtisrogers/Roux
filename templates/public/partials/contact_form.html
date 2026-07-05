@@ -1,0 +1,5 @@
+<form method="post" action="{% url 'public:contact' %}" hx-post="{% url 'public:contact' %}" hx-target="this" hx-swap="outerHTML">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Send Message</button>
+</form>

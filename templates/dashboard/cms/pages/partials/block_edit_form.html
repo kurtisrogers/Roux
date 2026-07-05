@@ -1,0 +1,5 @@
+<form method="post" action="{% url 'dashboard:block_edit' block.pk %}" hx-post="{% url 'dashboard:block_edit' block.pk %}" hx-target="#block-{{ block.pk }}" hx-swap="outerHTML">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Save Block</button>
+</form>

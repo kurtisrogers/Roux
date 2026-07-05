@@ -1,0 +1,19 @@
+{% extends "base/dashboard.html" %}
+{% block page_title %}Bookings{% endblock %}
+{% block content %}
+<h1>Bookings</h1>
+<table>
+  <thead><tr><th>Child</th><th>Session</th><th>Date</th><th>Status</th><th>Payment</th></tr></thead>
+  <tbody>
+    {% for booking in bookings %}
+    <tr>
+      <td>{{ booking.child.full_name }}</td>
+      <td>{{ booking.session.session_type.name }}</td>
+      <td>{{ booking.session.date|date:"j M Y" }}</td>
+      <td>{{ booking.get_status_display }}</td>
+      <td>{{ booking.get_payment_status_display }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

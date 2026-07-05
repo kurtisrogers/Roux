@@ -1,0 +1,13 @@
+{% extends "base/dashboard.html" %}
+{% block page_title %}Contact Messages{% endblock %}
+{% block content %}
+<h1>Contact Messages</h1>
+{% for contact in contacts %}
+<article>
+  <header><strong>{{ contact.name }}</strong> – {{ contact.email }} · {{ contact.created_at|date:"j M Y H:i" }}</header>
+  <p>{{ contact.message }}</p>
+</article>
+{% empty %}
+<p>No messages.</p>
+{% endfor %}
+{% endblock %}

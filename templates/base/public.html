@@ -1,0 +1,51 @@
+{% extends "base/base.html" %}
+{% block title %}{% if site_settings.site_name %}{{ site_settings.site_name }}{% else %}{{ current_organisation.name }}{% endif %}{% endblock %}
+{% block body %}
+<header class="container">
+  <nav>
+    <ul>
+      <li>
+        <strong>
+          <a href="{% url 'public:home' %}">
+            {% if site_settings.site_name %}{{ site_settings.site_name }}{% else %}{{ current_organisation.name }}{% endif %}
+          </a>
+        </strong>
+      </li>
+    </ul>
+    <ul>
+      {% for item in nav_items %}
+        <li><a href="{{ item.url }}">{{ item.label }}</a></li>
+      {% empty %}
+        {% for page in nav_pages %}
+          <li><a href="{% if page.is_homepage %}{% url 'public:home' %}{% else %}{% url 'public:page' page.slug %}{% endif %}">{{ page.title }}</a></li>
+        {% endfor %}
+      {% endfor %}
+      <li><a href="{% url 'public:session_list' %}">Sessions</a></li>
+      {% if user.is_authenticated %}
+        <li><a href="{% url 'public:my_bookings' %}">My Bookings</a></li>
+        {% if user.is_dashboard_user %}
+          <li><a href="{% url 'dashboard:home' %}">Dashboard</a></li>
+        {% endif %}
+        <li><a href="{% url 'accounts:logout' %}">Logout</a></li>
+      {% else %}
+        <li><a href="{% url 'accounts:login' %}">Login</a></li>
+        <li><a href="{% url 'accounts:register' %}" role="button" class="outline">Register</a></li>
+      {% endif %}
+    </ul>
+  </nav>
+</header>
+<main class="container">
+  {% if messages %}
+    {% for message in messages %}
+      <article class="{{ message.tags }}">{{ message }}</article>
+    {% endfor %}
+  {% endif %}
+  {% block content %}{% endblock %}
+</main>
+<footer class="container">
+  <small>
+    {% if site_settings.footer_text %}{{ site_settings.footer_text }}{% else %}© {{ current_organisation.name }} – Wraparound care in the UK{% endif %}
+    {% if site_settings.contact_email %} · {{ site_settings.contact_email }}{% endif %}
+  </small>
+</footer>
+{% endblock %}

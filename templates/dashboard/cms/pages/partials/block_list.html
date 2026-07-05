@@ -1,0 +1,5 @@
+{% for block in blocks %}
+  {% include "dashboard/cms/pages/partials/block_item.html" %}
+{% empty %}
+<p>No blocks yet. Add one above.</p>
+{% endfor %}

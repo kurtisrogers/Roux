@@ -1,0 +1,9 @@
+{% extends "base/public.html" %}
+{% block title %}Booking Confirmed{% endblock %}
+{% block content %}
+<article>
+  <h1>Booking Confirmed</h1>
+  <p>Thank you! {{ booking.child.full_name }} is booked for {{ booking.session.session_type.name }} on {{ booking.session.date|date:"j F Y" }}.</p>
+  <a href="{% url 'public:my_bookings' %}" role="button">View My Bookings</a>
+</article>
+{% endblock %}

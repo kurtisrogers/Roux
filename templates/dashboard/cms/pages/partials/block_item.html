@@ -1,0 +1,13 @@
+<article class="block-item" id="block-{{ block.pk }}">
+  <header>
+    <strong>{{ block.get_block_type_display }}</strong>
+    <small>Order: {{ block.order }}</small>
+  </header>
+  <div hx-get="{% url 'dashboard:block_edit' block.pk %}" hx-trigger="click" hx-target="#block-edit-panel" hx-swap="innerHTML">
+    <pre>{{ block.content|truncatechars:120 }}</pre>
+  </div>
+  <footer>
+    <button hx-get="{% url 'dashboard:block_edit' block.pk %}" hx-target="#block-edit-panel" hx-swap="innerHTML" class="outline">Edit</button>
+    <button hx-post="{% url 'dashboard:block_delete' block.pk %}" hx-target="#block-list" hx-swap="innerHTML" hx-confirm="Delete this block?" class="secondary">Delete</button>
+  </footer>
+</article>
