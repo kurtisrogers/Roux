@@ -648,10 +648,13 @@ def finance(request):
 @role_required(User.Role.SUPER_ADMIN, User.Role.ORG_ADMIN, User.Role.FINANCE)
 def xero_connect(request):
     org = _org_or_403(request)
+    franchise = getattr(request, "franchise", None)
     state = xero_service.generate_state()
     request.session["xero_oauth_state"] = state
     request.session["xero_org_id"] = org.pk
-    return redirect(xero_service.get_authorization_url(state))
+    if franchise:
+        request.session["xero_franchise_slug"] = franchise.slug
+    return redirect(xero_service.get_authorization_url(state, franchise=franchise))
 
 
 @dashboard_required
@@ -665,9 +668,10 @@ def xero_callback(request):
     code = request.GET.get("code")
     org_id = request.session.get("xero_org_id")
     org = get_object_or_404(Organisation, pk=org_id)
+    franchise = getattr(request, "franchise", None)
 
     try:
-        tokens = xero_service.exchange_code_for_tokens(code)
+        tokens = xero_service.exchange_code_for_tokens(code, franchise=franchise)
         xero_service.save_connection(org, tokens)
         messages.success(request, "Xero connected successfully.")
     except Exception as exc:
@@ -696,7 +700,9 @@ def xero_disconnect(request):
 def sync_payment_to_xero(request, payment_pk):
     org = _org_or_403(request)
     payment = get_object_or_404(Payment, pk=payment_pk, organisation=org)
-    invoice = xero_service.create_invoice_for_payment(payment)
+    invoice = xero_service.create_invoice_for_payment(
+        payment, franchise=getattr(request, "franchise", None)
+    )
     if invoice.status == XeroInvoice.Status.ERROR:
         messages.error(request, f"Sync failed: {invoice.sync_error}")
     else:
@@ -708,15 +714,26 @@ def sync_payment_to_xero(request, payment_pk):
 
 
 @csrf_exempt
-def stripe_webhook(request):
+def stripe_webhook(request, franchise_slug=None):
     import stripe
-    from django.conf import settings
+    from franchises.context import set_franchise_context
+    from franchises.db import register_franchise_database
+    from franchises.models import Franchise
+
+    franchise = None
+    if franchise_slug:
+        try:
+            franchise = Franchise.objects.get(slug=franchise_slug, status=Franchise.Status.ACTIVE)
+            alias = register_franchise_database(franchise)
+            set_franchise_context(franchise, alias)
+        except Franchise.DoesNotExist:
+            return HttpResponseBadRequest("Unknown franchise")
 
     payload = request.body
     sig_header = request.META.get("HTTP_STRIPE_SIGNATURE", "")
 
     try:
-        event = stripe.Webhook.construct_event(payload, sig_header, settings.STRIPE_WEBHOOK_SECRET)
+        event = stripe_service.verify_webhook(payload, sig_header, franchise=franchise)
     except (ValueError, stripe.error.SignatureVerificationError):
         return HttpResponseBadRequest()
 
@@ -731,7 +748,7 @@ def stripe_webhook(request):
         if payment and payment.status == Payment.Status.SUCCEEDED:
             connection = getattr(payment.organisation, "xero_connection", None)
             if connection and connection.auto_sync_invoices:
-                xero_service.create_invoice_for_payment(payment)
+                xero_service.create_invoice_for_payment(payment, franchise=franchise)
 
     return HttpResponse(status=200)
 

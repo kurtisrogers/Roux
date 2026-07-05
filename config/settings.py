@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "notifications",
     "ofsted",
     "api",
+    "franchises",
     "dashboard",
     "public_site",
 ]
@@ -59,8 +60,11 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django_htmx.middleware.HtmxMiddleware",
+    "franchises.middleware.FranchiseMiddleware",
     "public_site.middleware.OrganisationMiddleware",
 ]
+
+DATABASE_ROUTERS = ["franchises.db.FranchiseRouter"]
 
 ROOT_URLCONF = "config.urls"
 

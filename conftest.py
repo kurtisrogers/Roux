@@ -1,4 +1,11 @@
 import pytest
+from franchises.context import clear_franchise_context
+
+
+@pytest.fixture(autouse=True)
+def reset_franchise_context():
+    yield
+    clear_franchise_context()
 
 
 @pytest.fixture

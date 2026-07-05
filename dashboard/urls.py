@@ -1,11 +1,20 @@
 from django.urls import path
 
-from dashboard import ofsted_views, views
+from dashboard import franchise_views, ofsted_views, views
 
 app_name = "dashboard"
 
 urlpatterns = [
     path("", views.home, name="home"),
+    # Franchises (platform / super admin)
+    path("franchises/", franchise_views.franchise_list, name="franchise_list"),
+    path("franchises/new/", franchise_views.franchise_create, name="franchise_create"),
+    path("franchises/<int:pk>/", franchise_views.franchise_detail, name="franchise_detail"),
+    path(
+        "franchises/<int:pk>/integrations/",
+        franchise_views.franchise_integrations,
+        name="franchise_integrations",
+    ),
     # Children
     path("children/", views.child_list, name="child_list"),
     path("children/new/", views.child_create, name="child_create"),
@@ -40,6 +49,11 @@ urlpatterns = [
     path("billing/subscribe/", views.billing_subscribe, name="billing_subscribe"),
     path("billing/success/", views.billing_success, name="billing_success"),
     path("webhooks/stripe/", views.stripe_webhook, name="stripe_webhook"),
+    path(
+        "webhooks/stripe/<slug:franchise_slug>/",
+        views.stripe_webhook,
+        name="stripe_webhook_franchise",
+    ),
     # Finance
     path("finance/", views.finance, name="finance"),
     path("finance/xero/connect/", views.xero_connect, name="xero_connect"),

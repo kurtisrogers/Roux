@@ -7,6 +7,7 @@ from urllib.parse import urlencode
 import requests
 from django.conf import settings
 from django.utils import timezone
+from franchises.services import get_franchise_xero_config
 
 from finance.models import XeroConnection, XeroInvoice
 
@@ -18,17 +19,19 @@ XERO_CONNECTIONS_URL = "https://api.xero.com/connections"
 XERO_API_URL = "https://api.xero.com/api.xro/2.0"
 
 
-def _basic_auth_header() -> str:
-    credentials = f"{settings.XERO_CLIENT_ID}:{settings.XERO_CLIENT_SECRET}"
+def _basic_auth_header(franchise=None) -> str:
+    config = get_franchise_xero_config(franchise)
+    credentials = f"{config['client_id']}:{config['client_secret']}"
     encoded = base64.b64encode(credentials.encode()).decode()
     return f"Basic {encoded}"
 
 
-def get_authorization_url(state: str) -> str:
+def get_authorization_url(state: str, franchise=None) -> str:
+    config = get_franchise_xero_config(franchise)
     params = {
         "response_type": "code",
-        "client_id": settings.XERO_CLIENT_ID,
-        "redirect_uri": settings.XERO_REDIRECT_URI,
+        "client_id": config["client_id"],
+        "redirect_uri": config["redirect_uri"],
         "scope": " ".join(settings.XERO_SCOPES),
         "state": state,
     }
@@ -39,17 +42,18 @@ def generate_state() -> str:
     return secrets.token_urlsafe(32)
 
 
-def exchange_code_for_tokens(code: str) -> dict:
+def exchange_code_for_tokens(code: str, franchise=None) -> dict:
+    config = get_franchise_xero_config(franchise)
     response = requests.post(
         XERO_TOKEN_URL,
         headers={
-            "Authorization": _basic_auth_header(),
+            "Authorization": _basic_auth_header(franchise),
             "Content-Type": "application/x-www-form-urlencoded",
         },
         data={
             "grant_type": "authorization_code",
             "code": code,
-            "redirect_uri": settings.XERO_REDIRECT_URI,
+            "redirect_uri": config["redirect_uri"],
         },
         timeout=30,
     )
@@ -57,11 +61,11 @@ def exchange_code_for_tokens(code: str) -> dict:
     return response.json()
 
 
-def refresh_access_token(connection: XeroConnection) -> XeroConnection:
+def refresh_access_token(connection: XeroConnection, franchise=None) -> XeroConnection:
     response = requests.post(
         XERO_TOKEN_URL,
         headers={
-            "Authorization": _basic_auth_header(),
+            "Authorization": _basic_auth_header(franchise),
             "Content-Type": "application/x-www-form-urlencoded",
         },
         data={
@@ -110,15 +114,15 @@ def save_connection(organisation, token_data: dict) -> XeroConnection:
     return connection
 
 
-def _ensure_valid_token(connection: XeroConnection) -> XeroConnection:
+def _ensure_valid_token(connection: XeroConnection, franchise=None) -> XeroConnection:
     if connection.token_expires_at and connection.token_expires_at <= timezone.now() + timedelta(
         minutes=5
     ):
-        return refresh_access_token(connection)
+        return refresh_access_token(connection, franchise)
     return connection
 
 
-def create_invoice_for_payment(payment) -> XeroInvoice:
+def create_invoice_for_payment(payment, franchise=None) -> XeroInvoice:
     """Create a Xero invoice for a successful payment."""
     organisation = payment.organisation
     connection = getattr(organisation, "xero_connection", None)
@@ -141,7 +145,7 @@ def create_invoice_for_payment(payment) -> XeroInvoice:
         return invoice_record
 
     try:
-        connection = _ensure_valid_token(connection)
+        connection = _ensure_valid_token(connection, franchise)
         description = payment.description or "Wraparound care booking"
         payload = {
             "Invoices": [

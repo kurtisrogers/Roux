@@ -7,7 +7,7 @@ requires-python = ">=3.12"
 [tool.ruff]
 target-version = "py312"
 line-length = 100
-src = ["accounts", "api", "billing", "bookings", "cms", "config", "dashboard", "finance", "notifications", "ofsted", "organisations", "public_site", "e2e", "tests"]
+src = ["accounts", "api", "billing", "bookings", "cms", "config", "dashboard", "finance", "franchises", "notifications", "ofsted", "organisations", "public_site", "e2e", "tests"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "SIM"]
@@ -20,7 +20,7 @@ ignore = ["E501"]
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "config.settings"
 python_files = ["tests.py", "test_*.py", "*_test.py", "*_steps.py"]
-testpaths = ["accounts", "api", "billing", "bookings", "cms", "dashboard", "finance", "notifications", "ofsted", "organisations", "public_site", "tests"]
+testpaths = ["accounts", "api", "billing", "bookings", "cms", "dashboard", "finance", "franchises", "notifications", "ofsted", "organisations", "public_site", "tests"]
 addopts = "--strict-markers -ra"
 markers = [
     "e2e: end-to-end browser tests (Playwright)",
@@ -28,7 +28,7 @@ markers = [
 ]
 
 [tool.coverage.run]
-source = ["accounts", "api", "billing", "bookings", "cms", "dashboard", "finance", "notifications", "ofsted", "organisations", "public_site"]
+source = ["accounts", "api", "billing", "bookings", "cms", "dashboard", "finance", "franchises", "notifications", "ofsted", "organisations", "public_site"]
 omit = ["*/migrations/*", "*/tests/*", "e2e/*"]
 
 [tool.coverage.report]
