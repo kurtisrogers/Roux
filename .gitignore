@@ -14,7 +14,6 @@ build/
 htmlcov/
 .DS_Store
 node_modules/
-package-lock.json
 .sst/
 test-results/
 playwright-report/
