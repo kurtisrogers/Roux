@@ -40,6 +40,8 @@ export default $config({
 
     const cluster = new sst.aws.Cluster("RouxCluster", { vpc });
 
+    const franchiseDomain = isProd ? "roux.care" : "staging.roux.care";
+
     // PostgreSQL database
     const database = new sst.aws.Postgres("RouxDatabase", {
       vpc,
@@ -92,12 +94,15 @@ export default $config({
       environment: {
         DJANGO_SETTINGS_MODULE: "config.settings",
         DEBUG: isProd ? "False" : "True",
-        ALLOWED_HOSTS: domain,
+        ALLOWED_HOSTS: `.${franchiseDomain},${domain}`,
         SECRET_KEY: secretKey.value,
         STRIPE_SECRET_KEY: stripeSecretKey.value,
         STRIPE_WEBHOOK_SECRET: stripeWebhookSecret.value,
         XERO_CLIENT_SECRET: xeroClientSecret.value,
         DATABASE_URL: $interpolate`postgresql://${database.username}:${database.password}@${database.host}:${database.port}/${database.database}`,
+        FRANCHISE_DATABASE_URL_TEMPLATE: $interpolate`postgresql://${database.username}:${database.password}@${database.host}:${database.port}/{db_name}`,
+        FRANCHISE_BASE_DOMAIN: franchiseDomain,
+        PLATFORM_ADMIN_EMAIL: `partnerships@${franchiseDomain}`,
         DEFAULT_ORGANISATION_SLUG: "demo-club",
         EMAIL_BACKEND: "django.core.mail.backends.smtp.EmailBackend",
         DEFAULT_FROM_EMAIL: `noreply@${domain}`,

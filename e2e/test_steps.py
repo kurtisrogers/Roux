@@ -11,6 +11,7 @@ pytestmark = pytest.mark.e2e
 scenarios("features/public_site.feature")
 scenarios("features/dashboard.feature")
 scenarios("features/auth.feature")
+scenarios("features/franchise.feature")
 
 
 @pytest.fixture(scope="session")
@@ -46,6 +47,11 @@ def click_text(page: Page, text):
 @when(parsers.parse('I fill in "{field}" with "{value}"'))
 def fill_field(page: Page, field, value):
     page.get_by_label(field).fill(value)
+
+
+@when(parsers.parse('I press "{text}"'))
+def press_button(page: Page, text):
+    page.get_by_role("button", name=text).click()
 
 
 @when("I submit the login form")

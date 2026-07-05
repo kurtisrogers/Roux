@@ -1,0 +1,5 @@
+<p>Hello {{ application.applicant_name }},</p>
+<p>Thank you for applying to run <strong>{{ application.business_name }}</strong> on Roux.</p>
+<p>After review we're unable to proceed at this time.</p>
+{% if application.admin_notes %}<p>{{ application.admin_notes }}</p>{% endif %}
+<p>Roux Partnerships Team</p>

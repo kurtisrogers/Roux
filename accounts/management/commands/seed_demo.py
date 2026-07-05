@@ -90,6 +90,21 @@ class Command(BaseCommand):
             admin_user.set_password("admin123")
             admin_user.save()
 
+        super_admin, created = User.objects.get_or_create(
+            username="superadmin",
+            defaults={
+                "email": "platform@roux.example",
+                "first_name": "Platform",
+                "last_name": "Admin",
+                "role": User.Role.SUPER_ADMIN,
+                "is_staff": True,
+                "is_superuser": True,
+            },
+        )
+        if created:
+            super_admin.set_password("super123")
+            super_admin.save()
+
         staff_user, created = User.objects.get_or_create(
             username="staff1",
             defaults={
@@ -267,5 +282,6 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS("Demo data seeded successfully."))
         self.stdout.write("Login credentials:")
         self.stdout.write("  Admin:  admin / admin123  (dashboard)")
+        self.stdout.write("  Super:  superadmin / super123  (platform)")
         self.stdout.write("  Staff:  staff1 / staff123")
         self.stdout.write("  Parent: parent1 / parent123")

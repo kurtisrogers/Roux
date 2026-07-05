@@ -1,0 +1,17 @@
+{% extends "base/base.html" %}
+{% block title %}Application received{% endblock %}
+{% block body %}
+<main class="container">
+  <article>
+    <header>
+      <h1>Thank you, {{ application.applicant_name }}!</h1>
+      <p>Your franchise application for <strong>{{ application.business_name }}</strong> has been received.</p>
+    </header>
+    <p><strong>Reference:</strong> <code>{{ application.reference }}</code></p>
+    <p><strong>Status:</strong> {{ application.get_status_display }}</p>
+    <p>We've sent a confirmation email to <strong>{{ application.email }}</strong>. You can check your application status any time:</p>
+    <p><a href="{% url 'franchises:application_status' application.reference %}" role="button">Track my application</a></p>
+    <p><small>Typical journey: Pending → Under Review → Partner. Our team will be in touch at each stage.</small></p>
+  </article>
+</main>
+{% endblock %}

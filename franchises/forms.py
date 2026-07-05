@@ -1,6 +1,33 @@
 from django import forms
 
-from franchises.models import Franchise, FranchiseDomain
+from franchises.models import Franchise, FranchiseApplication
+
+
+class FranchiseApplicationForm(forms.ModelForm):
+    class Meta:
+        model = FranchiseApplication
+        fields = (
+            "applicant_name",
+            "business_name",
+            "email",
+            "phone",
+            "region",
+            "experience_years",
+            "message",
+        )
+        widgets = {
+            "message": forms.Textarea(attrs={"rows": 4}),
+            "experience_years": forms.NumberInput(attrs={"min": 0, "max": 50}),
+        }
+
+
+class FranchiseApplicationReviewForm(forms.ModelForm):
+    class Meta:
+        model = FranchiseApplication
+        fields = ("status", "admin_notes")
+        widgets = {
+            "admin_notes": forms.Textarea(attrs={"rows": 3}),
+        }
 
 
 class FranchiseForm(forms.ModelForm):

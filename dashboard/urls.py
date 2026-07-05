@@ -1,6 +1,6 @@
 from django.urls import path
 
-from dashboard import franchise_views, ofsted_views, views
+from dashboard import franchise_application_views, franchise_views, ofsted_views, views
 
 app_name = "dashboard"
 
@@ -14,6 +14,16 @@ urlpatterns = [
         "franchises/<int:pk>/integrations/",
         franchise_views.franchise_integrations,
         name="franchise_integrations",
+    ),
+    path(
+        "franchise-applications/",
+        franchise_application_views.application_list,
+        name="franchise_application_list",
+    ),
+    path(
+        "franchise-applications/<int:pk>/",
+        franchise_application_views.application_detail,
+        name="franchise_application_detail",
     ),
     # Children
     path("children/", views.child_list, name="child_list"),

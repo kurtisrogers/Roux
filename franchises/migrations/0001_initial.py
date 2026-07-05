@@ -5,50 +5,110 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Franchise',
+            name="Franchise",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=200)),
-                ('slug', models.SlugField(max_length=100, unique=True)),
-                ('status', models.CharField(choices=[('provisioning', 'Provisioning'), ('active', 'Active'), ('suspended', 'Suspended'), ('archived', 'Archived')], default='provisioning', max_length=20)),
-                ('database_alias', models.CharField(help_text='Django DATABASES alias for this franchise.', max_length=100, unique=True)),
-                ('database_url', models.TextField(blank=True, help_text='PostgreSQL URL for production. Empty uses SQLite file in dev.')),
-                ('contact_email', models.EmailField(blank=True, max_length=254)),
-                ('contact_phone', models.CharField(blank=True, max_length=20)),
-                ('stripe_publishable_key', models.CharField(blank=True, max_length=255)),
-                ('stripe_secret_key', models.CharField(blank=True, max_length=255)),
-                ('stripe_webhook_secret', models.CharField(blank=True, max_length=255)),
-                ('stripe_connect_account_id', models.CharField(blank=True, help_text='Optional Stripe Connect account ID.', max_length=255)),
-                ('xero_client_id', models.CharField(blank=True, max_length=255)),
-                ('xero_client_secret', models.CharField(blank=True, max_length=255)),
-                ('xero_redirect_uri', models.URLField(blank=True)),
-                ('default_from_email', models.EmailField(blank=True, max_length=254)),
-                ('platform_fee_percent', models.DecimalField(decimal_places=2, default=0, help_text='Optional platform fee % taken by franchisor on payments.', max_digits=5)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("name", models.CharField(max_length=200)),
+                ("slug", models.SlugField(max_length=100, unique=True)),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("provisioning", "Provisioning"),
+                            ("active", "Active"),
+                            ("suspended", "Suspended"),
+                            ("archived", "Archived"),
+                        ],
+                        default="provisioning",
+                        max_length=20,
+                    ),
+                ),
+                (
+                    "database_alias",
+                    models.CharField(
+                        help_text="Django DATABASES alias for this franchise.",
+                        max_length=100,
+                        unique=True,
+                    ),
+                ),
+                (
+                    "database_url",
+                    models.TextField(
+                        blank=True,
+                        help_text="PostgreSQL URL for production. Empty uses SQLite file in dev.",
+                    ),
+                ),
+                ("contact_email", models.EmailField(blank=True, max_length=254)),
+                ("contact_phone", models.CharField(blank=True, max_length=20)),
+                ("stripe_publishable_key", models.CharField(blank=True, max_length=255)),
+                ("stripe_secret_key", models.CharField(blank=True, max_length=255)),
+                ("stripe_webhook_secret", models.CharField(blank=True, max_length=255)),
+                (
+                    "stripe_connect_account_id",
+                    models.CharField(
+                        blank=True, help_text="Optional Stripe Connect account ID.", max_length=255
+                    ),
+                ),
+                ("xero_client_id", models.CharField(blank=True, max_length=255)),
+                ("xero_client_secret", models.CharField(blank=True, max_length=255)),
+                ("xero_redirect_uri", models.URLField(blank=True)),
+                ("default_from_email", models.EmailField(blank=True, max_length=254)),
+                (
+                    "platform_fee_percent",
+                    models.DecimalField(
+                        decimal_places=2,
+                        default=0,
+                        help_text="Optional platform fee % taken by franchisor on payments.",
+                        max_digits=5,
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
             ],
             options={
-                'ordering': ['name'],
+                "ordering": ["name"],
             },
         ),
         migrations.CreateModel(
-            name='FranchiseDomain',
+            name="FranchiseDomain",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('hostname', models.CharField(help_text='e.g. acme.roux.care or acme.localhost', max_length=255, unique=True)),
-                ('is_primary', models.BooleanField(default=False)),
-                ('franchise', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='domains', to='franchises.franchise')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                (
+                    "hostname",
+                    models.CharField(
+                        help_text="e.g. acme.roux.care or acme.localhost",
+                        max_length=255,
+                        unique=True,
+                    ),
+                ),
+                ("is_primary", models.BooleanField(default=False)),
+                (
+                    "franchise",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="domains",
+                        to="franchises.franchise",
+                    ),
+                ),
             ],
             options={
-                'ordering': ['hostname'],
+                "ordering": ["hostname"],
             },
         ),
     ]

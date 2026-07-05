@@ -1,0 +1,14 @@
+Hello {{ application.applicant_name }},
+
+Thank you for applying to become a Roux franchise partner.
+
+Business: {{ application.business_name }}
+Reference: {{ application.reference }}
+Status: Pending
+
+We'll review your application and email you when the status changes to Under Review or Partner.
+
+Track your application:
+{{ application.reference }}
+
+Roux Partnerships Team

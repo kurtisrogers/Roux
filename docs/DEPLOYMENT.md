@@ -74,3 +74,40 @@ docker run -p 8000:8000 -e SECRET_KEY=dev -e DEBUG=True roux
 2. Seed demo data (staging only): `npx sst shell --stage staging -- python manage.py seed_demo`
 3. Configure Stripe webhook URL: `https://<domain>/dashboard/webhooks/stripe/`
 4. Configure Xero redirect: `https://<domain>/dashboard/finance/xero/callback/`
+
+## Multi-franchise databases (production)
+
+Each franchise partner gets an isolated PostgreSQL database on the shared Aurora cluster.
+
+SST sets these environment variables automatically:
+
+| Variable | Purpose |
+|----------|---------|
+| `DATABASE_URL` | Control-plane database (franchise registry, applications) |
+| `FRANCHISE_DATABASE_URL_TEMPLATE` | Template with `{db_name}` for per-franchise DBs |
+| `FRANCHISE_BASE_DOMAIN` | Base domain for partner hostnames (`acme.roux.care`) |
+| `PLATFORM_ADMIN_EMAIL` | Receives alerts for new franchise applications |
+
+### Provision a franchise in production
+
+```bash
+# Approve via dashboard (recommended) — provisions DB + franchise admin automatically
+
+# Or manually:
+npx sst shell --stage staging -- python manage.py provision_franchise "Acme Care" \
+  --slug acme \
+  --hostname acme.staging.roux.care \
+  --admin-email hello@acme.example \
+  --admin-name "Jane Smith"
+```
+
+When `FRANCHISE_DATABASE_URL_TEMPLATE` is set, provisioning runs `CREATE DATABASE` on the Aurora cluster before migrating the tenant schema.
+
+### DNS
+
+Point a wildcard record at the load balancer so partner subdomains resolve:
+
+- Staging: `*.staging.roux.care`
+- Production: `*.roux.care`
+
+Django `ALLOWED_HOSTS` includes `.<domain>` for subdomain routing.

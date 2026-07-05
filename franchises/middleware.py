@@ -1,5 +1,3 @@
-from django.utils.functional import SimpleLazyObject
-
 from franchises.context import clear_franchise_context, set_franchise_context
 from franchises.db import register_franchise_database, resolve_franchise_from_host
 

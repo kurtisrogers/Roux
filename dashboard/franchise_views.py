@@ -1,12 +1,12 @@
-from django.contrib import messages
-from django.shortcuts import get_object_or_404, redirect, render
-
 from accounts.decorators import dashboard_required, role_required
 from accounts.models import User
-from dashboard.mixins import dashboard_context
+from django.contrib import messages
+from django.shortcuts import get_object_or_404, redirect, render
 from franchises.forms import FranchiseForm, FranchiseIntegrationForm
 from franchises.models import Franchise
 from franchises.services import provision_franchise
+
+from dashboard.mixins import dashboard_context
 
 
 @dashboard_required
@@ -26,7 +26,7 @@ def franchise_create(request):
     if request.method == "POST":
         form = FranchiseForm(request.POST)
         if form.is_valid():
-            franchise = provision_franchise(
+            franchise, _admin_password = provision_franchise(
                 name=form.cleaned_data["name"],
                 slug=form.cleaned_data["slug"],
                 contact_email=form.cleaned_data.get("contact_email", ""),

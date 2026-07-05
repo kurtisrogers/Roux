@@ -1,0 +1,89 @@
+{% extends "base/base.html" %}
+{% block title %}Become a Roux Franchise Partner{% endblock %}
+{% block body %}
+<header class="container">
+  <nav>
+    <ul><li><strong><a href="/">Roux</a></strong></li></ul>
+    <ul>
+      <li><a href="{% url 'franchises:apply' %}">Franchise</a></li>
+      <li><a href="{% url 'accounts:login' %}">Login</a></li>
+    </ul>
+  </nav>
+</header>
+<main class="container" x-data="{ step: 1 }">
+  <hgroup>
+    <h1>Run wraparound care under your own brand</h1>
+    <p>Apply to become a Roux franchise partner. Each partner gets an isolated platform with their own database, website, Stripe, and Xero integrations.</p>
+  </hgroup>
+
+  {% if messages %}
+    {% for message in messages %}
+      <article class="{{ message.tags }}">{{ message }}</article>
+    {% endfor %}
+  {% endif %}
+
+  <form method="post" @submit="step = 3">
+    {% csrf_token %}
+
+    <article x-show="step === 1">
+      <header><strong>Step 1 — About you</strong></header>
+      <label>
+        Your name
+        {{ form.applicant_name }}
+        {% if form.applicant_name.errors %}<small class="error">{{ form.applicant_name.errors.0 }}</small>{% endif %}
+      </label>
+      <label>
+        Email
+        {{ form.email }}
+        {% if form.email.errors %}<small class="error">{{ form.email.errors.0 }}</small>{% endif %}
+      </label>
+      <label>
+        Phone
+        {{ form.phone }}
+      </label>
+      <button type="button" @click="step = 2">Continue</button>
+    </article>
+
+    <article x-show="step === 2">
+      <header><strong>Step 2 — Your business</strong></header>
+      <label>
+        Business / club name
+        {{ form.business_name }}
+        {% if form.business_name.errors %}<small class="error">{{ form.business_name.errors.0 }}</small>{% endif %}
+      </label>
+      <label>
+        UK region
+        {{ form.region }}
+        <small>e.g. Greater Manchester, West Yorkshire</small>
+      </label>
+      <label>
+        Years of wraparound / childcare experience
+        {{ form.experience_years }}
+      </label>
+      <label>
+        Tell us about your plans
+        {{ form.message }}
+      </label>
+      <div class="grid">
+        <button type="button" class="outline" @click="step = 1">Back</button>
+        <button type="button" @click="step = 3">Review application</button>
+      </div>
+    </article>
+
+    <article x-show="step === 3">
+      <header><strong>Step 3 — Review &amp; submit</strong></header>
+      <p>We'll email you a confirmation and keep you updated as your application moves from <em>Pending</em> → <em>Under Review</em> → <em>Partner</em>.</p>
+      <ul>
+        <li><strong>Status after submit:</strong> Pending</li>
+      </ul>
+      <div class="grid">
+        <button type="button" class="outline" @click="step = 2">Back</button>
+        <button type="submit">Submit application</button>
+      </div>
+    </article>
+  </form>
+</main>
+<footer class="container">
+  <small>© Roux — UK wraparound care platform</small>
+</footer>
+{% endblock %}

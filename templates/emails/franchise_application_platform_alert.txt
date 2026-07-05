@@ -1,0 +1,10 @@
+New franchise application received.
+
+Business: {{ application.business_name }}
+Applicant: {{ application.applicant_name }}
+Email: {{ application.email }}
+Phone: {{ application.phone }}
+Region: {{ application.region }}
+Reference: {{ application.reference }}
+
+Review in dashboard: Franchise Applications

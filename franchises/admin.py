@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from franchises.models import Franchise, FranchiseDomain
+from franchises.models import Franchise, FranchiseApplication, FranchiseDomain
 
 
 class FranchiseDomainInline(admin.TabularInline):
@@ -19,3 +19,10 @@ class FranchiseAdmin(admin.ModelAdmin):
 @admin.register(FranchiseDomain)
 class FranchiseDomainAdmin(admin.ModelAdmin):
     list_display = ("hostname", "franchise", "is_primary")
+
+
+@admin.register(FranchiseApplication)
+class FranchiseApplicationAdmin(admin.ModelAdmin):
+    list_display = ("business_name", "applicant_name", "status", "email", "created_at")
+    list_filter = ("status",)
+    search_fields = ("business_name", "applicant_name", "email", "reference")

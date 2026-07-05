@@ -1,0 +1,16 @@
+Hello {{ application.applicant_name }},
+
+Congratulations — your application has been approved and {{ franchise.name }} is now a Roux Partner!
+
+Your franchise environment has been provisioned with its own isolated database and integrations.
+
+Sign in with:
+  Email: {{ application.email }}
+  Temporary password: {{ temp_password }}
+
+Please change your password after first login.
+
+{% with d=franchise.domains.first %}Portal: http://{{ d.hostname }}:8000/{% endwith %}
+
+Welcome aboard,
+Roux Partnerships Team

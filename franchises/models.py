@@ -89,3 +89,58 @@ class FranchiseDomain(models.Model):
 
     def __str__(self) -> str:
         return self.hostname
+
+
+class FranchiseApplication(models.Model):
+    """Prospective franchisee application (control plane)."""
+
+    class Status(models.TextChoices):
+        PENDING = "pending", "Pending"
+        UNDER_REVIEW = "under_review", "Under Review"
+        PARTNER = "partner", "Partner"
+        REJECTED = "rejected", "Rejected"
+
+    reference = models.CharField(max_length=32, unique=True, editable=False)
+    applicant_name = models.CharField(max_length=200)
+    business_name = models.CharField(max_length=200)
+    proposed_slug = models.SlugField(max_length=100, unique=True)
+    email = models.EmailField()
+    phone = models.CharField(max_length=20, blank=True)
+    region = models.CharField(
+        max_length=100,
+        blank=True,
+        help_text="UK region or area of operation",
+    )
+    experience_years = models.PositiveSmallIntegerField(
+        null=True,
+        blank=True,
+        help_text="Years of wraparound/childcare experience",
+    )
+    message = models.TextField(blank=True)
+    status = models.CharField(
+        max_length=20,
+        choices=Status.choices,
+        default=Status.PENDING,
+    )
+    franchise = models.OneToOneField(
+        Franchise,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="application",
+    )
+    admin_notes = models.TextField(blank=True)
+    reviewed_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self) -> str:
+        return f"{self.business_name} ({self.get_status_display()})"
+
+    def save(self, *args, **kwargs):
+        if not self.proposed_slug:
+            self.proposed_slug = slugify(self.business_name)
+        super().save(*args, **kwargs)

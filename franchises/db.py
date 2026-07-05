@@ -1,3 +1,4 @@
+import os
 import re
 from pathlib import Path
 from urllib.parse import urlparse
@@ -11,6 +12,7 @@ from franchises.models import Franchise, FranchiseDomain
 CONTROL_PLANE_MODELS = {
     "franchises.franchise",
     "franchises.franchisedomain",
+    "franchises.franchiseapplication",
 }
 
 
@@ -89,6 +91,49 @@ def register_franchise_database(franchise: Franchise) -> str:
     settings.DATABASES[alias] = config
     connections.databases[alias] = config
     return alias
+
+
+def franchise_database_name(slug: str) -> str:
+    return f"roux_franchise_{slug.replace('-', '_')}"
+
+
+def build_franchise_database_url(slug: str, *, db_name: str | None = None) -> str:
+    """Build PostgreSQL URL for a franchise database from the platform template."""
+    template = os.getenv("FRANCHISE_DATABASE_URL_TEMPLATE", "")
+    if not template:
+        return ""
+    name = db_name or franchise_database_name(slug)
+    return template.replace("{db_name}", name)
+
+
+def create_franchise_database(db_name: str) -> None:
+    """Create a PostgreSQL database on the shared cluster (production only)."""
+    template = os.getenv("FRANCHISE_DATABASE_URL_TEMPLATE", "")
+    if not template:
+        return
+
+    admin_url = os.getenv("DATABASE_URL", "")
+    if not admin_url or not admin_url.startswith("postgres"):
+        return
+
+    try:
+        import psycopg
+        from psycopg import sql
+    except ImportError:
+        return
+
+    parsed = urlparse(admin_url)
+    conninfo = (
+        f"host={parsed.hostname} port={parsed.port or 5432} "
+        f"user={parsed.username} password={parsed.password} dbname=postgres"
+    )
+    with psycopg.connect(conninfo, autocommit=True) as conn, conn.cursor() as cur:
+        cur.execute(
+            sql.SQL("SELECT 1 FROM pg_database WHERE datname = {}").format(sql.Literal(db_name))
+        )
+        if cur.fetchone():
+            return
+        cur.execute(sql.SQL("CREATE DATABASE {}").format(sql.Identifier(db_name)))
 
 
 def resolve_franchise_from_host(host: str) -> Franchise | None:
