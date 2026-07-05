@@ -3,12 +3,18 @@
 from datetime import date, time
 
 import pytest
+from accounts.models import User
+from bookings.models import Booking, Session
 from django.db import IntegrityError
 from django.urls import reverse
 
-from accounts.models import User
-from bookings.models import Booking, Session
-from tests.factories import ChildFactory, OrganisationFactory, SessionTypeFactory, SiteFactory, UserFactory
+from tests.factories import (
+    ChildFactory,
+    OrganisationFactory,
+    SessionTypeFactory,
+    SiteFactory,
+    UserFactory,
+)
 
 
 @pytest.mark.integration

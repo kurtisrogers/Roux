@@ -56,8 +56,8 @@ def _render_features(content):
     html = '<section class="features-block"><div class="grid">'
     for item in items:
         html += (
-            f'<article><h3>{escape(item.get("title", ""))}</h3>'
-            f'<p>{escape(item.get("description", ""))}</p></article>'
+            f"<article><h3>{escape(item.get('title', ''))}</h3>"
+            f"<p>{escape(item.get('description', ''))}</p></article>"
         )
     html += "</div></section>"
     return mark_safe(html)
@@ -111,7 +111,7 @@ def _render_session_list(organisation):
     html = '<section class="session-list-block"><h2>Upcoming Sessions</h2><div class="grid">'
     for session in sessions:
         html += (
-            f'<article><h3>{escape(session.session_type.name)}</h3>'
+            f"<article><h3>{escape(session.session_type.name)}</h3>"
             f"<p>{session.date} · {session.start_time.strftime('%H:%M')} – "
             f"{session.end_time.strftime('%H:%M')}</p>"
             f"<p>{escape(session.site.name)} · "
@@ -154,7 +154,7 @@ def _render_testimonials(content):
     for item in items:
         html += (
             f'<blockquote><p>"{escape(item.get("quote", ""))}"</p>'
-            f"<footer>— {escape(item.get("author", ""))}</footer></blockquote>"
+            f"<footer>— {escape(item.get('author', ''))}</footer></blockquote>"
         )
     html += "</div></section>"
     return mark_safe(html)

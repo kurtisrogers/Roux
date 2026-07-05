@@ -33,9 +33,7 @@ def create_booking_checkout_session(booking, request) -> str:
                     "unit_amount": amount_pence,
                     "product_data": {
                         "name": f"{session_type.name} – {booking.session.date}",
-                        "description": (
-                            f"{booking.child.full_name} – " f"{booking.session.site.name}"
-                        ),
+                        "description": (f"{booking.child.full_name} – {booking.session.site.name}"),
                     },
                 },
                 "quantity": 1,

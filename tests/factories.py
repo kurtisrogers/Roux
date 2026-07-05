@@ -3,11 +3,10 @@
 from datetime import date
 
 import factory
+from accounts.models import User
+from bookings.models import Child, SessionType
 from django.contrib.auth import get_user_model
 from factory.django import DjangoModelFactory
-
-from accounts.models import User
-from bookings.models import Child, Session, SessionType
 from organisations.models import Organisation, Site
 
 UserModel = get_user_model()
