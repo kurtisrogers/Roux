@@ -1,7 +1,5 @@
 /* Roux landing – warm childcare theme with light/dark support */
 
-@import url("https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&family=Source+Sans+3:wght@400;500;600&display=swap");
-
 :root,
 [data-theme="light"] {
   color-scheme: light;
@@ -163,17 +161,28 @@ a:hover {
   position: sticky;
   top: 0;
   z-index: 50;
-  background: color-mix(in srgb, var(--bg-elevated) 88%, transparent);
-  backdrop-filter: blur(12px);
+  background: var(--bg-elevated);
   border-bottom: 1px solid var(--border);
 }
 
-.site-header .container {
+@supports (background: color-mix(in srgb, white 50%, black)) {
+  .site-header {
+    background: color-mix(in srgb, var(--bg-elevated) 88%, transparent);
+    backdrop-filter: blur(12px);
+  }
+}
+
+.header-inner {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
   padding-block: 0.9rem;
+  position: relative;
+}
+
+.site-header .container {
+  padding-block: 0;
 }
 
 .brand {
@@ -199,10 +208,17 @@ a:hover {
   box-shadow: var(--shadow-soft);
 }
 
-.header-actions {
+.header-tools {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.site-nav {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
 }
 
 .icon-button {
@@ -365,6 +381,7 @@ a:hover {
   line-height: 1.08;
   letter-spacing: -0.02em;
   margin: 0 0 1rem;
+  color: var(--text);
 }
 
 .lead {
@@ -693,19 +710,26 @@ ol.status-flow {
     grid-template-columns: 1fr;
   }
 
+  .header-inner {
+    flex-wrap: wrap;
+  }
+
   .nav-toggle {
     display: inline-flex;
   }
 
   .site-nav {
     position: absolute;
-    top: 100%;
+    top: calc(100% + 1px);
     left: 0;
     right: 0;
+    z-index: 60;
+    flex: none;
+    display: none;
     background: var(--bg-elevated);
     border-bottom: 1px solid var(--border);
     padding: 0.75rem 1rem 1rem;
-    display: none;
+    box-shadow: var(--shadow-soft);
   }
 
   .site-nav.is-open {
@@ -721,5 +745,15 @@ ol.status-flow {
   .site-nav .button {
     width: 100%;
     justify-content: center;
+  }
+
+  .nav-cta {
+    margin-top: 0.25rem;
+  }
+}
+
+@media (min-width: 861px) {
+  .nav-toggle {
+    display: none;
   }
 }
