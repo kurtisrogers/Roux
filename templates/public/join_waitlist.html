@@ -1,0 +1,17 @@
+{% extends "base/public.html" %}
+{% block title %}Join waitlist — {{ session.session_type.name }}{% endblock %}
+{% block content %}
+<h1>Join waitlist</h1>
+<p>{{ session.session_type.name }} on {{ session.date|date:"l j F Y" }} is full.</p>
+<form method="post" class="form-card">
+  {% csrf_token %}
+  <label for="child">Child
+    <select name="child" id="child" required>
+      {% for child in children %}
+      <option value="{{ child.pk }}">{{ child.full_name }}</option>
+      {% endfor %}
+    </select>
+  </label>
+  <button type="submit" class="btn">Join waitlist</button>
+</form>
+{% endblock %}

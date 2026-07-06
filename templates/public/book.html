@@ -18,7 +18,12 @@
   <label for="special_requirements">Special requirements
     <textarea name="special_requirements" id="special_requirements" rows="3"></textarea>
   </label>
-  <button type="submit">Proceed to Payment</button>
+  <fieldset>
+    <legend>Payment method</legend>
+    <label><input type="radio" name="payment_type" value="card" checked> Card (Stripe)</label>
+    <label><input type="radio" name="payment_type" value="voucher"> Childcare voucher</label>
+  </fieldset>
+  <button type="submit">Confirm booking</button>
 </form>
 {% else %}
 <article>

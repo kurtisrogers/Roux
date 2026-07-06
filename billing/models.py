@@ -1,5 +1,6 @@
 from decimal import Decimal
 
+from django.conf import settings
 from django.db import models
 
 
@@ -11,6 +12,13 @@ class Payment(models.Model):
         FAILED = "failed", "Failed"
         REFUNDED = "refunded", "Refunded"
         CANCELLED = "cancelled", "Cancelled"
+
+    class Method(models.TextChoices):
+        CARD = "card", "Card (Stripe)"
+        VOUCHER = "voucher", "Childcare voucher"
+        CASH = "cash", "Cash"
+        SUBSIDY = "subsidy", "Subsidy / LA funding"
+        WAIVED = "waived", "Waived"
 
     organisation = models.ForeignKey(
         "organisations.Organisation",
@@ -33,6 +41,11 @@ class Payment(models.Model):
         choices=Status.choices,
         default=Status.PENDING,
     )
+    payment_method = models.CharField(
+        max_length=20,
+        choices=Method.choices,
+        default=Method.CARD,
+    )
     description = models.CharField(max_length=500, blank=True)
     metadata = models.JSONField(default=dict, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -43,6 +56,27 @@ class Payment(models.Model):
 
     def __str__(self) -> str:
         return f"£{self.amount} – {self.status}"
+
+
+class Refund(models.Model):
+    payment = models.ForeignKey(
+        Payment,
+        on_delete=models.CASCADE,
+        related_name="refunds",
+    )
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    stripe_refund_id = models.CharField(max_length=255, blank=True)
+    reason = models.CharField(max_length=255, blank=True)
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self) -> str:
+        return f"Refund £{self.amount} for {self.payment_id}"
 
 
 class Subscription(models.Model):

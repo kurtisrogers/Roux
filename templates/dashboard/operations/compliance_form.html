@@ -1,0 +1,22 @@
+{% extends "dashboard/operations/_base.html" %}
+{% block operations_content %}
+{% if items %}<table><tbody>{% for item in items %}<tr><td>{{ item }}</td></tr>{% endfor %}</tbody></table>{% endif %}
+{% if patterns %}<table>{% for p in patterns %}<tr><td>{{ p }}</td><td>{{ p.get_weekday_display }}</td><td>{{ p.session_type.name }}</td></tr>{% endfor %}</table>{% endif %}
+{% if entries %}<table>{% for e in entries %}<tr><td>{{ e.position }}</td><td>{{ e.child }}</td><td>{{ e.session }}</td></tr>{% endfor %}</table>{% endif %}
+{% if shifts %}<table>{% for s in shifts %}<tr><td>{{ s.date }}</td><td>{{ s.user }}</td><td>{{ s.site }}</td></tr>{% endfor %}</table>{% endif %}
+{% if visitors %}<table>{% for v in visitors %}<tr><td>{{ v.name }}</td><td>{{ v.purpose }}</td><td>{% if v.signed_out_at %}Out{% else %}<form method="post" action="{% url 'dashboard:visitor_sign_out' v.pk %}">{% csrf_token %}<button>Sign out</button></form>{% endif %}</td></tr>{% endfor %}</table>{% endif %}
+{% if logs %}<table>{% for l in logs %}<tr><td>{{ l.administered_at }}</td><td>{{ l.child }}</td><td>{{ l.medication_name }}</td></tr>{% endfor %}</table>{% endif %}
+{% if staff %}<table>{% for s in staff %}<tr><td>{{ s.get_full_name }}</td><td><a href="{% url 'dashboard:staff_compliance_edit' s.pk %}">Compliance</a></td></tr>{% endfor %}</table>{% endif %}
+{% if cases %}<table>{% for c in cases %}<tr><td>{{ c.title }}</td><td>{{ c.get_status_display }}</td></tr>{% endfor %}</table>{% endif %}
+{% if codes %}<table>{% for c in codes %}<tr><td>{{ c.code }}</td><td>{{ c.name }}</td></tr>{% endfor %}</table>{% endif %}
+{% if vouchers %}<table>{% for v in vouchers %}<tr><td>{{ v.reference }}</td><td>£{{ v.balance }}</td></tr>{% endfor %}</table>{% endif %}
+{% if plans %}<table>{% for p in plans %}<tr><td>{{ p.name }}</td><td>£{{ p.total_amount }}</td></tr>{% endfor %}</table>{% endif %}
+{% if collectors %}<table>{% for c in collectors %}<tr><td>{{ c.name }}</td><td>{{ c.relationship }}</td></tr>{% endfor %}</table>{% endif %}
+{% if stats %}<ul>{% for k,v in stats.items %}<li>{{ k }}: {{ v }}</li>{% endfor %}</ul>{% endif %}
+{% if onboarding %}<ul>{% for t in onboarding %}<li>{{ t.label }} {% if t.completed_at %}✓{% else %}<form method="post">{% csrf_token %}<input type="hidden" name="task_id" value="{{ t.pk }}"><button>Complete</button></form>{% endif %}</li>{% endfor %}</ul>{% endif %}
+{% if events_json %}<div id="calendar" data-events='{{ events_json|safe }}'></div><p><a href="{% url 'dashboard:session_list' %}">Session list</a></p>{% endif %}
+{% if booking %}<p>Checkout: {{ booking.child.full_name }}</p>{% endif %}
+{% if payment %}<p>Refund payment £{{ payment.amount }}</p>{% endif %}
+{% if session %}<p>Session: {{ session }}</p>{% endif %}
+{% if child %}<p>Child: {{ child.full_name }}</p>{% endif %}
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends "base/public.html" %}
+{% block title %}Book a session — {{ organisation.name }}{% endblock %}
+{% block content %}
+<h1>Book a session</h1>
+<p class="muted">Choose an available session for {{ organisation.name }}.</p>
+<div class="card-grid">
+  {% for session in sessions %}
+  <article class="card">
+    <h2>{{ session.session_type.name }}</h2>
+    <p>{{ session.date|date:"l j F Y" }}</p>
+    <p>{{ session.start_time|time:"H:i" }} – {{ session.end_time|time:"H:i" }}</p>
+    <p><strong>£{{ session.session_type.price }}</strong> · {{ session.available_spaces }} spaces left</p>
+    {% if session.available_spaces > 0 %}
+    <a class="btn" href="{% url 'public_site:book_session' session.pk %}">Book now</a>
+    {% else %}
+    <a class="btn btn-secondary" href="{% url 'public_site:join_waitlist' session.pk %}">Join waitlist</a>
+    {% endif %}
+  </article>
+  {% empty %}
+  <p>No upcoming sessions are open for booking.</p>
+  {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,9 @@
+Hello {{ case.assigned_to.first_name }},
+
+You have been assigned safeguarding case: {{ case.title }}
+
+Status: {{ case.get_status_display }}
+
+Please review in the dashboard.
+
+Roux Wraparound Care

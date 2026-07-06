@@ -2,9 +2,6 @@ from datetime import date, time
 
 import pytest
 from bookings.models import Booking, Session
-
-from billing.models import Payment
-from billing.services.stripe_service import handle_checkout_completed
 from tests.factories import (
     ChildFactory,
     OrganisationFactory,
@@ -12,6 +9,9 @@ from tests.factories import (
     SiteFactory,
     UserFactory,
 )
+
+from billing.models import Payment
+from billing.services.stripe_service import handle_checkout_completed
 
 
 @pytest.mark.django_db

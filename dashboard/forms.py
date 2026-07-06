@@ -19,6 +19,8 @@ class ChildForm(forms.ModelForm):
             "emergency_contact_phone",
             "emergency_contact_relationship",
             "photo_consent",
+            "pupil_premium",
+            "fsm_eligible",
         )
         widgets = {
             "date_of_birth": forms.DateInput(attrs={"type": "date"}),
@@ -40,6 +42,8 @@ class SessionTypeForm(forms.ModelForm):
             "age_min",
             "age_max",
             "duration_minutes",
+            "late_pickup_fee",
+            "late_pickup_grace_minutes",
             "is_active",
         )
 

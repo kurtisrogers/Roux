@@ -1,0 +1,7 @@
+Hello {{ parent.first_name }},
+
+We've recorded that {{ absence.child.full_name }} will be absent on {{ absence.date|date:"l j F Y" }}.
+
+{% if absence.reason %}Reason: {{ absence.reason }}{% endif %}
+
+Roux Wraparound Care

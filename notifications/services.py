@@ -143,3 +143,73 @@ def notify_platform_new_application(application) -> bool:
         "emails/franchise_application_platform_alert.txt",
         {"application": application},
     )
+
+
+def notify_waitlist_promoted(booking) -> bool:
+    parent = booking.booked_by or booking.child.parent
+    sent = _send(
+        parent.email,
+        f"A space opened up – {booking.session.session_type.name}",
+        "emails/waitlist_promoted.txt",
+        {"booking": booking, "parent": parent},
+    )
+    from operations.sms import send_sms
+
+    if parent.phone:
+        send_sms(
+            parent.phone,
+            f"A space is available for {booking.child.first_name} on {booking.session.date}.",
+        )
+    return sent
+
+
+def notify_absence_reported(absence) -> bool:
+    parent = absence.child.parent
+    return _send(
+        parent.email,
+        f"Absence recorded for {absence.child.first_name}",
+        "emails/absence_recorded.txt",
+        {"absence": absence, "parent": parent},
+    )
+
+
+def notify_late_fee(booking, fee) -> bool:
+    parent = booking.booked_by or booking.child.parent
+    return _send(
+        parent.email,
+        f"Late collection fee – £{fee}",
+        "emails/late_fee.txt",
+        {"booking": booking, "fee": fee, "parent": parent},
+    )
+
+
+def notify_safeguarding_escalation(case) -> bool:
+    if not case.assigned_to or not case.assigned_to.email:
+        return False
+    return _send(
+        case.assigned_to.email,
+        f"Safeguarding case assigned: {case.title}",
+        "emails/safeguarding_assigned.txt",
+        {"case": case},
+    )
+
+
+def notify_dbs_expiry_reminder(user, compliance) -> bool:
+    if not user.email:
+        return False
+    return _send(
+        user.email,
+        "DBS certificate expiry reminder",
+        "emails/dbs_expiry_reminder.txt",
+        {"user": user, "compliance": compliance},
+    )
+
+
+def notify_voucher_redemption(booking, voucher, amount) -> bool:
+    parent = booking.booked_by or booking.child.parent
+    return _send(
+        parent.email,
+        f"Childcare voucher applied – £{amount}",
+        "emails/voucher_redeemed.txt",
+        {"booking": booking, "voucher": voucher, "amount": amount, "parent": parent},
+    )

@@ -1,9 +1,9 @@
 import pytest
+from tests.factories import OrganisationFactory
 
 from cms.block_forms import HeroBlockForm, get_content_form
 from cms.block_renderer import render_block
 from cms.models import PageBlock
-from tests.factories import OrganisationFactory
 
 
 @pytest.mark.django_db

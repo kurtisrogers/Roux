@@ -7,6 +7,12 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from operations.models import ChildcareVoucher
+from operations.services import (
+    add_to_waitlist,
+    calculate_discounted_price,
+    redeem_voucher,
+)
 
 from public_site.booking_access import booking_for_request
 
@@ -60,6 +66,77 @@ def session_list(request):
 
 
 @login_required
+def booking_calendar(request):
+    organisation = request.organisation
+    sessions = (
+        Session.objects.filter(organisation=organisation, status=Session.Status.SCHEDULED)
+        .select_related("session_type", "site")
+        .order_by("date", "start_time")[:60]
+    )
+    for session in sessions:
+        session.available_spaces = session.spaces_remaining
+    return render(
+        request,
+        "public/booking_calendar.html",
+        {"organisation": organisation, "sessions": sessions},
+    )
+
+
+@login_required
+def report_absence_view(request):
+    from operations.forms import AbsenceForm
+
+    organisation = request.organisation
+    form = AbsenceForm(request.POST or None)
+    form.fields["child"].queryset = Child.objects.filter(
+        parent=request.user, organisation=organisation, is_active=True
+    )
+    form.fields["session"].queryset = Session.objects.filter(
+        organisation=organisation, status=Session.Status.SCHEDULED
+    )
+    if request.method == "POST" and form.is_valid():
+        absence = form.save(commit=False)
+        absence.reported_by = request.user
+        absence.save()
+        if absence.session:
+            Booking.objects.filter(child=absence.child, session=absence.session).update(
+                status=Booking.Status.CANCELLED
+            )
+        from notifications.services import notify_absence_reported
+
+        notify_absence_reported(absence)
+        messages.success(request, "Absence reported. Thank you.")
+        return redirect("public:my_bookings")
+    return render(
+        request,
+        "public/report_absence.html",
+        {"organisation": organisation, "form": form},
+    )
+
+
+@login_required
+def join_waitlist(request, pk):
+    organisation = request.organisation
+    session = get_object_or_404(Session, pk=pk, organisation=organisation)
+    children = Child.objects.filter(parent=request.user, organisation=organisation, is_active=True)
+    if request.method == "POST":
+        child = get_object_or_404(
+            Child,
+            pk=request.POST.get("child"),
+            parent=request.user,
+            organisation=organisation,
+        )
+        add_to_waitlist(child, session)
+        messages.success(request, "Added to waiting list. We'll email you if a space opens.")
+        return redirect("public:session_list")
+    return render(
+        request,
+        "public/join_waitlist.html",
+        {"session": session, "children": children},
+    )
+
+
+@login_required
 def book_session(request, pk):
     organisation = request.organisation
     session = get_object_or_404(
@@ -73,8 +150,22 @@ def book_session(request, pk):
             Child, pk=child_id, parent=request.user, organisation=organisation
         )
         if session.is_full:
+            if request.POST.get("join_waitlist"):
+                add_to_waitlist(child, session)
+                messages.info(request, "Session full — you've been added to the waiting list.")
+                return redirect("public:session_list")
             messages.error(request, "This session is full.")
             return redirect("public:session_list")
+
+        payment_type = request.POST.get("payment_type", "card")
+        sibling_count = (
+            Booking.objects.filter(
+                booked_by=request.user,
+                session=session,
+                status__in=[Booking.Status.PENDING, Booking.Status.CONFIRMED],
+            ).count()
+            + 1
+        )
 
         booking, created = Booking.objects.get_or_create(
             child=child,
@@ -89,7 +180,34 @@ def book_session(request, pk):
             messages.warning(request, "Already booked for this session.")
             return redirect("public:my_bookings")
 
-        checkout_url = stripe_service.create_booking_checkout_session(booking, request)
+        price = calculate_discounted_price(
+            session.session_type,
+            child,
+            sibling_count=sibling_count,
+            organisation=organisation,
+        )
+
+        if payment_type == "voucher":
+            voucher = ChildcareVoucher.objects.filter(
+                parent=request.user,
+                organisation=organisation,
+                is_active=True,
+                balance__gte=price,
+            ).first()
+            if not voucher:
+                messages.error(request, "No voucher with sufficient balance found.")
+                booking.delete()
+                return redirect("public:book_session", pk=pk)
+            booking.status = Booking.Status.CONFIRMED
+            booking.payment_status = Booking.PaymentStatus.PAID
+            booking.save()
+            redeem_voucher(booking, voucher)
+            messages.success(request, "Booked and paid with childcare voucher.")
+            return redirect("public:my_bookings")
+
+        checkout_url = stripe_service.create_booking_checkout_session(
+            booking, request, amount=price
+        )
         return redirect(checkout_url)
 
     return render(

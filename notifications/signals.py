@@ -25,6 +25,10 @@ def send_booking_notifications(sender, instance, created, **kwargs):
     prev_status = getattr(instance, "_previous_status", None)
     if instance.status == Booking.Status.CONFIRMED and prev_status != Booking.Status.CONFIRMED:
         notify_booking_confirmed(instance)
+    if instance.status == Booking.Status.CANCELLED and prev_status != Booking.Status.CANCELLED:
+        from operations.services import promote_waitlist
+
+        promote_waitlist(instance.session)
 
 
 @receiver(pre_save, sender=Attendance)
