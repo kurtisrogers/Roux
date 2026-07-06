@@ -1,15 +1,10 @@
 import logging
 import secrets
-from datetime import datetime
 
 from django.conf import settings
 from django.db import transaction
 from django.utils import timezone
 from django.utils.text import slugify
-
-from franchises.db import build_franchise_database_url, create_franchise_database
-from franchises.models import Franchise, FranchiseApplication
-from franchises.services import provision_franchise
 from notifications.services import (
     notify_franchise_application_partner,
     notify_franchise_application_received,
@@ -17,6 +12,10 @@ from notifications.services import (
     notify_franchise_application_under_review,
     notify_platform_new_application,
 )
+
+from franchises.db import build_franchise_database_url, create_franchise_database
+from franchises.models import Franchise, FranchiseApplication
+from franchises.services import provision_franchise
 
 logger = logging.getLogger(__name__)
 
@@ -29,9 +28,10 @@ def unique_slug_from_business_name(business_name: str) -> str:
     base = slugify(business_name) or "franchise"
     slug = base
     counter = 1
-    while FranchiseApplication.objects.filter(proposed_slug=slug).exists() or Franchise.objects.filter(
-        slug=slug
-    ).exists():
+    while (
+        FranchiseApplication.objects.filter(proposed_slug=slug).exists()
+        or Franchise.objects.filter(slug=slug).exists()
+    ):
         slug = f"{base}-{counter}"
         counter += 1
     return slug
@@ -121,5 +121,7 @@ def _approve_as_partner(application: FranchiseApplication) -> FranchiseApplicati
     application.save(update_fields=["franchise", "updated_at"])
 
     notify_franchise_application_partner(application, franchise, temp_password or "")
-    logger.info("Approved franchise application %s as partner %s", application.reference, franchise.slug)
+    logger.info(
+        "Approved franchise application %s as partner %s", application.reference, franchise.slug
+    )
     return application

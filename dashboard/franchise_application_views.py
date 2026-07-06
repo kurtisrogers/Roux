@@ -1,12 +1,12 @@
-from django.contrib import messages
-from django.shortcuts import get_object_or_404, redirect, render
-
 from accounts.decorators import dashboard_required, role_required
 from accounts.models import User
-from dashboard.mixins import dashboard_context
+from django.contrib import messages
+from django.shortcuts import get_object_or_404, redirect, render
 from franchises.application_services import set_application_status
 from franchises.forms import FranchiseApplicationReviewForm
 from franchises.models import FranchiseApplication
+
+from dashboard.mixins import dashboard_context
 
 
 @dashboard_required

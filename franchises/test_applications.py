@@ -1,11 +1,11 @@
 from unittest.mock import MagicMock, patch
 
 import pytest
+from accounts.models import User
 from django.core import mail
 from django.test import TestCase
 from django.urls import reverse
 
-from accounts.models import User
 from franchises.application_services import set_application_status, submit_franchise_application
 from franchises.models import Franchise, FranchiseApplication
 from franchises.services import create_franchise_admin_user, provision_franchise
@@ -53,7 +53,9 @@ class TestFranchiseApplicationFlow:
 
 @pytest.mark.django_db
 class TestFranchiseAdminProvisioning:
-    @patch("franchises.services.create_franchise_admin_user", return_value=(MagicMock(), "secret-pass"))
+    @patch(
+        "franchises.services.create_franchise_admin_user", return_value=(MagicMock(), "secret-pass")
+    )
     @patch("franchises.services.connections")
     @patch("franchises.services.call_command")
     @patch("franchises.services.register_franchise_database", return_value="franchise_admintest")

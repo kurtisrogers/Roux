@@ -1,7 +1,6 @@
+from bookings.models import Booking
 from django.http import Http404
 from django.shortcuts import get_object_or_404
-
-from bookings.models import Booking
 
 
 def booking_for_request(request, pk: int, *, require_owner: bool = False) -> Booking:
