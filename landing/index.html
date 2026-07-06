@@ -1,107 +1,328 @@
 <!DOCTYPE html>
-<html lang="en-GB">
+<html lang="en-GB" data-theme="light">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Roux – Wraparound Care Management for UK Schools & Clubs</title>
-  <meta name="description" content="Roux is the modern platform for UK wraparound care. Bookings, Ofsted compliance, parent payments, CMS websites, and more.">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+  <title>Roux – Wraparound Care Management for UK Schools &amp; Clubs</title>
+  <meta name="description" content="Roux is the modern platform for UK wraparound care. Bookings, Ofsted compliance, parent payments, CMS websites, and franchise-ready operations.">
+  <meta name="color-scheme" content="light dark">
+  <meta property="og:title" content="Roux – Wraparound Care Management">
+  <meta property="og:description" content="A warm, modern platform for UK breakfast clubs, after-school clubs, and holiday programmes.">
+  <meta property="og:type" content="website">
   <link rel="stylesheet" href="assets/style.css">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍲</text></svg>">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%233d8b72'/><text x='50' y='68' text-anchor='middle' font-size='52' fill='white' font-family='sans-serif'>R</text></svg>">
+  <script src="assets/theme.js" defer></script>
 </head>
 <body>
-  <header class="container">
-    <nav>
-      <ul><li><strong>Roux</strong></li></ul>
-      <ul>
-        <li><a href="#features">Features</a></li>
-        <li><a href="#franchise">Franchise</a></li>
-        <li><a href="#compliance">Ofsted</a></li>
-        <li><a href="https://github.com/kurtisrogers/Roux" target="_blank" rel="noopener">GitHub</a></li>
-        <li><a href="#get-started" role="button">Get Started</a></li>
-      </ul>
-    </nav>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <header class="site-header">
+    <div class="container">
+      <a class="brand" href="#" aria-label="Roux home">
+        <span class="brand-mark" aria-hidden="true">R</span>
+        <span>Roux</span>
+      </a>
+
+      <div class="header-actions">
+        <button
+          type="button"
+          class="icon-button"
+          id="theme-toggle"
+          aria-pressed="false"
+          aria-label="Switch to dark mode"
+        >
+          <span class="theme-icon-light" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <circle cx="12" cy="12" r="4"></circle>
+              <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path>
+            </svg>
+          </span>
+          <span class="theme-icon-dark" hidden aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <path d="M21 12.8A9 9 0 1111.2 3a7 7 0 109.8 9.8z"></path>
+            </svg>
+          </span>
+        </button>
+
+        <button
+          type="button"
+          class="icon-button nav-toggle"
+          id="nav-toggle"
+          aria-expanded="false"
+          aria-controls="site-nav"
+          aria-label="Open navigation menu"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <path d="M4 7h16M4 12h16M4 17h16"></path>
+          </svg>
+        </button>
+
+        <nav class="site-nav" id="site-nav" aria-label="Primary">
+          <ul>
+            <li><a href="#features">Features</a></li>
+            <li><a href="#franchise">Franchise</a></li>
+            <li><a href="#compliance">Ofsted</a></li>
+            <li>
+              <a href="https://github.com/kurtisrogers/Roux" target="_blank" rel="noopener noreferrer">
+                GitHub<span class="sr-only"> (opens in new tab)</span>
+              </a>
+            </li>
+            <li><a class="button button-primary" href="#get-started">Get started</a></li>
+          </ul>
+        </nav>
+      </div>
+    </div>
   </header>
 
-  <main>
-    <section class="hero container">
-      <h1>Wraparound care,<br>beautifully managed</h1>
-      <p class="lead">
-        Roux helps UK breakfast clubs, after-school clubs, and holiday programmes
-        run bookings, payments, Ofsted compliance, and parent-facing websites — all in one platform.
-      </p>
-      <div class="cta-row">
-        <a href="https://github.com/kurtisrogers/Roux" role="button">View on GitHub</a>
-        <a href="#features" role="button" class="outline">Explore features</a>
+  <main id="main-content">
+    <section class="hero" aria-labelledby="hero-heading">
+      <div class="hero-blobs" aria-hidden="true">
+        <span class="blob blob-1"></span>
+        <span class="blob blob-2"></span>
+        <span class="blob blob-3"></span>
+      </div>
+
+      <div class="container hero-grid">
+        <div>
+          <p class="eyebrow">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M12 2a5 5 0 0 1 5 5v1h1a4 4 0 0 1 4 4v2a4 4 0 0 1-4 4h-1.2A6 6 0 0 1 6.2 18H5a4 4 0 0 1-4-4v-2a4 4 0 0 1 4-4h1V7a5 5 0 0 1 5-5zm-2 7a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"></path>
+            </svg>
+            UK wraparound care platform
+          </p>
+          <h1 id="hero-heading">Caring for children.<br>Clarity for your team.</h1>
+          <p class="lead">
+            Roux helps breakfast clubs, after-school clubs, and holiday programmes
+            manage bookings, parent payments, Ofsted compliance, and beautiful websites —
+            with the warmth parents expect and the control staff need.
+          </p>
+          <div class="cta-row">
+            <a class="button button-primary" href="https://github.com/kurtisrogers/Roux">View on GitHub</a>
+            <a class="button button-secondary" href="#features">Explore features</a>
+          </div>
+          <ul class="trust-row" aria-label="Platform highlights">
+            <li>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M9 12l2 2 4-4m5 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+              Ofsted-ready
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 4.5C7 4.5 2.7 7.6 1 12c1.7 4.4 6 7.5 11 7.5s9.3-3.1 11-7.5C21.3 7.6 17 4.5 12 4.5zm0 12a4.5 4.5 0 110-9 4.5 4.5 0 010 9z"></path></svg>
+              Parent-friendly
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4 6h16v12H4V6zm2 2v8h12V8H6zm2 2h8v2H8v-2z"></path></svg>
+              Franchise-ready
+            </li>
+          </ul>
+        </div>
+
+        <aside class="hero-card" aria-labelledby="today-sessions-heading">
+          <h2 id="today-sessions-heading">Today at Oakwood Club</h2>
+          <ul class="schedule-list">
+            <li class="schedule-item">
+              <span class="schedule-icon" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 3M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+              </span>
+              <div>
+                <strong>Breakfast Club</strong>
+                <span>07:30 · 18 children checked in</span>
+              </div>
+              <span class="status-pill">Live</span>
+            </li>
+            <li class="schedule-item">
+              <span class="schedule-icon" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 20h5v-2a4 4 0 00-5-3.87M9 20H4v-2a4 4 0 015-3.87M16 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+              </span>
+              <div>
+                <strong>After School Club</strong>
+                <span>15:15 · Ratios compliant</span>
+              </div>
+              <span class="status-pill">Ready</span>
+            </li>
+            <li class="schedule-item">
+              <span class="schedule-icon" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8c-1.7 0-3 1.3-3 3v1H7a2 2 0 00-2 2v5a2 2 0 002 2h10a2 2 0 002-2v-5a2 2 0 00-2-2h-2v-1c0-1.7-1.3-3-3-3z"></path></svg>
+              </span>
+              <div>
+                <strong>Parent payments</strong>
+                <span>12 bookings confirmed today</span>
+              </div>
+              <span class="status-pill">Paid</span>
+            </li>
+          </ul>
+        </aside>
       </div>
     </section>
 
-    <section id="features" class="container">
-      <h2>Everything you need to compete with legacy SaaS</h2>
-      <div class="grid">
-        <article>
-          <h3>📅 Operations Dashboard</h3>
-          <p>Sessions, bookings, check-in/out, multi-site management, and role-based access for your whole team.</p>
-        </article>
-        <article>
-          <h3>🌐 CMS Website Builder</h3>
-          <p>Drag-and-drop page builder with visual editors. Parents book and pay online from your branded site.</p>
-        </article>
-        <article>
-          <h3>💳 Stripe & Xero</h3>
-          <p>Session payments via Stripe Checkout. Automatic invoice sync to Xero for painless accounting.</p>
-        </article>
-        <article>
-          <h3>📋 Ofsted Compliance</h3>
-          <p>Incident logging, UK EYFS staff:child ratio checks, monthly reports, and CSV exports.</p>
-        </article>
-        <article>
-          <h3>📱 Mobile API</h3>
-          <p>JWT-authenticated REST API for iOS and Android apps. Children, sessions, bookings — all covered.</p>
-        </article>
-        <article>
-          <h3>✉️ Parent Notifications</h3>
-          <p>Automatic emails for bookings, payments, check-in, and check-out. Staff session reminders too.</p>
-        </article>
+    <section id="features" class="section" aria-labelledby="features-heading">
+      <div class="container">
+        <div class="section-header">
+          <h2 id="features-heading">Built for busy clubs, trusted by families</h2>
+          <p>Everything you need to run safe, organised wraparound care — without the clutter of legacy childcare software.</p>
+        </div>
+
+        <div class="feature-grid">
+          <article class="feature-card">
+            <div class="feature-icon" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M16 2v4M8 2v4M3 10h18"></path></svg>
+            </div>
+            <h3>Operations dashboard</h3>
+            <p>Sessions, bookings, check-in/out, multi-site management, and role-based access for your whole team.</p>
+          </article>
+
+          <article class="feature-card">
+            <div class="feature-icon" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5h16v14H4z"></path><path d="M4 9h16M9 15h6"></path></svg>
+            </div>
+            <h3>CMS website builder</h3>
+            <p>Drag-and-drop pages with visual editors. Parents book and pay from your branded, welcoming site.</p>
+          </article>
+
+          <article class="feature-card">
+            <div class="feature-icon" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"></rect><path d="M2 10h20"></path></svg>
+            </div>
+            <h3>Stripe &amp; Xero</h3>
+            <p>Session payments via Stripe Checkout with automatic invoice sync to Xero for painless accounting.</p>
+          </article>
+
+          <article class="feature-card">
+            <div class="feature-icon" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"></path><rect x="9" y="3" width="6" height="4" rx="1"></rect></svg>
+            </div>
+            <h3>Ofsted compliance</h3>
+            <p>Incident logging, UK EYFS staff:child ratio checks, monthly reports, and CSV exports.</p>
+          </article>
+
+          <article class="feature-card">
+            <div class="feature-icon" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="7" y="2" width="10" height="20" rx="2"></rect><path d="M11 18h2"></path></svg>
+            </div>
+            <h3>Mobile API</h3>
+            <p>JWT-authenticated REST API for iOS and Android apps — children, sessions, and bookings covered.</p>
+          </article>
+
+          <article class="feature-card">
+            <div class="feature-icon" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16v12H4z"></path><path d="M4 8l8 5 8-5"></path></svg>
+            </div>
+            <h3>Parent notifications</h3>
+            <p>Automatic emails for bookings, payments, check-in, and check-out — plus staff session reminders.</p>
+          </article>
+        </div>
       </div>
     </section>
 
-    <section id="franchise" class="container highlight">
-      <h2>Run your own wraparound business</h2>
-      <p>
-        Become a Roux franchise partner — each partner gets an isolated database, branded website,
-        and their own Stripe &amp; Xero integrations. Apply online and track your application from
-        Pending → Under Review → Partner.
-      </p>
-      <a href="/franchise/apply/" role="button">Apply to become a partner</a>
+    <section id="franchise" class="section" aria-labelledby="franchise-heading">
+      <div class="container">
+        <div class="highlight-panel accent">
+          <div>
+            <h2 id="franchise-heading">Grow your own wraparound business</h2>
+            <p>
+              Become a Roux franchise partner. Each partner receives an isolated database,
+              branded website, and their own Stripe and Xero integrations.
+            </p>
+            <ol class="status-flow" aria-label="Application status journey">
+              <li>Pending</li>
+              <li>Under Review</li>
+              <li>Partner</li>
+            </ol>
+            <a class="button button-primary" href="https://app.roux.care/franchise/apply/">Apply to become a partner</a>
+          </div>
+          <div class="compliance-grid" aria-label="Franchise benefits">
+            <div class="compliance-item">
+              <strong>Isolated data</strong>
+              <span>Separate database per partner</span>
+            </div>
+            <div class="compliance-item">
+              <strong>Your brand</strong>
+              <span>Custom domain and website</span>
+            </div>
+            <div class="compliance-item">
+              <strong>Your finances</strong>
+              <span>Own Stripe &amp; Xero accounts</span>
+            </div>
+            <div class="compliance-item">
+              <strong>Guided onboarding</strong>
+              <span>Application emails at every step</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
 
-    <section id="compliance" class="container highlight">
-      <h2>Built for UK regulation</h2>
-      <p>
-        Statutory staff:child ratios, Ofsted-notifiable incident tracking, emergency contact management,
-        allergy and medical notes — Roux is designed for the realities of UK wraparound care.
-      </p>
+    <section id="compliance" class="section" aria-labelledby="compliance-heading">
+      <div class="container">
+        <div class="highlight-panel">
+          <div>
+            <h2 id="compliance-heading">Designed for UK regulation</h2>
+            <p>
+              Statutory staff:child ratios, Ofsted-notifiable incident tracking, emergency contacts,
+              allergy and medical notes — Roux reflects the realities of professional childcare.
+            </p>
+          </div>
+          <div class="compliance-grid">
+            <div class="compliance-item">
+              <strong>Ratio checks</strong>
+              <span>Live EYFS compliance per session</span>
+            </div>
+            <div class="compliance-item">
+              <strong>Incident logs</strong>
+              <span>Safeguarding-ready records</span>
+            </div>
+            <div class="compliance-item">
+              <strong>Medical notes</strong>
+              <span>Allergies &amp; emergency contacts</span>
+            </div>
+            <div class="compliance-item">
+              <strong>CSV exports</strong>
+              <span>Reports for inspections</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
 
-    <section class="container tech">
-      <h2>Modern, extensible stack</h2>
-      <p>Django · Pico CSS · HTMX · Alpine.js · Playwright · SST on AWS</p>
+    <section class="section" aria-labelledby="tech-heading">
+      <div class="container tech-strip">
+        <h2 id="tech-heading" class="sr-only">Technology stack</h2>
+        <p>Modern, extensible stack: Django · HTMX · Alpine.js · Playwright · SST on AWS</p>
+      </div>
     </section>
 
-    <section id="get-started" class="container">
-      <h2>Get started in minutes</h2>
-      <pre><code>git clone https://github.com/kurtisrogers/Roux.git
+    <section id="get-started" class="section" aria-labelledby="get-started-heading">
+      <div class="container">
+        <div class="section-header">
+          <h2 id="get-started-heading">Get started in minutes</h2>
+          <p>Clone the repo, seed demo data, and explore the dashboard and parent booking flow locally.</p>
+        </div>
+        <div class="code-block" role="region" aria-label="Installation commands">
+          <code>git clone https://github.com/kurtisrogers/Roux.git
 cd Roux
 pip install -r requirements.txt -r requirements-dev.txt
 python manage.py migrate && python manage.py seed_demo
-python manage.py runserver</code></pre>
-      <p>Demo logins: <code>admin</code> / <code>admin123</code> · <code>parent1</code> / <code>parent123</code></p>
+python manage.py runserver</code>
+        </div>
+        <p class="demo-logins">
+          Demo logins:
+          <code>admin</code> / <code>admin123</code> ·
+          <code>superadmin</code> / <code>super123</code> ·
+          <code>parent1</code> / <code>parent123</code>
+        </p>
+      </div>
     </section>
   </main>
 
-  <footer class="container">
-    <small>© 2026 Roux · Open source wraparound care platform · <a href="https://github.com/kurtisrogers/Roux">GitHub</a></small>
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <p><small>© 2026 Roux · Open source wraparound care platform</small></p>
+      <ul class="footer-links" aria-label="Footer">
+        <li><a href="https://github.com/kurtisrogers/Roux">GitHub</a></li>
+        <li><a href="https://app.roux.care/franchise/apply/">Franchise apply</a></li>
+        <li><a href="#features">Features</a></li>
+        <li><a href="#main-content">Back to top</a></li>
+      </ul>
+    </div>
   </footer>
 </body>
 </html>
