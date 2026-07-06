@@ -1,0 +1,21 @@
+{% extends "base/dashboard.html" %}
+{% block page_title %}{{ franchise.name }}{% endblock %}
+{% block content %}
+<h1>{{ franchise.name }}</h1>
+<div class="grid">
+  <article>
+    <h2>Details</h2>
+    <p><strong>Slug:</strong> {{ franchise.slug }}</p>
+    <p><strong>Status:</strong> {{ franchise.get_status_display }}</p>
+    <p><strong>Database:</strong> <code>{{ franchise.database_alias }}</code></p>
+    <p><strong>Domain:</strong> {% if primary_domain %}<a href="http://{{ primary_domain.hostname }}:8000/" target="_blank">{{ primary_domain.hostname }} ↗</a>{% else %}—{% endif %}</p>
+    <p><strong>Stripe webhook:</strong> <code>/dashboard/webhooks/stripe/{{ franchise.slug }}/</code></p>
+  </article>
+  <article>
+    <h2>Integrations</h2>
+    <p>Stripe: {% if franchise.stripe_secret_key %}configured{% else %}not set{% endif %}</p>
+    <p>Xero: {% if franchise.xero_client_id %}configured{% else %}not set{% endif %}</p>
+    <a href="{% url 'dashboard:franchise_integrations' franchise.pk %}" role="button">Edit Integrations</a>
+  </article>
+</div>
+{% endblock %}

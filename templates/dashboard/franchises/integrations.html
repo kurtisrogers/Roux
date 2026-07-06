@@ -1,0 +1,12 @@
+{% extends "base/dashboard.html" %}
+{% block page_title %}Integrations – {{ franchise.name }}{% endblock %}
+{% block content %}
+<h1>Integrations: {{ franchise.name }}</h1>
+<p>Each franchise uses its own Stripe and Xero accounts, fully isolated from other franchises.</p>
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Save</button>
+  <a href="{% url 'dashboard:franchise_detail' franchise.pk %}" role="button" class="secondary">Back</a>
+</form>
+{% endblock %}

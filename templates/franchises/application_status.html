@@ -1,0 +1,29 @@
+{% extends "base/base.html" %}
+{% block title %}Application status{% endblock %}
+{% block body %}
+<main class="container">
+  <article>
+    <header>
+      <h1>{{ application.business_name }}</h1>
+      <p>Application reference: <code>{{ application.reference }}</code></p>
+    </header>
+    <p>
+      <strong>Status:</strong>
+      {% if application.status == 'pending' %}
+        <mark>Pending</mark> — we've received your application
+      {% elif application.status == 'under_review' %}
+        <mark>Under Review</mark> — our partnerships team is reviewing your details
+      {% elif application.status == 'partner' %}
+        <mark>Partner</mark> — welcome! Your franchise environment is ready
+      {% elif application.status == 'rejected' %}
+        <mark>Not proceeding</mark> — thank you for your interest
+      {% endif %}
+    </p>
+    {% if application.franchise %}
+      <p>Your franchise portal: {% with d=application.franchise.domains.first %}<a href="http://{{ d.hostname }}:8000/">{{ d.hostname }}</a>{% endwith %}</p>
+    {% endif %}
+    <p>Submitted {{ application.created_at|date:"j F Y" }}. Questions? Reply to your confirmation email.</p>
+    <p><a href="{% url 'franchises:apply' %}">Submit another application</a></p>
+  </article>
+</main>
+{% endblock %}

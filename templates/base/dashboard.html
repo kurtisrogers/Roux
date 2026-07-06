@@ -17,6 +17,15 @@
         <li><a href="{% url 'dashboard:site_list' %}">Sites</a></li>
         <li><a href="{% url 'dashboard:user_list' %}">Users</a></li>
       </ul>
+      {% if user.role == 'super_admin' %}
+      <details open>
+        <summary>Platform</summary>
+        <ul>
+          <li><a href="{% url 'dashboard:franchise_list' %}">Franchises</a></li>
+          <li><a href="{% url 'dashboard:franchise_application_list' %}">Applications</a></li>
+        </ul>
+      </details>
+      {% endif %}
       <details open>
         <summary>Website</summary>
         <ul>

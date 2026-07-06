@@ -1,0 +1,33 @@
+{% extends "base/dashboard.html" %}
+{% block page_title %}Application — {{ application.business_name }}{% endblock %}
+{% block content %}
+<hgroup>
+  <h1>{{ application.business_name }}</h1>
+  <p>Reference <code>{{ application.reference }}</code> · {{ application.get_status_display }}</p>
+</hgroup>
+<article>
+  <header><strong>Applicant details</strong></header>
+  <dl>
+    <dt>Name</dt><dd>{{ application.applicant_name }}</dd>
+    <dt>Email</dt><dd>{{ application.email }}</dd>
+    <dt>Phone</dt><dd>{{ application.phone|default:"—" }}</dd>
+    <dt>Region</dt><dd>{{ application.region|default:"—" }}</dd>
+    <dt>Experience</dt><dd>{{ application.experience_years|default:"—" }} years</dd>
+    <dt>Proposed slug</dt><dd><code>{{ application.proposed_slug }}</code></dd>
+    <dt>Message</dt><dd>{{ application.message|linebreaksbr|default:"—" }}</dd>
+  </dl>
+</article>
+{% if application.franchise %}
+<p>Provisioned franchise: <a href="{% url 'dashboard:franchise_detail' application.franchise.pk %}">{{ application.franchise.name }}</a></p>
+{% endif %}
+<article>
+  <header><strong>Update status</strong></header>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Save</button>
+  </form>
+  <p><small>Pending → Under Review sends a review email. Partner provisions the franchise and sends welcome credentials. Rejected sends a polite decline email.</small></p>
+</article>
+<p><a href="{% url 'franchises:application_status' application.reference %}" target="_blank">Applicant status page ↗</a></p>
+{% endblock %}

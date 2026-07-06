@@ -1,0 +1,9 @@
+Hello {{ application.applicant_name }},
+
+Good news — your Roux franchise application for {{ application.business_name }} is now Under Review.
+
+Our partnerships team is reviewing your details. We'll be in touch soon with next steps.
+
+Reference: {{ application.reference }}
+
+Roux Partnerships Team

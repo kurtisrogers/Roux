@@ -8,6 +8,8 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
+from public_site.booking_access import booking_for_request
+
 
 def home(request):
     organisation = request.organisation
@@ -67,7 +69,9 @@ def book_session(request, pk):
 
     if request.method == "POST":
         child_id = request.POST.get("child")
-        child = get_object_or_404(Child, pk=child_id, parent=request.user)
+        child = get_object_or_404(
+            Child, pk=child_id, parent=request.user, organisation=organisation
+        )
         if session.is_full:
             messages.error(request, "This session is full.")
             return redirect("public:session_list")
@@ -97,8 +101,9 @@ def book_session(request, pk):
 
 @login_required
 def my_bookings(request):
+    organisation = request.organisation
     bookings = (
-        Booking.objects.filter(booked_by=request.user)
+        Booking.objects.filter(booked_by=request.user, session__organisation=organisation)
         .select_related("child", "session", "session__session_type", "session__site")
         .order_by("-session__date")
     )
@@ -123,12 +128,13 @@ def add_child(request):
 
 
 def booking_success(request, pk):
-    booking = get_object_or_404(Booking, pk=pk)
+    booking = booking_for_request(request, pk)
     return render(request, "public/booking_success.html", {"booking": booking})
 
 
+@login_required
 def booking_cancel(request, pk):
-    booking = get_object_or_404(Booking, pk=pk)
+    booking = booking_for_request(request, pk, require_owner=True)
     booking.status = Booking.Status.CANCELLED
     booking.save(update_fields=["status"])
     messages.info(request, "Booking cancelled.")

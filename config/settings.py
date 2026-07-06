@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "notifications",
     "ofsted",
     "api",
+    "franchises",
     "dashboard",
     "public_site",
 ]
@@ -59,8 +60,11 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django_htmx.middleware.HtmxMiddleware",
+    "franchises.middleware.FranchiseMiddleware",
     "public_site.middleware.OrganisationMiddleware",
 ]
+
+DATABASE_ROUTERS = ["franchises.db.FranchiseRouter"]
 
 ROOT_URLCONF = "config.urls"
 
@@ -177,6 +181,9 @@ XERO_SCOPES = [
 
 # Roux platform defaults
 DEFAULT_ORGANISATION_SLUG = os.getenv("DEFAULT_ORGANISATION_SLUG", "demo-club")
+PLATFORM_ADMIN_EMAIL = os.getenv("PLATFORM_ADMIN_EMAIL", "")
+FRANCHISE_BASE_DOMAIN = os.getenv("FRANCHISE_BASE_DOMAIN", "localhost")
+FRANCHISE_DATABASE_URL_TEMPLATE = os.getenv("FRANCHISE_DATABASE_URL_TEMPLATE", "")
 
 # Email
 EMAIL_BACKEND = os.getenv(

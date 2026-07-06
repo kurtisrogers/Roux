@@ -4,13 +4,19 @@ from organisations.models import Organisation
 
 
 def _get_organisation(request):
-    slug = request.GET.get("org") or getattr(settings, "DEFAULT_ORGANISATION_SLUG", "demo-club")
+    franchise = getattr(request, "franchise", None)
     host = request.get_host().split(":")[0]
-
-    # Subdomain routing: {slug}.roux.app
     parts = host.split(".")
-    if len(parts) > 2 and parts[0] not in ("www", "localhost", "127"):
-        slug = parts[0]
+
+    slug = request.GET.get("org")
+    if not slug:
+        if franchise and len(parts) >= 3:
+            # {org}.{franchise}.localhost
+            slug = parts[0]
+        elif not franchise and len(parts) > 2 and parts[0] not in ("www", "localhost", "127"):
+            slug = parts[0]
+        else:
+            slug = getattr(settings, "DEFAULT_ORGANISATION_SLUG", "demo-club")
 
     try:
         return Organisation.objects.select_related("site_settings").get(slug=slug, is_active=True)

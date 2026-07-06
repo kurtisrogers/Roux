@@ -15,6 +15,13 @@ def resolve_organisation(request, organisation=None):
 
             return Organisation.objects.filter(pk=org_id).first()
         return getattr(request, "organisation", None)
+    if request.user.role == User.Role.FRANCHISE_ADMIN:
+        org_id = request.GET.get("org")
+        if org_id:
+            from organisations.models import Organisation
+
+            return Organisation.objects.filter(pk=org_id).first()
+        return Organisation.objects.filter(is_active=True).first()
     return get_user_organisation(request.user)
 
 

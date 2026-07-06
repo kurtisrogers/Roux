@@ -57,6 +57,15 @@ Roux is a Django SaaS platform for UK wraparound care providers (breakfast clubs
 - **Stripe:** Checkout for session payments; subscription billing for organisations; webhook handling
 - **Xero:** OAuth2 connect; automatic invoice creation on successful payments
 
+### Franchises (multi-tenant)
+- Each franchise is an isolated wraparound business with its own database
+- Per-franchise Stripe and Xero credentials (separate merchant accounts)
+- Hostname routing: `{slug}.localhost` in dev, custom domains in production
+- Super Admin dashboard to provision and manage franchises
+- Franchise Admin role for franchisor-level oversight within a tenant
+- **Partner application journey** at `/franchise/apply/` with statuses: Pending → Under Review → Partner
+- Automated confirmation and status-update emails for applicants
+
 ## Quick Start
 
 ```bash
@@ -77,6 +86,29 @@ python manage.py runserver
 ```
 
 Visit http://localhost:8000 for the public site and http://localhost:8000/dashboard/ for the admin dashboard.
+
+### Provision a franchise
+
+Each franchise gets an isolated SQLite database in dev (PostgreSQL URL in production):
+
+```bash
+python manage.py provision_franchise "Acme Care" --slug acme --hostname acme.localhost
+```
+
+Then visit http://acme.localhost:8000/ (add `acme.localhost` to `/etc/hosts` if needed, or use the hostname from the command).
+
+Franchise Stripe webhooks: `POST /dashboard/webhooks/stripe/<franchise_slug>/`
+
+Super Admins can also create franchises from **Dashboard → Franchises**.
+
+### Apply as a franchise partner
+
+Prospective partners can start at `/franchise/apply/` — a guided signup that creates an application with **Pending** status. Super Admins review applications at **Dashboard → Franchise Applications** and move them through **Under Review** and **Partner** (which provisions the isolated environment and emails login credentials).
+
+```bash
+# Optional: set platform alert email in .env
+PLATFORM_ADMIN_EMAIL=partnerships@yourcompany.example
+```
 
 ### Demo Credentials
 
@@ -143,6 +175,7 @@ roux/
 ├── notifications/     # Email notifications and signals
 ├── ofsted/            # Incident logging, ratio checks, reports
 ├── api/               # REST API for mobile apps
+├── franchises/        # Multi-franchise control plane, DB routing, provisioning
 ├── dashboard/         # Staff/admin dashboard views
 ├── public_site/       # Customer-facing website
 ├── config/            # Django settings and URLs
@@ -154,7 +187,8 @@ roux/
 
 | Role              | Access                                              |
 |-------------------|-----------------------------------------------------|
-| Super Admin       | All organisations (platform operator)               |
+| Super Admin       | All organisations, franchise provisioning (platform)  |
+| Franchise Admin   | All organisations within their franchise tenant     |
 | Organisation Admin| Full org management, CMS, billing, users            |
 | Site Manager      | Sessions, children, bookings, CMS                   |
 | Staff             | Session management, check-in/out                    |

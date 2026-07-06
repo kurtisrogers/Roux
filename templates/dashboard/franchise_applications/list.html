@@ -1,0 +1,38 @@
+{% extends "base/dashboard.html" %}
+{% block page_title %}Franchise Applications{% endblock %}
+{% block content %}
+<hgroup>
+  <h1>Franchise Applications</h1>
+  <a href="{% url 'franchises:apply' %}" target="_blank" role="button" class="outline">Public apply page ↗</a>
+</hgroup>
+<form method="get" class="grid">
+  <label>
+    Filter by status
+    <select name="status" onchange="this.form.submit()">
+      <option value="">All</option>
+      {% for value, label in status_choices %}
+        <option value="{{ value }}" {% if status_filter == value %}selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
+  </label>
+</form>
+<table>
+  <thead>
+    <tr><th>Business</th><th>Applicant</th><th>Status</th><th>Region</th><th>Submitted</th><th></th></tr>
+  </thead>
+  <tbody>
+    {% for app in applications %}
+    <tr>
+      <td>{{ app.business_name }}</td>
+      <td>{{ app.applicant_name }}<br><small>{{ app.email }}</small></td>
+      <td>{{ app.get_status_display }}</td>
+      <td>{{ app.region|default:"—" }}</td>
+      <td>{{ app.created_at|date:"j M Y" }}</td>
+      <td><a href="{% url 'dashboard:franchise_application_detail' app.pk %}">Review</a></td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="6">No applications yet.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

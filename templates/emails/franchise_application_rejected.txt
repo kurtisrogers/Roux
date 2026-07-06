@@ -1,0 +1,11 @@
+Hello {{ application.applicant_name }},
+
+Thank you for your interest in becoming a Roux franchise partner for {{ application.business_name }}.
+
+After careful review we're unable to proceed with your application at this time.
+
+{% if application.admin_notes %}Note: {{ application.admin_notes }}{% endif %}
+
+We appreciate you taking the time to apply and wish you every success.
+
+Roux Partnerships Team
