@@ -2,7 +2,6 @@ from datetime import date, time, timedelta
 
 import pytest
 from django.core.exceptions import ValidationError
-from tests.factories import OrganisationFactory, SessionTypeFactory, SiteFactory
 
 from programme.models import Activity, Programme, ScheduleEvent, WeekPack, WeekPackBlock
 from programme.services import (
@@ -11,6 +10,7 @@ from programme.services import (
     resolve_programme,
     week_pack_for_date,
 )
+from tests.factories import OrganisationFactory, SessionTypeFactory, SiteFactory
 
 
 @pytest.mark.django_db

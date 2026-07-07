@@ -1,6 +1,8 @@
 from datetime import date, time
 
 import pytest
+
+from bookings.models import Booking, Session
 from tests.factories import (
     ChildFactory,
     OrganisationFactory,
@@ -8,8 +10,6 @@ from tests.factories import (
     SiteFactory,
     UserFactory,
 )
-
-from bookings.models import Booking, Session
 
 
 @pytest.mark.django_db

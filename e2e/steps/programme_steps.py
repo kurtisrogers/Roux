@@ -88,6 +88,7 @@ def replace_day_with_trip(page: Page):
     page.get_by_label("Label").fill("Coach trip")
     page.get_by_role("button", name="Save").click()
 
+
 @when("I start creating a new programme")
 def start_new_programme(page: Page):
     page.get_by_role("button", name="New programme").click()

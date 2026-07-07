@@ -369,10 +369,14 @@ class Command(BaseCommand):
 
         for weekday in range(0, 5):
             _ensure_block(week_a, weekday, 15, 15, 15, 30, snack, 0)
-            _ensure_block(week_a, weekday, 15, 30, 16, 15, football if weekday % 2 == 0 else crafts, 1)
+            _ensure_block(
+                week_a, weekday, 15, 30, 16, 15, football if weekday % 2 == 0 else crafts, 1
+            )
             _ensure_block(week_a, weekday, 16, 15, 17, 0, homework, 2)
             _ensure_block(week_b, weekday, 15, 15, 15, 30, snack, 0)
-            _ensure_block(week_b, weekday, 15, 30, 16, 15, crafts if weekday % 2 == 0 else football, 1)
+            _ensure_block(
+                week_b, weekday, 15, 30, 16, 15, crafts if weekday % 2 == 0 else football, 1
+            )
             _ensure_block(week_b, weekday, 16, 15, 17, 0, homework, 2)
 
         term_end = today + timedelta(days=90)

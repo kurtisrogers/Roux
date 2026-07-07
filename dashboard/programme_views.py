@@ -123,9 +123,7 @@ def week_pack_detail(request, pk):
     blocks = pack.blocks.select_related("activity").all()
     weekday_columns = []
     for day_value, day_label in WeekPackBlock._meta.get_field("weekday").choices:
-        weekday_columns.append(
-            (day_label, [b for b in blocks if b.weekday == day_value])
-        )
+        weekday_columns.append((day_label, [b for b in blocks if b.weekday == day_value]))
     return render(
         request,
         "dashboard/programme/week_pack_detail.html",
@@ -187,7 +185,9 @@ def programme_create(request):
     org = _org_or_403(request)
     form = ProgrammeForm(request.POST or None)
     form.fields["site"].queryset = Site.objects.filter(organisation=org)
-    form.fields["session_type"].queryset = SessionType.objects.filter(organisation=org, is_active=True)
+    form.fields["session_type"].queryset = SessionType.objects.filter(
+        organisation=org, is_active=True
+    )
     form.fields["week_a_pack"].queryset = WeekPack.objects.filter(organisation=org, is_active=True)
     form.fields["week_b_pack"].queryset = WeekPack.objects.filter(organisation=org, is_active=True)
     if request.method == "POST" and form.is_valid():
@@ -273,7 +273,9 @@ def programme_calendar(request, pk):
                     "date": day,
                     "in_month": day.month == month,
                     "in_range": in_range,
-                    "week_label": week_label_for_date(programme, day) if in_range and blocks is not None else "",
+                    "week_label": week_label_for_date(programme, day)
+                    if in_range and blocks is not None
+                    else "",
                     "closed": in_range and blocks is None,
                     "has_override": bool(singles),
                 }

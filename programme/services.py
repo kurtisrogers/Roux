@@ -31,7 +31,9 @@ class ResolvedBlock:
         return "Break"
 
 
-def week_pack_for_date(programme: Programme, target: date) -> tuple[WeekPack, Literal["week_a", "week_b"]]:
+def week_pack_for_date(
+    programme: Programme, target: date
+) -> tuple[WeekPack, Literal["week_a", "week_b"]]:
     weeks_since_anchor = (target - programme.anchor_date).days // 7
     is_anchor_week = weeks_since_anchor % 2 == 0
     use_a = is_anchor_week if programme.first_week == Programme.FirstWeek.A else not is_anchor_week
@@ -56,9 +58,7 @@ def _closure_matches(
     if event.site_id and site_id and event.site_id != site_id:
         return False
     return not (
-        event.session_type_id
-        and session_type_id
-        and event.session_type_id != session_type_id
+        event.session_type_id and session_type_id and event.session_type_id != session_type_id
     )
 
 
@@ -85,7 +85,9 @@ def is_date_closed(
     return False
 
 
-def _block_from_week_pack_block(block: WeekPackBlock, source: Literal["week_a", "week_b"]) -> ResolvedBlock:
+def _block_from_week_pack_block(
+    block: WeekPackBlock, source: Literal["week_a", "week_b"]
+) -> ResolvedBlock:
     return ResolvedBlock(
         start_time=block.start_time,
         end_time=block.end_time,
@@ -157,8 +159,12 @@ def resolve_programme(programme: Programme, target: date) -> list[ResolvedBlock]
     for base in base_blocks:
         overlapped = False
         for single in singles:
-            if single.start_time and single.end_time and _times_overlap(
-                base.start_time, base.end_time, single.start_time, single.end_time
+            if (
+                single.start_time
+                and single.end_time
+                and _times_overlap(
+                    base.start_time, base.end_time, single.start_time, single.end_time
+                )
             ):
                 overlapped = True
                 break
@@ -232,6 +238,7 @@ def publish_programme(programme: Programme) -> Programme:
     programme.full_clean()
     programme.save(update_fields=["status", "published_at", "updated_at"])
     return programme
+
 
 def duplicate_week_pack(source: WeekPack, new_name: str) -> WeekPack:
     duplicate = WeekPack.objects.create(
