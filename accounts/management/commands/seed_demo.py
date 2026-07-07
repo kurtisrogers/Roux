@@ -6,6 +6,7 @@ from django.core.management.base import BaseCommand
 from django.utils import timezone
 from operations.models import AuthorisedCollector, ChildcareVoucher, RecurringBooking
 from organisations.models import Organisation, Site, TermDate
+from programme.models import Activity, Programme, WeekPack, WeekPackBlock
 
 from accounts.models import User
 
@@ -319,6 +320,75 @@ class Command(BaseCommand):
                 "child": child,
                 "provider": "Edenred",
                 "balance": "120.00",
+            },
+        )
+
+        snack, _ = Activity.objects.get_or_create(
+            organisation=org,
+            name="Snack time",
+            defaults={"category": Activity.Category.FOOD, "default_duration_minutes": 15},
+        )
+        football, _ = Activity.objects.get_or_create(
+            organisation=org,
+            name="Football",
+            defaults={"category": Activity.Category.SPORT, "default_duration_minutes": 45},
+        )
+        crafts, _ = Activity.objects.get_or_create(
+            organisation=org,
+            name="Arts & crafts",
+            defaults={"category": Activity.Category.CREATIVE, "default_duration_minutes": 45},
+        )
+        homework, _ = Activity.objects.get_or_create(
+            organisation=org,
+            name="Homework club",
+            defaults={"category": Activity.Category.QUIET, "default_duration_minutes": 30},
+        )
+
+        week_a, _ = WeekPack.objects.get_or_create(
+            organisation=org,
+            name="Week A",
+            defaults={"description": "Standard after-school rotation"},
+        )
+        week_b, _ = WeekPack.objects.get_or_create(
+            organisation=org,
+            name="Week B",
+            defaults={"description": "Alternate after-school rotation"},
+        )
+
+        def _ensure_block(pack, weekday, start_h, start_m, end_h, end_m, activity, order):
+            WeekPackBlock.objects.get_or_create(
+                week_pack=pack,
+                weekday=weekday,
+                start_time=time(start_h, start_m),
+                defaults={
+                    "end_time": time(end_h, end_m),
+                    "activity": activity,
+                    "sort_order": order,
+                },
+            )
+
+        for weekday in range(0, 5):
+            _ensure_block(week_a, weekday, 15, 15, 15, 30, snack, 0)
+            _ensure_block(week_a, weekday, 15, 30, 16, 15, football if weekday % 2 == 0 else crafts, 1)
+            _ensure_block(week_a, weekday, 16, 15, 17, 0, homework, 2)
+            _ensure_block(week_b, weekday, 15, 15, 15, 30, snack, 0)
+            _ensure_block(week_b, weekday, 15, 30, 16, 15, crafts if weekday % 2 == 0 else football, 1)
+            _ensure_block(week_b, weekday, 16, 15, 17, 0, homework, 2)
+
+        term_end = today + timedelta(days=90)
+        programme, _ = Programme.objects.get_or_create(
+            organisation=org,
+            site=site,
+            session_type=after_school,
+            name="Summer term after-school",
+            defaults={
+                "start_date": today,
+                "end_date": term_end,
+                "week_a_pack": week_a,
+                "week_b_pack": week_b,
+                "anchor_date": today,
+                "first_week": Programme.FirstWeek.A,
+                "status": Programme.Status.PUBLISHED,
             },
         )
 

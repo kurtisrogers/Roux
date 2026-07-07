@@ -1,0 +1,27 @@
+{% extends "dashboard/programme/_base.html" %}
+{% block programme_content %}
+<p><a href="{% url 'dashboard:programme_calendar' programme.pk %}">← Calendar</a> · {{ week_label }}</p>
+
+<h2>Resolved timetable</h2>
+{% if blocks %}
+<ul>
+  {% for block in blocks %}
+  <li>
+    {{ block.start_time|time:"H:i" }}–{{ block.end_time|time:"H:i" }}
+    <strong>{{ block.display_name }}</strong>
+    <small>({{ block.source }})</small>
+    {% if block.notes %}<br>{{ block.notes }}{% endif %}
+  </li>
+  {% endfor %}
+</ul>
+{% elif blocks is None %}
+<p><em>Closed — no activities scheduled.</em></p>
+{% else %}
+<p>No blocks for this day.</p>
+{% endif %}
+
+<article>
+  <h2>Override this day</h2>
+  <form method="post">{% csrf_token %}{{ form.as_p }}<button type="submit">Save</button></form>
+</article>
+{% endblock %}

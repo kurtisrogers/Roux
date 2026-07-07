@@ -59,6 +59,7 @@ from operations.services import (
     verify_collector_pin,
 )
 from organisations.models import Site
+from programme.services import find_published_programme, resolve_for_session, week_label_for_date
 
 from dashboard.mixins import dashboard_context
 from dashboard.views import _org_or_403
@@ -88,6 +89,16 @@ def session_register(request, pk):
     ratio = None
     with suppress(Exception):
         ratio = session.ratio_checks.order_by("-checked_at").first()
+    programme_blocks = resolve_for_session(session)
+    programme_week = None
+    prog = find_published_programme(
+        session.organisation,
+        session.date,
+        site_id=session.site_id,
+        session_type_id=session.session_type_id,
+    )
+    if prog:
+        programme_week = week_label_for_date(prog, session.date)
     return render(
         request,
         "dashboard/operations/register.html",
@@ -97,6 +108,8 @@ def session_register(request, pk):
             "rows": get_register_rows(session),
             "ratio": ratio,
             "is_closed": bool(session.register_closed_at),
+            "programme_blocks": programme_blocks,
+            "programme_week": programme_week,
         },
     )
 

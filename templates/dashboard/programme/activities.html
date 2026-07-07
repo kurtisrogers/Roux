@@ -1,0 +1,23 @@
+{% extends "dashboard/programme/_base.html" %}
+{% block programme_content %}
+<article>
+  <h2>Add activity</h2>
+  <form method="post">{% csrf_token %}{{ form.as_p }}<button type="submit">Save</button></form>
+</article>
+<table>
+  <thead><tr><th>Name</th><th>Category</th><th>Duration</th><th>Active</th><th></th></tr></thead>
+  <tbody>
+    {% for activity in activities %}
+    <tr>
+      <td>{{ activity.name }}</td>
+      <td>{{ activity.get_category_display }}</td>
+      <td>{{ activity.default_duration_minutes }} min</td>
+      <td>{{ activity.is_active|yesno:"Yes,No" }}</td>
+      <td><a href="{% url 'dashboard:activity_edit' activity.pk %}">Edit</a></td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="5">No activities yet. Add your catalogue above.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

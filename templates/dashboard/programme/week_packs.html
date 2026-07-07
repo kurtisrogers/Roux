@@ -1,0 +1,18 @@
+{% extends "dashboard/programme/_base.html" %}
+{% block programme_content %}
+<article>
+  <h2>New week pack</h2>
+  <form method="post">{% csrf_token %}{{ form.as_p }}<button type="submit">Create</button></form>
+</article>
+<ul>
+  {% for pack in packs %}
+  <li>
+    <a href="{% url 'dashboard:week_pack_detail' pack.pk %}"><strong>{{ pack.name }}</strong></a>
+    — {{ pack.blocks.count }} block{{ pack.blocks.count|pluralize }}
+  </li>
+  {% empty %}
+  <li>No week packs yet. Create Week A and Week B to get started.</li>
+  {% endfor %}
+</ul>
+<p><a href="{% url 'dashboard:programme_list' %}">Programmes</a></p>
+{% endblock %}

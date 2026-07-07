@@ -19,6 +19,7 @@ from django.views.decorators.http import require_POST
 from finance.models import XeroConnection, XeroInvoice
 from finance.services import xero_service
 from organisations.models import Organisation, Site
+from programme.services import resolve_for_session
 
 from dashboard.forms import (
     ChildForm,
@@ -198,7 +199,12 @@ def session_detail(request, pk):
     return render(
         request,
         "dashboard/sessions/detail.html",
-        {**dashboard_context(request, org), "session": session, "bookings": bookings},
+        {
+            **dashboard_context(request, org),
+            "session": session,
+            "bookings": bookings,
+            "programme_blocks": resolve_for_session(session),
+        },
     )
 
 

@@ -5,6 +5,17 @@
 <p>{{ session.date|date:"l j F Y" }} · {{ session.start_time|time:"H:i" }} – {{ session.end_time|time:"H:i" }}</p>
 <p>{{ session.site.name }} · £{{ session.session_type.price }}</p>
 
+{% if programme_blocks %}
+<article>
+  <h2>Planned activities</h2>
+  <ul>
+    {% for block in programme_blocks %}
+    <li>{{ block.start_time|time:"H:i" }}–{{ block.end_time|time:"H:i" }} {{ block.display_name }}</li>
+    {% endfor %}
+  </ul>
+</article>
+{% endif %}
+
 {% if children %}
 <form method="post">
   {% csrf_token %}
