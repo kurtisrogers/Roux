@@ -6,13 +6,6 @@ from accounts.models import User
 from billing.models import Payment
 from bookings.models import Booking, Session
 from django.utils import timezone
-from tests.factories import (
-    ChildFactory,
-    OrganisationFactory,
-    SessionTypeFactory,
-    SiteFactory,
-    UserFactory,
-)
 
 from operations.models import ChildcareVoucher, RecurringBooking, WaitlistEntry
 from operations.services import (
@@ -22,6 +15,13 @@ from operations.services import (
     calculate_discounted_price,
     get_register_rows,
     redeem_voucher,
+)
+from tests.factories import (
+    ChildFactory,
+    OrganisationFactory,
+    SessionTypeFactory,
+    SiteFactory,
+    UserFactory,
 )
 
 

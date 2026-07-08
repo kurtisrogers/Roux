@@ -1,7 +1,7 @@
 # Programme planner — design spec
 
-**Date:** 2026-07-07  
-**Status:** Draft — awaiting review  
+**Date:** 2026-07-07
+**Status:** Draft — awaiting review
 **Context:** Roux wraparound care platform (`bookings.Session` exists; no intraday timetable today)
 
 ## Problem
@@ -242,11 +242,11 @@ def week_pack_for_date(programme: Programme, target: date) -> WeekPack:
 
 ### Programme wizard
 
-1. Name + session type + site + date range  
-2. Select Week A pack, Week B pack  
-3. Confirm anchor (default: start date = Week A)  
-4. Review alternating preview (first 4 weeks)  
-5. Save as draft → Publish  
+1. Name + session type + site + date range
+2. Select Week A pack, Week B pack
+3. Confirm anchor (default: start date = Week A)
+4. Review alternating preview (first 4 weeks)
+5. Save as draft → Publish
 
 ### Register integration
 
