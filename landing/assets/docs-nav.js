@@ -5,12 +5,28 @@
   const toggle = document.getElementById("docs-toc-toggle");
   const dock = document.getElementById("docs-mobile-dock");
   const currentLabel = document.getElementById("docs-current-section");
+  const desktopToc = document.querySelector(".docs-toc-desktop");
+  const desktopMq = window.matchMedia("(min-width: 861px)");
 
   if (!toc || !mobileToc || !sheet || !toggle) {
     return;
   }
 
   mobileToc.innerHTML = toc.innerHTML;
+
+  function syncDesktopToc() {
+    if (!desktopToc) {
+      return;
+    }
+
+    if (desktopMq.matches) {
+      desktopToc.hidden = false;
+      desktopToc.classList.add("is-sticky");
+    } else {
+      desktopToc.hidden = true;
+      desktopToc.classList.remove("is-sticky");
+    }
+  }
 
   const sectionLinks = Array.from(mobileToc.querySelectorAll("a[href^='#']"));
   const sections = sectionLinks
@@ -52,7 +68,7 @@
     toggle.setAttribute("aria-expanded", "true");
     dock?.classList.add("is-hidden");
     document.body.classList.add("sheet-open");
-    sheet.querySelector('button[data-docs-close]')?.focus();
+    sheet.querySelector("button[data-docs-close]")?.focus();
   }
 
   function closeSheet() {
@@ -129,5 +145,7 @@
     }
   });
 
+  syncDesktopToc();
+  desktopMq.addEventListener("change", syncDesktopToc);
   initObserver();
 })();
