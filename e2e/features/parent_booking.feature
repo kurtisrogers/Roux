@@ -20,7 +20,7 @@ Feature: Parent booking and programme visibility
   Scenario: After-school booking shows planned activities
     When I open the first after-school booking page
     Then I should see planned activities for the session
-    And I should see "Football"
+    And I should see "Homework club"
 
   Scenario: Booking page offers childcare voucher payment
     When I open the first after-school booking page
