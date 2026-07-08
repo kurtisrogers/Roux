@@ -770,31 +770,59 @@ section[id] {
 /* Mobile docs navigation (mobile-first: dock by default, sidebar on desktop) */
 
 .docs-page {
-  overflow-x: clip;
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100%;
   --mobile-dock-offset: max(1.25rem, env(safe-area-inset-bottom, 0px));
   padding-bottom: 6rem;
+}
+
+.docs-page .code-block {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  box-sizing: border-box;
+}
+
+.docs-page .code-block code {
+  display: block;
+  width: max-content;
+  min-width: 0;
+}
+
+.docs-page .table-scroll {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin: 1rem 0 1.25rem;
+  box-sizing: border-box;
+}
+
+.docs-page .table-scroll table {
+  width: max-content;
+  min-width: 100%;
+  margin: 0;
+}
+
+.docs-page p code,
+.docs-page li code,
+.docs-page td code,
+.docs-page .compliance-item code {
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .docs-page main,
 .docs-page .container,
 .docs-page .hero-grid,
-.docs-page .docs-content {
+.docs-page .docs-content,
+.docs-page .doc-block {
   min-width: 0;
   max-width: 100%;
-}
-
-.docs-page .code-block {
-  max-width: 100%;
-}
-
-.docs-page .table-scroll {
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  margin: 1rem 0 1.25rem;
-}
-
-.docs-page .table-scroll table {
-  margin: 0;
 }
 
 .docs-toc-desktop {
