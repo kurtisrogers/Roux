@@ -9,6 +9,14 @@
 </form>
 <a href="{% url 'dashboard:session_register' session.pk %}" role="button">Open Register</a>
 <a href="{% url 'dashboard:walk_in_booking' session.pk %}" class="outline">Walk-in</a>
+{% if programme_blocks %}
+<h2>Today's programme</h2>
+<ul>
+  {% for block in programme_blocks %}
+  <li>{{ block.start_time|time:"H:i" }}–{{ block.end_time|time:"H:i" }} {{ block.display_name }}</li>
+  {% endfor %}
+</ul>
+{% endif %}
 <h2>Bookings ({{ bookings|length }}/{{ session.session_type.capacity }})</h2>
 <table>
   <thead><tr><th>Child</th><th>Parent</th><th>Status</th><th>Payment</th><th>Actions</th></tr></thead>

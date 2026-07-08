@@ -1,0 +1,32 @@
+{% extends "dashboard/programme/_base.html" %}
+{% block programme_content %}
+<p><a href="{% url 'dashboard:programme_detail' programme.pk %}">← {{ programme.name }}</a></p>
+<h2>{{ month_name }} {{ year }}</h2>
+<table class="cal-table">
+  <thead><tr><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th><th>Sun</th></tr></thead>
+  <tbody>
+    {% for week in weeks %}
+    <tr>
+      {% for cell in week %}
+      <td class="{% if not cell.in_month %}muted{% endif %} {% if cell.closed %}closed{% endif %} {% if cell.has_override %}override{% endif %}">
+        {% if cell.in_month %}<strong>{{ cell.date.day }}</strong>{% else %}{{ cell.date.day }}{% endif %}
+        {% if cell.in_range and cell.in_month %}
+          {% if cell.closed %}<br><small>Closed</small>
+          {% elif cell.week_label %}<br><small>{{ cell.week_label }}</small>{% endif %}
+          {% if cell.has_override %}<br><small>Override</small>{% endif %}
+          <br><a href="{% url 'dashboard:programme_day' programme.pk cell.date|date:'Y-m-d' %}">Edit</a>
+        {% endif %}
+      </td>
+      {% endfor %}
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+<style>
+.cal-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+.cal-table td { border: 1px solid var(--pico-muted-border-color); padding: 0.35rem; vertical-align: top; min-height: 4rem; }
+.cal-table td.closed { background: #fde8e8; }
+.cal-table td.override { background: #fff8e6; }
+.cal-table td.muted { opacity: 0.4; }
+</style>
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends "dashboard/programme/_base.html" %}
+{% block programme_content %}
+<p>{{ pack.description }}</p>
+<p>
+  <a href="{% url 'dashboard:week_pack_list' %}">← Week packs</a>
+  ·
+  <form method="post" action="{% url 'dashboard:week_pack_duplicate' pack.pk %}" style="display:inline">
+    {% csrf_token %}
+    <input type="hidden" name="name" value="{{ pack.name }} (copy)">
+    <button type="submit" class="secondary">Duplicate pack</button>
+  </form>
+</p>
+
+<article>
+  <h2>Add time slot</h2>
+  <form method="post">{% csrf_token %}{{ form.as_p }}<button type="submit">Add block</button></form>
+</article>
+
+<div class="programme-grid">
+  {% for day_label, day_blocks in weekday_columns %}
+  <section>
+    <h3>{{ day_label }}</h3>
+    <ul>
+      {% for block in day_blocks %}
+      <li>
+        {{ block.start_time|time:"H:i" }}–{{ block.end_time|time:"H:i" }}
+        {% if block.activity %}{{ block.activity.name }}{% else %}{{ block.label|default:"Break" }}{% endif %}
+        {% if not block.is_running_period %}<em>(break)</em>{% endif %}
+        <form method="post" action="{% url 'dashboard:week_pack_block_delete' block.pk %}" style="display:inline">
+          {% csrf_token %}
+          <button type="submit" class="secondary outline" style="font-size:0.75rem">×</button>
+        </form>
+      </li>
+      {% empty %}
+      <li class="muted">—</li>
+      {% endfor %}
+    </ul>
+  </section>
+  {% endfor %}
+</div>
+
+<style>
+.programme-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 1rem; }
+.programme-grid ul { list-style: none; padding: 0; font-size: 0.9rem; }
+.programme-grid li { margin-bottom: 0.35rem; padding: 0.25rem 0; border-bottom: 1px solid var(--pico-muted-border-color); }
+.muted { opacity: 0.5; }
+</style>
+{% endblock %}

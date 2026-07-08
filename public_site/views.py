@@ -13,6 +13,7 @@ from operations.services import (
     calculate_discounted_price,
     redeem_voucher,
 )
+from programme.services import resolve_for_session
 
 from public_site.booking_access import booking_for_request
 
@@ -213,7 +214,12 @@ def book_session(request, pk):
     return render(
         request,
         "public/book.html",
-        {"session": session, "children": children, "child_form": ChildForm()},
+        {
+            "session": session,
+            "children": children,
+            "child_form": ChildForm(),
+            "programme_blocks": resolve_for_session(session),
+        },
     )
 
 

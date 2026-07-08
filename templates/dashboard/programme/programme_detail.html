@@ -1,0 +1,40 @@
+{% extends "dashboard/programme/_base.html" %}
+{% block programme_content %}
+<p>
+  <strong>{{ programme.session_type.name }}</strong>
+  {% if programme.site %}· {{ programme.site.name }}{% endif %}
+  · {{ programme.start_date|date:"j M Y" }} – {{ programme.end_date|date:"j M Y" }}
+  · <span class="badge">{{ programme.get_status_display }}</span>
+</p>
+<p>
+  <a href="{% url 'dashboard:programme_calendar' programme.pk %}">Calendar</a>
+  · Week A: {{ programme.week_a_pack.name }}
+  · Week B: {{ programme.week_b_pack.name }}
+  · Anchor: {{ programme.anchor_date|date:"j M Y" }} ({{ programme.get_first_week_display }})
+</p>
+{% if programme.status == 'draft' %}
+<form method="post" action="{% url 'dashboard:programme_publish' programme.pk %}">
+  {% csrf_token %}
+  <button type="submit">Publish programme</button>
+</form>
+{% endif %}
+
+<h2>Preview (next school days)</h2>
+<table>
+  <thead><tr><th>Date</th><th>Week</th><th>Programme</th></tr></thead>
+  <tbody>
+    {% for day in preview %}
+    <tr>
+      <td><a href="{% url 'dashboard:programme_day' programme.pk day.date|date:'Y-m-d' %}">{{ day.date|date:"D j M" }}</a></td>
+      <td>{{ day.week_label }}</td>
+      <td>
+        {% if day.closed %}<em>Closed</em>
+        {% elif day.blocks %}
+          {% for block in day.blocks %}{{ block.start_time|time:"H:i" }} {{ block.display_name }}{% if not forloop.last %}; {% endif %}{% endfor %}
+        {% else %}—{% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

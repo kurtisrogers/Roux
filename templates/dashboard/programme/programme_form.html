@@ -1,0 +1,6 @@
+{% extends "dashboard/programme/_base.html" %}
+{% block programme_content %}
+<p><a href="{% url 'dashboard:programme_list' %}">← Programmes</a></p>
+<form method="post">{% csrf_token %}{{ form.as_p }}<button type="submit">Save draft</button></form>
+<p class="muted">Pick Week A and Week B packs. Anchor date controls which week applies first (usually term start).</p>
+{% endblock %}

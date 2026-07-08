@@ -5,6 +5,7 @@ from dashboard import (
     franchise_views,
     ofsted_views,
     operations_views,
+    programme_views,
     views,
 )
 
@@ -163,4 +164,40 @@ urlpatterns = [
     path("ofsted/reports/generate/", ofsted_views.generate_report, name="generate_report"),
     path("ofsted/export/incidents/", ofsted_views.export_incidents, name="export_incidents"),
     path("ofsted/export/ratios/", ofsted_views.export_ratios, name="export_ratios"),
+    # Programme planner
+    path("programme/", programme_views.programme_list, name="programme_list"),
+    path("programme/new/", programme_views.programme_create, name="programme_create"),
+    path("programme/activities/", programme_views.activity_list, name="activity_list"),
+    path(
+        "programme/activities/<int:pk>/edit/", programme_views.activity_edit, name="activity_edit"
+    ),
+    path("programme/week-packs/", programme_views.week_pack_list, name="week_pack_list"),
+    path(
+        "programme/week-packs/<int:pk>/", programme_views.week_pack_detail, name="week_pack_detail"
+    ),
+    path(
+        "programme/week-packs/<int:pk>/duplicate/",
+        programme_views.week_pack_duplicate,
+        name="week_pack_duplicate",
+    ),
+    path(
+        "programme/week-pack-blocks/<int:pk>/delete/",
+        programme_views.week_pack_block_delete,
+        name="week_pack_block_delete",
+    ),
+    path("programme/closures/", programme_views.closure_list, name="closure_list"),
+    path("programme/<int:pk>/", programme_views.programme_detail, name="programme_detail"),
+    path(
+        "programme/<int:pk>/publish/", programme_views.programme_publish, name="programme_publish"
+    ),
+    path(
+        "programme/<int:pk>/calendar/",
+        programme_views.programme_calendar,
+        name="programme_calendar",
+    ),
+    path(
+        "programme/<int:pk>/day/<str:date_str>/",
+        programme_views.programme_day,
+        name="programme_day",
+    ),
 ]

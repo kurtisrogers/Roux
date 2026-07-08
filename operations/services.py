@@ -10,6 +10,7 @@ from django.db import transaction
 from django.db.models import Sum
 from django.utils import timezone
 from organisations.models import Site, TermDate
+from programme.services import is_date_closed
 
 from operations.models import (
     Absence,
@@ -235,7 +236,13 @@ def generate_sessions_bulk(
     while current <= end_date:
         if current.weekday() in weekdays:
             in_holiday = any(h.start_date <= current <= h.end_date for h in holidays)
-            if not in_holiday:
+            closed = is_date_closed(
+                organisation,
+                current,
+                site_id=site.pk,
+                session_type_id=session_type.pk,
+            )
+            if not in_holiday and not closed:
                 _, was_created = Session.objects.get_or_create(
                     organisation=organisation,
                     site=site,
@@ -264,6 +271,13 @@ def apply_recurring_bookings(for_date: date | None = None) -> int:
         if target.weekday() != pattern.weekday:
             continue
         if Absence.objects.filter(child=pattern.child, date=target).exists():
+            continue
+        if is_date_closed(
+            pattern.child.organisation,
+            target,
+            site_id=pattern.site_id,
+            session_type_id=pattern.session_type_id,
+        ):
             continue
         session = Session.objects.filter(
             organisation=pattern.child.organisation,

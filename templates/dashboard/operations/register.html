@@ -15,6 +15,27 @@
 {% if ratio %}
 <p><small>Last ratio check: {% if ratio.compliant %}Compliant{% else %}Non-compliant{% endif %} ({{ ratio.child_count }} children, {{ ratio.staff_count }} staff)</small></p>
 {% endif %}
+{% if programme_blocks %}
+<details open>
+  <summary>Today's programme{% if programme_week %} ({{ programme_week }}){% endif %}</summary>
+  <ul class="programme-run-sheet">
+    {% for block in programme_blocks %}
+    <li class="{% if not block.is_running_period %}break-slot{% endif %}">
+      <time>{{ block.start_time|time:"H:i" }}–{{ block.end_time|time:"H:i" }}</time>
+      <strong>{{ block.display_name }}</strong>
+      {% if block.notes %}<br><small>{{ block.notes }}</small>{% endif %}
+    </li>
+    {% endfor %}
+  </ul>
+</details>
+<style>
+.programme-run-sheet { list-style: none; padding: 0; display: grid; gap: 0.35rem; margin: 0.5rem 0 1rem; }
+.programme-run-sheet li { padding: 0.35rem 0.5rem; border-left: 3px solid var(--pico-primary); background: var(--pico-card-background-color); }
+.programme-run-sheet li.break-slot { border-left-color: var(--pico-muted-color); opacity: 0.85; }
+</style>
+{% elif programme_blocks is None and programme_week %}
+<p><em>Programme: closed today{% if programme_week %} ({{ programme_week }}){% endif %}.</em></p>
+{% endif %}
 {% if is_closed %}
 <article class="success">Register closed {{ session.register_closed_at|date:"j M Y H:i" }}{% if session.register_notes %} — {{ session.register_notes }}{% endif %}</article>
 {% endif %}

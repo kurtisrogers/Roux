@@ -1,0 +1,26 @@
+{% extends "dashboard/programme/_base.html" %}
+{% block programme_content %}
+<p><a href="{% url 'dashboard:programme_create' %}" role="button">New programme</a>
+   · <a href="{% url 'dashboard:activity_list' %}">Activities</a>
+   · <a href="{% url 'dashboard:week_pack_list' %}">Week packs</a>
+   · <a href="{% url 'dashboard:closure_list' %}">Closures</a></p>
+<table>
+  <thead>
+    <tr><th>Name</th><th>Session type</th><th>Site</th><th>Dates</th><th>Status</th><th></th></tr>
+  </thead>
+  <tbody>
+    {% for programme in programmes %}
+    <tr>
+      <td><a href="{% url 'dashboard:programme_detail' programme.pk %}">{{ programme.name }}</a></td>
+      <td>{{ programme.session_type.name }}</td>
+      <td>{{ programme.site.name|default:"All sites" }}</td>
+      <td>{{ programme.start_date|date:"j M Y" }} – {{ programme.end_date|date:"j M Y" }}</td>
+      <td>{{ programme.get_status_display }}</td>
+      <td><a href="{% url 'dashboard:programme_calendar' programme.pk %}">Calendar</a></td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="6">No programmes yet.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

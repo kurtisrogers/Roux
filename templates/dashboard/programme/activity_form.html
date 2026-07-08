@@ -1,0 +1,5 @@
+{% extends "dashboard/programme/_base.html" %}
+{% block programme_content %}
+<form method="post">{% csrf_token %}{{ form.as_p }}<button type="submit">Save</button></form>
+<p><a href="{% url 'dashboard:activity_list' %}">← Back to activities</a></p>
+{% endblock %}

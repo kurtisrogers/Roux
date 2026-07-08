@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     "api",
     "franchises",
     "operations",
+    "programme",
     "dashboard",
     "public_site",
 ]

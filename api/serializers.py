@@ -1,6 +1,7 @@
 from accounts.models import User
 from bookings.models import Booking, Child, Session, SessionType
 from organisations.models import Organisation, Site
+from programme.services import resolve_for_session
 from rest_framework import serializers
 
 
@@ -75,6 +76,7 @@ class SessionSerializer(serializers.ModelSerializer):
     booked_count = serializers.IntegerField(read_only=True)
     spaces_remaining = serializers.IntegerField(read_only=True)
     is_full = serializers.BooleanField(read_only=True)
+    programme_blocks = serializers.SerializerMethodField()
 
     class Meta:
         model = Session
@@ -89,7 +91,23 @@ class SessionSerializer(serializers.ModelSerializer):
             "booked_count",
             "spaces_remaining",
             "is_full",
+            "programme_blocks",
         )
+
+    def get_programme_blocks(self, obj):
+        blocks = resolve_for_session(obj)
+        if blocks is None:
+            return None
+        return [
+            {
+                "start_time": b.start_time.isoformat(),
+                "end_time": b.end_time.isoformat(),
+                "name": b.display_name,
+                "source": b.source,
+                "is_running_period": b.is_running_period,
+            }
+            for b in blocks
+        ]
 
 
 class BookingSerializer(serializers.ModelSerializer):
