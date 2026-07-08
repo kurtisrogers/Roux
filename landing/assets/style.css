@@ -667,12 +667,14 @@ section[id] {
   scroll-margin-top: 6rem;
 }
 
-.hero-card.is-sticky {
-  position: sticky;
-  top: 5.5rem;
-  align-self: start;
-  max-height: calc(100vh - 6.5rem);
-  overflow-y: auto;
+@media (min-width: 861px) {
+  .hero-card.is-sticky {
+    position: sticky;
+    top: 5.5rem;
+    align-self: start;
+    max-height: calc(100vh - 6.5rem);
+    overflow-y: auto;
+  }
 }
 
 .section table {
@@ -767,25 +769,57 @@ section[id] {
 
 /* Mobile docs navigation (mobile-first: dock by default, sidebar on desktop) */
 
+.docs-page {
+  overflow-x: clip;
+  --mobile-dock-offset: max(1.25rem, env(safe-area-inset-bottom, 0px));
+  padding-bottom: 6rem;
+}
+
+.docs-page main,
+.docs-page .container,
+.docs-page .hero-grid,
+.docs-page .docs-content {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.docs-page .code-block {
+  max-width: 100%;
+}
+
+.docs-page .table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin: 1rem 0 1.25rem;
+}
+
+.docs-page .table-scroll table {
+  margin: 0;
+}
+
 .docs-toc-desktop {
   display: none;
 }
 
-.docs-page {
-  --mobile-dock-offset: max(1.25rem, env(safe-area-inset-bottom, 0px));
-  padding-bottom: 6rem;
+.docs-toc-desktop[hidden] {
+  display: none !important;
 }
 
 .docs-page .site-footer {
   padding-bottom: calc(4.5rem + env(safe-area-inset-bottom, 0px));
 }
 
-.docs-page .hero-grid > .section {
+.docs-page .hero-grid > .docs-content {
   order: 1;
+  min-width: 0;
 }
 
-.docs-page .hero-grid > .docs-toc-desktop {
-  order: 2;
+.docs-content {
+  min-width: 0;
+}
+
+.doc-block {
+  min-width: 0;
 }
 
 .mobile-dock {
@@ -943,8 +977,16 @@ body.sheet-open {
 }
 
 @media (min-width: 861px) {
-  .docs-toc-desktop {
+  .docs-toc-desktop:not([hidden]) {
     display: block;
+  }
+
+  .docs-toc-desktop.is-sticky {
+    position: sticky;
+    top: 5.5rem;
+    align-self: start;
+    max-height: calc(100vh - 6.5rem);
+    overflow-y: auto;
   }
 
   .docs-page {
@@ -955,7 +997,7 @@ body.sheet-open {
     padding-bottom: 3rem;
   }
 
-  .docs-page .hero-grid > .section {
+  .docs-page .hero-grid > .docs-content {
     order: unset;
   }
 
@@ -1016,6 +1058,10 @@ body.sheet-open {
 @media (max-width: 860px) {
   .hero-grid,
   .highlight-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .docs-page .feature-grid {
     grid-template-columns: 1fr;
   }
 
