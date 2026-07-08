@@ -3,14 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <script>
-    (function () {
-      var parts = window.location.pathname.split("/").filter(Boolean);
-      var base = document.createElement("base");
-      base.href = parts[0] === "Roux" ? "/Roux/" : "/";
-      document.head.appendChild(base);
-    })();
-  </script>
+  <script src="assets/base.js"></script>
   <title>Developer documentation – Roux</title>
   <meta name="description" content="Developer guide for Roux: local setup, architecture, API, operations, testing, CI/CD, and AWS deployment.">
   <meta name="color-scheme" content="light dark">
