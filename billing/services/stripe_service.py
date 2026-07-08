@@ -15,12 +15,13 @@ def _configure_stripe(franchise=None):
     return config
 
 
-def create_booking_checkout_session(booking, request) -> str:
+def create_booking_checkout_session(booking, request, amount=None) -> str:
     """Create a Stripe Checkout session for a booking and return the URL."""
     franchise = getattr(request, "franchise", None)
     _configure_stripe(franchise)
 
     session_type = booking.session.session_type
+    price = amount if amount is not None else booking.price
     success_url = request.build_absolute_uri(
         reverse("public:booking_success", kwargs={"pk": booking.pk})
     )
@@ -28,7 +29,7 @@ def create_booking_checkout_session(booking, request) -> str:
         reverse("public:booking_cancel", kwargs={"pk": booking.pk})
     )
 
-    amount_pence = int(session_type.price * 100)
+    amount_pence = int(price * 100)
     connect_account = getattr(franchise, "stripe_connect_account_id", "") if franchise else ""
 
     create_kwargs = {
@@ -64,8 +65,9 @@ def create_booking_checkout_session(booking, request) -> str:
         organisation=booking.session.organisation,
         booking=booking,
         stripe_checkout_session_id=checkout_session.id,
-        amount=session_type.price,
+        amount=price,
         status=Payment.Status.PENDING,
+        payment_method=Payment.Method.CARD,
         description=f"Booking: {booking.child.full_name} – {session_type.name}",
         metadata={"booking_id": booking.pk},
     )
@@ -129,6 +131,37 @@ def create_org_subscription_checkout(organisation, request) -> str:
         customer_email=organisation.email or None,
     )
     return checkout_session.url
+
+
+def refund_payment(payment, amount=None, reason: str = "", user=None):
+    """Refund a payment via Stripe when applicable."""
+    from billing.models import Refund
+
+    refund_amount = amount or payment.amount
+    stripe_refund_id = ""
+    if payment.stripe_payment_intent_id:
+        _configure_stripe()
+        import stripe
+
+        refund = stripe.Refund.create(
+            payment_intent=payment.stripe_payment_intent_id,
+            amount=int(refund_amount * 100),
+        )
+        stripe_refund_id = refund.id
+
+    refund_record = Refund.objects.create(
+        payment=payment,
+        amount=refund_amount,
+        stripe_refund_id=stripe_refund_id,
+        reason=reason,
+        created_by=user,
+    )
+    payment.status = Payment.Status.REFUNDED
+    payment.save(update_fields=["status"])
+    if payment.booking:
+        payment.booking.payment_status = payment.booking.PaymentStatus.REFUNDED
+        payment.booking.save(update_fields=["payment_status"])
+    return refund_record
 
 
 def verify_webhook(payload, sig_header, franchise=None):

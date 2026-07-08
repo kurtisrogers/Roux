@@ -1,0 +1,3 @@
+<p>Hello {{ parent.first_name }},</p>
+<p>We've recorded that <strong>{{ absence.child.full_name }}</strong> will be absent on {{ absence.date|date:"l j F Y" }}.</p>
+{% if absence.reason %}<p>Reason: {{ absence.reason }}</p>{% endif %}

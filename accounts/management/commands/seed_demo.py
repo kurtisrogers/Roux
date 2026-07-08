@@ -1,9 +1,10 @@
 from datetime import date, time, timedelta
 
-from bookings.models import Session, SessionType
+from bookings.models import Child, Session, SessionType
 from cms.models import NavigationItem, Page, PageBlock, SiteSettings
 from django.core.management.base import BaseCommand
 from django.utils import timezone
+from operations.models import AuthorisedCollector, ChildcareVoucher, RecurringBooking
 from organisations.models import Organisation, Site, TermDate
 
 from accounts.models import User
@@ -278,6 +279,48 @@ class Command(BaseCommand):
                 start_time=time(7, 30),
                 defaults={"end_time": time(8, 30)},
             )
+
+        child, _ = Child.objects.get_or_create(
+            parent=parent,
+            organisation=org,
+            first_name="Emily",
+            last_name="Johnson",
+            defaults={
+                "date_of_birth": date(2017, 3, 15),
+                "emergency_contact_name": "Sarah Johnson",
+                "emergency_contact_phone": "07700900123",
+            },
+        )
+
+        AuthorisedCollector.objects.get_or_create(
+            child=child,
+            name="Grandma Pat",
+            defaults={
+                "relationship": "Grandmother",
+                "phone": "07700900456",
+                "pin_code": "1234",
+                "is_primary": True,
+            },
+        )
+
+        RecurringBooking.objects.get_or_create(
+            child=child,
+            session_type=after_school,
+            site=site,
+            weekday=RecurringBooking.Weekday.TUESDAY,
+            defaults={"start_date": today},
+        )
+
+        ChildcareVoucher.objects.get_or_create(
+            organisation=org,
+            parent=parent,
+            reference="EDEN-1001",
+            defaults={
+                "child": child,
+                "provider": "Edenred",
+                "balance": "120.00",
+            },
+        )
 
         self.stdout.write(self.style.SUCCESS("Demo data seeded successfully."))
         self.stdout.write("Login credentials:")

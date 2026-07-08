@@ -11,6 +11,9 @@
       <ul>
         <li><a href="{% url 'dashboard:home' %}">Overview</a></li>
         <li><a href="{% url 'dashboard:session_list' %}">Sessions</a></li>
+        <li><a href="{% url 'dashboard:booking_calendar' %}">Calendar</a></li>
+        <li><a href="{% url 'dashboard:recurring_list' %}">Recurring</a></li>
+        <li><a href="{% url 'dashboard:waitlist_list' %}">Waitlist</a></li>
         <li><a href="{% url 'dashboard:session_type_list' %}">Session Types</a></li>
         <li><a href="{% url 'dashboard:booking_list' %}">Bookings</a></li>
         <li><a href="{% url 'dashboard:child_list' %}">Children</a></li>
@@ -27,6 +30,17 @@
       </details>
       {% endif %}
       <details open>
+        <summary>Operations</summary>
+        <ul>
+          <li><a href="{% url 'dashboard:rota_list' %}">Staff Rota</a></li>
+          <li><a href="{% url 'dashboard:visitor_list' %}">Visitors</a></li>
+          <li><a href="{% url 'dashboard:medication_list' %}">Medication Log</a></li>
+          <li><a href="{% url 'dashboard:staff_compliance_list' %}">Staff Compliance</a></li>
+          <li><a href="{% url 'dashboard:safeguarding_list' %}">Safeguarding</a></li>
+          <li><a href="{% url 'dashboard:bulk_sessions' %}">Bulk Sessions</a></li>
+        </ul>
+      </details>
+      <details open>
         <summary>Website</summary>
         <ul>
           <li><a href="{% url 'dashboard:page_list' %}">Pages</a></li>
@@ -38,6 +52,10 @@
       <ul>
         <li><a href="{% url 'dashboard:billing' %}">Billing (Stripe)</a></li>
         <li><a href="{% url 'dashboard:finance' %}">Finance (Xero)</a></li>
+        <li><a href="{% url 'dashboard:voucher_list' %}">Childcare Vouchers</a></li>
+        <li><a href="{% url 'dashboard:subsidy_list' %}">Subsidies</a></li>
+        <li><a href="{% url 'dashboard:payment_plan_list' %}">Payment Plans</a></li>
+        <li><a href="{% url 'dashboard:analytics' %}">Analytics</a></li>
         <li><a href="{% url 'dashboard:ofsted_dashboard' %}">Ofsted & Compliance</a></li>
       </ul>
     </nav>

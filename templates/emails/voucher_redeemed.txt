@@ -1,0 +1,7 @@
+Hello {{ parent.first_name }},
+
+We've applied £{{ amount }} from your {{ voucher.get_provider_display }} voucher ({{ voucher.reference }}) to {{ booking.child.full_name }}'s booking.
+
+Remaining balance: £{{ voucher.balance }}
+
+Roux Wraparound Care

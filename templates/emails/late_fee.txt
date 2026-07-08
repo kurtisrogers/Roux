@@ -1,0 +1,5 @@
+Hello {{ parent.first_name }},
+
+A late collection fee of £{{ fee }} has been applied for {{ booking.child.first_name }}'s session on {{ booking.session.date|date:"j F Y" }}.
+
+Roux Wraparound Care

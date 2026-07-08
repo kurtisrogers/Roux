@@ -28,6 +28,11 @@ class Child(models.Model):
     emergency_contact_phone = models.CharField(max_length=20)
     emergency_contact_relationship = models.CharField(max_length=100, blank=True)
     photo_consent = models.BooleanField(default=False)
+    pupil_premium = models.BooleanField(default=False)
+    fsm_eligible = models.BooleanField(
+        default=False,
+        verbose_name="Free school meals eligible",
+    )
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -80,6 +85,13 @@ class SessionType(models.Model):
     age_min = models.PositiveIntegerField(default=4)
     age_max = models.PositiveIntegerField(default=11)
     duration_minutes = models.PositiveIntegerField(default=60)
+    late_pickup_fee = models.DecimalField(
+        max_digits=8,
+        decimal_places=2,
+        default=Decimal("5.00"),
+        help_text="Fee per 15 minutes after grace period",
+    )
+    late_pickup_grace_minutes = models.PositiveIntegerField(default=15)
     is_active = models.BooleanField(default=True)
 
     class Meta:
@@ -125,6 +137,15 @@ class Session(models.Model):
         related_name="assigned_sessions",
     )
     notes = models.TextField(blank=True)
+    register_notes = models.TextField(blank=True)
+    register_closed_at = models.DateTimeField(null=True, blank=True)
+    register_closed_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="registers_closed",
+    )
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -150,6 +171,12 @@ class Session(models.Model):
 
 
 class Booking(models.Model):
+    class Source(models.TextChoices):
+        ONLINE = "online", "Online"
+        WALK_IN = "walk_in", "Walk-in"
+        RECURRING = "recurring", "Recurring"
+        WAITLIST = "waitlist", "Waitlist"
+
     class Status(models.TextChoices):
         PENDING = "pending", "Pending"
         CONFIRMED = "confirmed", "Confirmed"
@@ -192,6 +219,23 @@ class Booking(models.Model):
         default=PaymentStatus.UNPAID,
     )
     special_requirements = models.TextField(blank=True)
+    source = models.CharField(
+        max_length=20,
+        choices=Source.choices,
+        default=Source.ONLINE,
+    )
+    subsidy_code = models.ForeignKey(
+        "operations.SubsidyCode",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="bookings",
+    )
+    late_fee_amount = models.DecimalField(
+        max_digits=8,
+        decimal_places=2,
+        default=Decimal("0"),
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -229,6 +273,14 @@ class Attendance(models.Model):
         blank=True,
         related_name="check_outs",
     )
+    collected_by = models.ForeignKey(
+        "operations.AuthorisedCollector",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="collections",
+    )
+    collection_verified_name = models.CharField(max_length=200, blank=True)
     notes = models.TextField(blank=True)
 
     def __str__(self) -> str:

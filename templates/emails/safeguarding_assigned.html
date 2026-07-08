@@ -1,0 +1,4 @@
+<p>Hello {{ case.assigned_to.first_name }},</p>
+<p>You have been assigned safeguarding case: <strong>{{ case.title }}</strong></p>
+<p>Status: {{ case.get_status_display }}</p>
+<p>Please review in the dashboard.</p>

@@ -1,0 +1,5 @@
+Hello {{ user.first_name }},
+
+Your DBS certificate{% if compliance.dbs_expiry %} expires on {{ compliance.dbs_expiry|date:"j F Y" }}{% endif %}. Please update your records in the dashboard.
+
+Roux Wraparound Care

@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     "ofsted",
     "api",
     "franchises",
+    "operations",
     "dashboard",
     "public_site",
 ]
@@ -192,6 +193,12 @@ EMAIL_BACKEND = os.getenv(
 )
 DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "noreply@roux.example")
 SERVER_EMAIL = DEFAULT_FROM_EMAIL
+
+# SMS (Twilio) — console backend in dev
+SMS_BACKEND = os.getenv("SMS_BACKEND", "console")
+TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID", "")
+TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN", "")
+TWILIO_FROM_NUMBER = os.getenv("TWILIO_FROM_NUMBER", "")
 
 # Django REST Framework
 REST_FRAMEWORK = {
