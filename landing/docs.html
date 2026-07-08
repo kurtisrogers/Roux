@@ -13,8 +13,9 @@
   <link rel="stylesheet" href="assets/style.css">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%233d8b72'/><text x='50' y='68' text-anchor='middle' font-size='52' fill='white' font-family='sans-serif'>R</text></svg>">
   <script src="assets/theme.js" defer></script>
+  <script src="assets/docs-nav.js" defer></script>
 </head>
-<body>
+<body class="docs-page">
   <a class="skip-link" href="#main-content">Skip to main content</a>
 
   <header class="site-header">
@@ -90,8 +91,9 @@
 
     <section class="section">
       <div class="container hero-grid">
-      <aside class="hero-card is-sticky" aria-label="On this page">
+      <aside class="hero-card is-sticky docs-toc-desktop" aria-label="On this page">
         <h2>On this page</h2>
+        <nav id="docs-toc">
         <ul class="toc-list">
           <li><a href="#overview">Overview</a></li>
           <li><a href="#quick-start">Quick start</a></li>
@@ -112,6 +114,7 @@
           <li><a href="#deployment">AWS deployment</a></li>
           <li><a href="#extending">Extending Roux</a></li>
         </ul>
+        </nav>
       </aside>
 
       <div class="section">
@@ -896,6 +899,42 @@ docker run -p 8000:8000 -e SECRET_KEY=dev -e DEBUG=True roux</code></div>
     </div>
     </section>
   </main>
+
+  <div class="mobile-dock" id="docs-mobile-dock">
+    <button
+      type="button"
+      class="mobile-dock__button button button-primary"
+      id="docs-toc-toggle"
+      aria-expanded="false"
+      aria-controls="docs-mobile-sheet"
+    >
+      <span class="mobile-dock__text">
+        <span class="mobile-dock__label">On this page</span>
+        <span class="mobile-dock__current" id="docs-current-section">Overview</span>
+      </span>
+      <svg class="mobile-dock__icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+        <path d="M6 9l6 6 6-6"></path>
+      </svg>
+    </button>
+  </div>
+
+  <div class="mobile-sheet" id="docs-mobile-sheet" hidden>
+    <div class="mobile-sheet__backdrop" data-docs-close tabindex="-1"></div>
+    <div class="mobile-sheet__panel hero-card" role="dialog" aria-modal="true" aria-labelledby="docs-sheet-title">
+      <div class="mobile-sheet__header">
+        <div>
+          <p class="eyebrow">Documentation</p>
+          <h2 id="docs-sheet-title">Jump to section</h2>
+        </div>
+        <button type="button" class="icon-button" data-docs-close aria-label="Close section menu">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <path d="M6 6l12 12M18 6L6 18"></path>
+          </svg>
+        </button>
+      </div>
+      <nav id="docs-toc-mobile" aria-label="Documentation sections"></nav>
+    </div>
+  </div>
 
   <footer class="site-footer">
     <div class="container footer-grid">
