@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="en-GB" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>
+    (function () {
+      var parts = window.location.pathname.split("/").filter(Boolean);
+      var base = document.createElement("base");
+      base.href = parts[0] === "Roux" ? "/Roux/" : "/";
+      document.head.appendChild(base);
+    })();
+  </script>
+  <title>Developer documentation – Roux</title>
+  <meta name="description" content="Developer guide for Roux: local setup, architecture, API, operations, testing, CI/CD, and AWS deployment.">
+  <meta name="color-scheme" content="light dark">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&family=Source+Sans+3:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%233d8b72'/><text x='50' y='68' text-anchor='middle' font-size='52' fill='white' font-family='sans-serif'>R</text></svg>">
+  <script src="assets/theme.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="./" aria-label="Roux home">
+        <span class="brand-mark" aria-hidden="true">R</span>
+        <span>Roux</span>
+      </a>
+
+      <nav class="site-nav" id="site-nav" aria-label="Primary">
+        <ul>
+          <li><a href="./#features">Features</a></li>
+          <li><a href="./#franchise">Franchise</a></li>
+          <li><a href="./#compliance">Ofsted</a></li>
+          <li><a href="docs.html" aria-current="page">Docs</a></li>
+          <li>
+            <a href="https://github.com/kurtisrogers/Roux" target="_blank" rel="noopener noreferrer">
+              GitHub<span class="sr-only"> (opens in new tab)</span>
+            </a>
+          </li>
+          <li class="nav-cta"><a class="button button-primary" href="./#get-started">Get started</a></li>
+        </ul>
+      </nav>
+
+      <div class="header-tools">
+        <button
+          type="button"
+          class="icon-button"
+          id="theme-toggle"
+          aria-pressed="false"
+          aria-label="Switch to dark mode"
+        >
+          <span class="theme-icon-light" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <circle cx="12" cy="12" r="4"></circle>
+              <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path>
+            </svg>
+          </span>
+          <span class="theme-icon-dark" hidden aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <path d="M21 12.8A9 9 0 1111.2 3a7 7 0 109.8 9.8z"></path>
+            </svg>
+          </span>
+        </button>
+
+        <button
+          type="button"
+          class="icon-button nav-toggle"
+          id="nav-toggle"
+          aria-expanded="false"
+          aria-controls="site-nav"
+          aria-label="Open navigation menu"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <path d="M4 7h16M4 12h16M4 17h16"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main-content">
+    <section class="docs-hero" aria-labelledby="docs-heading">
+      <div class="container">
+        <p class="eyebrow">Developer documentation</p>
+        <h1 id="docs-heading">Build, extend, and deploy Roux</h1>
+        <p>
+          Everything you need to run the platform locally, understand the architecture,
+          integrate with Stripe and Xero, use the mobile API, and ship to AWS.
+        </p>
+      </div>
+    </section>
+
+    <div class="container docs-layout">
+      <aside class="docs-sidebar" aria-label="On this page">
+        <h2>On this page</h2>
+        <ul class="docs-toc">
+          <li><a href="#overview">Overview</a></li>
+          <li><a href="#quick-start">Quick start</a></li>
+          <li><a href="#architecture">Architecture</a></li>
+          <li><a href="#project-structure">Project structure</a></li>
+          <li><a href="#local-urls">Local URLs</a></li>
+          <li><a href="#demo-credentials">Demo credentials</a></li>
+          <li><a href="#user-roles">User roles</a></li>
+          <li><a href="#environment">Environment variables</a></li>
+          <li><a href="#configuration">Configuration</a></li>
+          <li><a href="#franchises">Franchises</a></li>
+          <li><a href="#operations">Operations module</a></li>
+          <li><a href="#public-site">Public site</a></li>
+          <li><a href="#api">Mobile API</a></li>
+          <li><a href="#management-commands">Management commands</a></li>
+          <li><a href="#testing">Testing</a></li>
+          <li><a href="#ci-cd">CI/CD</a></li>
+          <li><a href="#deployment">AWS deployment</a></li>
+          <li><a href="#extending">Extending Roux</a></li>
+        </ul>
+      </aside>
+
+      <div class="docs-content">
+        <section id="overview" class="docs-section" aria-labelledby="overview-heading">
+          <h2 id="overview-heading">Overview</h2>
+          <p>
+            Roux is an open-source Django SaaS platform for UK wraparound care providers —
+            breakfast clubs, after-school clubs, and holiday programmes. It combines
+            day-to-day operations, parent booking, CMS-driven websites, Ofsted compliance,
+            and financial integrations in one extensible stack.
+          </p>
+          <div class="docs-grid">
+            <div class="docs-card">
+              <strong>Backend</strong>
+              <span>Django 5+, Django REST Framework, PostgreSQL (prod) / SQLite (dev)</span>
+            </div>
+            <div class="docs-card">
+              <strong>Dashboard UI</strong>
+              <span>Pico CSS, HTMX, Alpine.js, SortableJS page builder</span>
+            </div>
+            <div class="docs-card">
+              <strong>Payments</strong>
+              <span>Stripe Checkout for sessions; subscription billing for organisations</span>
+            </div>
+            <div class="docs-card">
+              <strong>Accounting</strong>
+              <span>Xero OAuth2 with automatic invoice sync on payment</span>
+            </div>
+            <div class="docs-card">
+              <strong>Mobile</strong>
+              <span>JWT-authenticated REST API at <code>/api/v1/</code></span>
+            </div>
+            <div class="docs-card">
+              <strong>Multi-tenant</strong>
+              <span>Franchise partners with isolated databases and custom domains</span>
+            </div>
+          </div>
+          <p>
+            Source code:
+            <a href="https://github.com/kurtisrogers/Roux" target="_blank" rel="noopener noreferrer">github.com/kurtisrogers/Roux</a>
+          </p>
+        </section>
+
+        <section id="quick-start" class="docs-section" aria-labelledby="quick-start-heading">
+          <h2 id="quick-start-heading">Quick start</h2>
+          <p>Requires <strong>Python 3.12+</strong>. Clone the repository and install dependencies:</p>
+          <div class="code-block" role="region" aria-label="Installation commands">
+            <code>git clone https://github.com/kurtisrogers/Roux.git
+cd Roux
+pip install -r requirements.txt -r requirements-dev.txt
+cp .env.example .env
+python manage.py migrate
+python manage.py seed_demo
+python manage.py runserver</code>
+          </div>
+          <ul>
+            <li>Public site: <code>http://localhost:8000/</code></li>
+            <li>Staff dashboard: <code>http://localhost:8000/dashboard/</code></li>
+            <li>Django admin: <code>http://localhost:8000/admin/</code></li>
+          </ul>
+          <div class="docs-callout">
+            <strong>Pre-commit (recommended)</strong>
+            <p>Install hooks before contributing: <code>pip install pre-commit &amp;&amp; pre-commit install</code></p>
+          </div>
+        </section>
+
+        <section id="architecture" class="docs-section" aria-labelledby="architecture-heading">
+          <h2 id="architecture-heading">Architecture</h2>
+          <p>Roux is organised as a modular monolith. Each Django app owns a bounded area of functionality:</p>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Layer</th>
+                <th>Responsibility</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>public_site</code></td>
+                <td>Parent-facing website, session booking, absence reporting</td>
+              </tr>
+              <tr>
+                <td><code>dashboard</code></td>
+                <td>Staff and admin views; orchestrates operations, CMS, finance, Ofsted</td>
+              </tr>
+              <tr>
+                <td><code>operations</code></td>
+                <td>Register, waitlist, vouchers, recurring bookings, safeguarding, analytics</td>
+              </tr>
+              <tr>
+                <td><code>bookings</code></td>
+                <td>Children, sessions, bookings, attendance, check-in/out</td>
+              </tr>
+              <tr>
+                <td><code>cms</code></td>
+                <td>Pages, blocks, navigation, site settings</td>
+              </tr>
+              <tr>
+                <td><code>billing</code> / <code>finance</code></td>
+                <td>Stripe payments, refunds, Xero invoice sync</td>
+              </tr>
+              <tr>
+                <td><code>ofsted</code></td>
+                <td>Incidents, EYFS ratio checks, compliance reports, CSV exports</td>
+              </tr>
+              <tr>
+                <td><code>franchises</code></td>
+                <td>Multi-tenant control plane, DB routing, partner provisioning</td>
+              </tr>
+              <tr>
+                <td><code>api</code></td>
+                <td>REST API for mobile apps (JWT auth)</td>
+              </tr>
+              <tr>
+                <td><code>notifications</code></td>
+                <td>Email templates and signal-driven notifications</td>
+              </tr>
+            </tbody>
+          </table>
+          <p>
+            Organisation context is resolved per request via middleware in
+            <code>public_site/middleware.py</code>. Franchise tenants use hostname-based routing
+            (<code>{slug}.localhost</code> in dev, custom subdomains in production).
+          </p>
+        </section>
+
+        <section id="project-structure" class="docs-section" aria-labelledby="structure-heading">
+          <h2 id="structure-heading">Project structure</h2>
+          <div class="code-block" role="region" aria-label="Repository layout">
+            <code>Roux/
+├── accounts/          # Custom user model, roles, authentication
+├── organisations/     # Multi-tenant orgs, sites, term dates
+├── bookings/          # Children, sessions, bookings, attendance
+├── cms/               # Site settings, pages, drag-and-drop page builder
+├── billing/           # Stripe payments, subscriptions, refunds
+├── finance/           # Xero integration
+├── notifications/     # Email notifications and signals
+├── ofsted/            # Incident logging, ratio checks, reports
+├── operations/        # Register, waitlist, vouchers, safeguarding, analytics
+├── api/               # REST API for mobile apps
+├── franchises/        # Multi-franchise control plane and provisioning
+├── dashboard/         # Staff/admin dashboard views
+├── public_site/       # Customer-facing website
+├── config/            # Django settings and root URLs
+├── templates/         # Pico CSS templates (dashboard, public, emails)
+├── static/            # CSS and JavaScript assets
+├── e2e/               # Playwright BDD end-to-end tests
+├── landing/           # Static marketing site (this GitHub Pages site)
+├── docs/              # Deployment and design documentation
+└── infra/             # SST v3 AWS infrastructure</code>
+          </div>
+        </section>
+
+        <section id="local-urls" class="docs-section" aria-labelledby="urls-heading">
+          <h2 id="urls-heading">Local URLs</h2>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>URL</th>
+                <th>Purpose</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>/</code></td>
+                <td>Public homepage (CMS-driven per organisation)</td>
+              </tr>
+              <tr>
+                <td><code>/sessions/</code></td>
+                <td>Parent session list and booking</td>
+              </tr>
+              <tr>
+                <td><code>/sessions/calendar/</code></td>
+                <td>Parent booking calendar (login required)</td>
+              </tr>
+              <tr>
+                <td><code>/my-bookings/</code></td>
+                <td>Parent booking history</td>
+              </tr>
+              <tr>
+                <td><code>/absence/</code></td>
+                <td>Report child absence</td>
+              </tr>
+              <tr>
+                <td><code>/dashboard/</code></td>
+                <td>Staff operations dashboard</td>
+              </tr>
+              <tr>
+                <td><code>/dashboard/sessions/&lt;id&gt;/register/</code></td>
+                <td>Live session register with check-in/out</td>
+              </tr>
+              <tr>
+                <td><code>/dashboard/cms/pages/</code></td>
+                <td>CMS page builder</td>
+              </tr>
+              <tr>
+                <td><code>/dashboard/ofsted/</code></td>
+                <td>Ofsted compliance dashboard</td>
+              </tr>
+              <tr>
+                <td><code>/franchise/apply/</code></td>
+                <td>Franchise partner application (Django app)</td>
+              </tr>
+              <tr>
+                <td><code>/api/v1/</code></td>
+                <td>Mobile REST API</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="demo-credentials" class="docs-section" aria-labelledby="credentials-heading">
+          <h2 id="credentials-heading">Demo credentials</h2>
+          <p>After running <code>python manage.py seed_demo</code>:</p>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Role</th>
+                <th>Username</th>
+                <th>Password</th>
+                <th>Access</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Super Admin</td>
+                <td><code>superadmin</code></td>
+                <td><code>super123</code></td>
+                <td>Platform-wide franchise provisioning</td>
+              </tr>
+              <tr>
+                <td>Org Admin</td>
+                <td><code>admin</code></td>
+                <td><code>admin123</code></td>
+                <td>Full dashboard, CMS, billing, users</td>
+              </tr>
+              <tr>
+                <td>Staff</td>
+                <td><code>staff1</code></td>
+                <td><code>staff123</code></td>
+                <td>Sessions, register, check-in/out</td>
+              </tr>
+              <tr>
+                <td>Parent</td>
+                <td><code>parent1</code></td>
+                <td><code>parent123</code></td>
+                <td>Public site, child profiles, bookings</td>
+              </tr>
+            </tbody>
+          </table>
+          <p>Demo organisation: <strong>Oakwood Wraparound Club</strong> with breakfast and after-school sessions, childcare vouchers, and recurring bookings.</p>
+        </section>
+
+        <section id="user-roles" class="docs-section" aria-labelledby="roles-heading">
+          <h2 id="roles-heading">User roles</h2>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Role</th>
+                <th>Access</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Super Admin</td>
+                <td>All organisations; franchise provisioning and applications (platform level)</td>
+              </tr>
+              <tr>
+                <td>Franchise Admin</td>
+                <td>All organisations within their franchise tenant</td>
+              </tr>
+              <tr>
+                <td>Organisation Admin</td>
+                <td>Full org management, CMS, billing, user administration</td>
+              </tr>
+              <tr>
+                <td>Site Manager</td>
+                <td>Sessions, children, bookings, CMS editing</td>
+              </tr>
+              <tr>
+                <td>Staff</td>
+                <td>Session management, register, check-in/out</td>
+              </tr>
+              <tr>
+                <td>Finance</td>
+                <td>Billing, Xero, payment reports, refunds</td>
+              </tr>
+              <tr>
+                <td>Parent</td>
+                <td>Public site, child profiles, online bookings</td>
+              </tr>
+            </tbody>
+          </table>
+          <p>Roles are defined on <code>accounts.models.User.Role</code> and enforced via decorators in <code>accounts/decorators.py</code>.</p>
+        </section>
+
+        <section id="environment" class="docs-section" aria-labelledby="env-heading">
+          <h2 id="env-heading">Environment variables</h2>
+          <p>Copy <code>.env.example</code> to <code>.env</code> and configure:</p>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Variable</th>
+                <th>Required</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>SECRET_KEY</code></td>
+                <td>Yes (prod)</td>
+                <td>Django secret key</td>
+              </tr>
+              <tr>
+                <td><code>DEBUG</code></td>
+                <td>Dev only</td>
+                <td>Set <code>True</code> for local development</td>
+              </tr>
+              <tr>
+                <td><code>ALLOWED_HOSTS</code></td>
+                <td>Prod</td>
+                <td>Comma-separated hostnames</td>
+              </tr>
+              <tr>
+                <td><code>DATABASE_URL</code></td>
+                <td>Prod</td>
+                <td>PostgreSQL connection string (SQLite used if unset in dev)</td>
+              </tr>
+              <tr>
+                <td><code>STRIPE_PUBLISHABLE_KEY</code></td>
+                <td>For payments</td>
+                <td>Stripe publishable key</td>
+              </tr>
+              <tr>
+                <td><code>STRIPE_SECRET_KEY</code></td>
+                <td>For payments</td>
+                <td>Stripe secret key</td>
+              </tr>
+              <tr>
+                <td><code>STRIPE_WEBHOOK_SECRET</code></td>
+                <td>For payments</td>
+                <td>Stripe webhook signing secret</td>
+              </tr>
+              <tr>
+                <td><code>XERO_CLIENT_ID</code></td>
+                <td>For Xero</td>
+                <td>Xero OAuth app client ID</td>
+              </tr>
+              <tr>
+                <td><code>XERO_CLIENT_SECRET</code></td>
+                <td>For Xero</td>
+                <td>Xero OAuth app client secret</td>
+              </tr>
+              <tr>
+                <td><code>XERO_REDIRECT_URI</code></td>
+                <td>For Xero</td>
+                <td>OAuth callback URL</td>
+              </tr>
+              <tr>
+                <td><code>EMAIL_BACKEND</code></td>
+                <td>Prod</td>
+                <td>SMTP backend for production email</td>
+              </tr>
+              <tr>
+                <td><code>DEFAULT_FROM_EMAIL</code></td>
+                <td>Prod</td>
+                <td>Sender address for notifications</td>
+              </tr>
+              <tr>
+                <td><code>PLATFORM_ADMIN_EMAIL</code></td>
+                <td>Optional</td>
+                <td>Receives alerts for new franchise applications</td>
+              </tr>
+              <tr>
+                <td><code>FRANCHISE_DATABASE_URL_TEMPLATE</code></td>
+                <td>Prod multi-tenant</td>
+                <td>PostgreSQL URL template with <code>{db_name}</code> placeholder</td>
+              </tr>
+              <tr>
+                <td><code>FRANCHISE_BASE_DOMAIN</code></td>
+                <td>Prod multi-tenant</td>
+                <td>Base domain for partner hostnames (e.g. <code>roux.care</code>)</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="configuration" class="docs-section" aria-labelledby="config-heading">
+          <h2 id="config-heading">Configuration</h2>
+
+          <h3>Stripe</h3>
+          <ol>
+            <li>Create a <a href="https://dashboard.stripe.com/register" target="_blank" rel="noopener noreferrer">Stripe account</a> and copy test keys into <code>.env</code>.</li>
+            <li>Forward webhooks locally:
+              <div class="code-block"><code>stripe listen --forward-to localhost:8000/dashboard/webhooks/stripe/</code></div>
+            </li>
+            <li>Per-franchise webhooks: <code>POST /dashboard/webhooks/stripe/&lt;franchise_slug&gt;/</code></li>
+          </ol>
+
+          <h3>Xero</h3>
+          <ol>
+            <li>Create an app at <a href="https://developer.xero.com/app/manage" target="_blank" rel="noopener noreferrer">Xero Developer</a>.</li>
+            <li>Set redirect URI to <code>http://localhost:8000/dashboard/finance/xero/callback/</code> (or your production domain).</li>
+            <li>Connect from <strong>Dashboard → Finance → Connect Xero</strong>.</li>
+          </ol>
+
+          <h3>Email</h3>
+          <p>Development uses the console backend. For production:</p>
+          <div class="code-block"><code>EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend
+EMAIL_HOST=smtp.example.com
+EMAIL_PORT=587
+EMAIL_USE_TLS=True
+EMAIL_HOST_USER=your@email.com
+EMAIL_HOST_PASSWORD=your-password
+DEFAULT_FROM_EMAIL=noreply@yourclub.example</code></div>
+          <p>Notification types include booking confirmations, payment receipts, check-in/out alerts, absence reports, waitlist promotions, voucher redemptions, and DBS expiry reminders.</p>
+        </section>
+
+        <section id="franchises" class="docs-section" aria-labelledby="franchises-heading">
+          <h2 id="franchises-heading">Franchises &amp; multi-tenancy</h2>
+          <p>
+            Each franchise partner runs as an isolated wraparound business with its own database,
+            branded website, Stripe account, and Xero connection. Hostname routing resolves the tenant.
+          </p>
+
+          <h3>Provision a franchise (development)</h3>
+          <div class="code-block"><code>python manage.py provision_franchise "Acme Care" \
+  --slug acme \
+  --hostname acme.localhost</code></div>
+          <p>Visit <code>http://acme.localhost:8000/</code> (add <code>acme.localhost</code> to <code>/etc/hosts</code> if needed).</p>
+
+          <h3>Partner application flow</h3>
+          <p>
+            Prospective partners apply at <code>/franchise/apply/</code> on the Django app.
+            Super Admins review applications at <strong>Dashboard → Franchise Applications</strong>
+            and progress them through <strong>Pending → Under Review → Partner</strong>.
+            Approval provisions the isolated environment and emails login credentials.
+          </p>
+
+          <h3>Production multi-database</h3>
+          <p>SST sets <code>FRANCHISE_DATABASE_URL_TEMPLATE</code> so each partner gets a PostgreSQL database on the shared Aurora cluster. Point wildcard DNS at the load balancer:</p>
+          <ul>
+            <li>Staging: <code>*.staging.roux.care</code></li>
+            <li>Production: <code>*.roux.care</code></li>
+          </ul>
+        </section>
+
+        <section id="operations" class="docs-section" aria-labelledby="operations-heading">
+          <h2 id="operations-heading">Operations module</h2>
+          <p>
+            The <code>operations</code> app extends the dashboard with day-to-day club management
+            workflows beyond core bookings.
+          </p>
+          <div class="docs-grid">
+            <div class="docs-card">
+              <strong>Session register</strong>
+              <span>Live check-in/out, authorised collectors, walk-ins, today's programme</span>
+            </div>
+            <div class="docs-card">
+              <strong>Waitlist</strong>
+              <span>Auto-promote when spaces open; parent notifications</span>
+            </div>
+            <div class="docs-card">
+              <strong>Childcare vouchers</strong>
+              <span>Voucher balances, redemption at checkout, Edenred-style references</span>
+            </div>
+            <div class="docs-card">
+              <strong>Recurring bookings</strong>
+              <span>Standing weekly bookings applied via management command</span>
+            </div>
+            <div class="docs-card">
+              <strong>Safeguarding</strong>
+              <span>Concern logging, assignment, and staff notifications</span>
+            </div>
+            <div class="docs-card">
+              <strong>Analytics</strong>
+              <span>Attendance, revenue, and occupancy dashboards</span>
+            </div>
+          </div>
+
+          <h3>Key dashboard routes</h3>
+          <ul class="route-list">
+            <li><code>/dashboard/sessions/&lt;id&gt;/register/</code> — live register</li>
+            <li><code>/dashboard/waitlist/</code> — waiting list management</li>
+            <li><code>/dashboard/vouchers/</code> — childcare voucher admin</li>
+            <li><code>/dashboard/recurring/</code> — recurring booking rules</li>
+            <li><code>/dashboard/calendar/</code> — staff booking calendar</li>
+            <li><code>/dashboard/safeguarding/</code> — safeguarding concerns</li>
+            <li><code>/dashboard/analytics/</code> — operations analytics</li>
+            <li><code>/dashboard/rota/</code> — staff rota</li>
+            <li><code>/dashboard/visitors/</code> — visitor sign-in</li>
+            <li><code>/dashboard/medication/</code> — medication administration records</li>
+          </ul>
+        </section>
+
+        <section id="public-site" class="docs-section" aria-labelledby="public-heading">
+          <h2 id="public-heading">Public site &amp; CMS</h2>
+          <p>
+            Each organisation's public website is built from the dashboard CMS. Block types include
+            hero, rich text, features, CTA, FAQ, testimonials, session list, pricing, and contact form.
+            Pages support drag-and-drop reordering with SortableJS.
+          </p>
+          <h3>Parent booking flow</h3>
+          <ol>
+            <li>Parent registers or logs in at the public site</li>
+            <li>Browses sessions at <code>/sessions/</code> or the calendar at <code>/sessions/calendar/</code></li>
+            <li>Selects a child and payment method (Stripe card or childcare voucher)</li>
+            <li>Receives confirmation email on successful booking</li>
+          </ol>
+          <h3>CMS extension</h3>
+          <p>To add a block type:</p>
+          <ol>
+            <li>Add to <code>PageBlock.BlockType</code> in <code>cms/models.py</code></li>
+            <li>Create a form in <code>cms/block_forms.py</code></li>
+            <li>Render in <code>cms/block_renderer.py</code></li>
+          </ol>
+        </section>
+
+        <section id="api" class="docs-section" aria-labelledby="api-heading">
+          <h2 id="api-heading">Mobile API</h2>
+          <p>JWT-authenticated REST API at <code>/api/v1/</code> for iOS and Android clients.</p>
+
+          <h3>Authentication</h3>
+          <div class="code-block"><code># Obtain access + refresh tokens
+curl -X POST http://localhost:8000/api/v1/auth/token/ \
+  -H "Content-Type: application/json" \
+  -d '{"username": "parent1", "password": "parent123"}'
+
+# Refresh an expired access token
+curl -X POST http://localhost:8000/api/v1/auth/token/refresh/ \
+  -H "Content-Type: application/json" \
+  -d '{"refresh": "&lt;refresh_token&gt;"}'</code></div>
+
+          <h3>Endpoints</h3>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Method</th>
+                <th>Endpoint</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>GET</td>
+                <td><code>/api/v1/me/</code></td>
+                <td>Current user profile</td>
+              </tr>
+              <tr>
+                <td>GET</td>
+                <td><code>/api/v1/sessions/</code></td>
+                <td>List scheduled sessions</td>
+              </tr>
+              <tr>
+                <td>GET</td>
+                <td><code>/api/v1/sessions/upcoming/</code></td>
+                <td>Upcoming sessions only</td>
+              </tr>
+              <tr>
+                <td>GET/POST</td>
+                <td><code>/api/v1/children/</code></td>
+                <td>List or create children for the logged-in parent</td>
+              </tr>
+              <tr>
+                <td>GET/POST</td>
+                <td><code>/api/v1/bookings/</code></td>
+                <td>List or create bookings</td>
+              </tr>
+              <tr>
+                <td>POST</td>
+                <td><code>/api/v1/bookings/&lt;id&gt;/cancel/</code></td>
+                <td>Cancel a booking</td>
+              </tr>
+            </tbody>
+          </table>
+          <p>Include the access token: <code>Authorization: Bearer &lt;access_token&gt;</code></p>
+        </section>
+
+        <section id="management-commands" class="docs-section" aria-labelledby="commands-heading">
+          <h2 id="commands-heading">Management commands</h2>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Command</th>
+                <th>Purpose</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>seed_demo</code></td>
+                <td>Populate demo organisation, users, sessions, vouchers, and sample data</td>
+              </tr>
+              <tr>
+                <td><code>provision_franchise</code></td>
+                <td>Create an isolated franchise tenant with database and admin user</td>
+              </tr>
+              <tr>
+                <td><code>apply_recurring_bookings</code></td>
+                <td>Materialise recurring booking rules into session bookings (run daily via cron)</td>
+              </tr>
+              <tr>
+                <td><code>send_session_reminders</code></td>
+                <td>Email staff reminders for upcoming sessions</td>
+              </tr>
+              <tr>
+                <td><code>send_dbs_reminders</code></td>
+                <td>Alert staff when DBS certificates are nearing expiry</td>
+              </tr>
+              <tr>
+                <td><code>sync_mis</code></td>
+                <td>Stub for MIS (school information system) pupil sync</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="testing" class="docs-section" aria-labelledby="testing-heading">
+          <h2 id="testing-heading">Testing</h2>
+
+          <h3>Unit &amp; integration tests</h3>
+          <div class="code-block"><code>pip install -r requirements.txt -r requirements-dev.txt
+pytest
+pytest --cov --cov-report=term-missing</code></div>
+
+          <h3>Playwright BDD e2e tests</h3>
+          <p>End-to-end scenarios use pytest-bdd and Playwright against a live Django server:</p>
+          <div class="code-block"><code>playwright install chromium
+DJANGO_ALLOW_ASYNC_UNSAFE=1 pytest e2e/ -m e2e --browser chromium</code></div>
+          <p>
+            Feature files live in <code>e2e/features/</code> with shared step definitions in
+            <code>e2e/steps/</code>. Scenarios cover auth, dashboard, public site, franchise flows,
+            operations, and parent booking journeys.
+          </p>
+
+          <h3>Pre-commit hooks</h3>
+          <div class="code-block"><code>pre-commit install
+pre-commit run --all-files</code></div>
+          <p>Hooks: trailing whitespace, YAML/TOML/JSON checks, ruff lint + format, Django system check, migration drift detection.</p>
+        </section>
+
+        <section id="ci-cd" class="docs-section" aria-labelledby="ci-heading">
+          <h2 id="ci-heading">CI/CD</h2>
+          <p>GitHub Actions workflows in <code>.github/workflows/</code>:</p>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Workflow</th>
+                <th>Trigger</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>ci.yml</code></td>
+                <td>Push / pull request</td>
+                <td>Pre-commit, unit tests with coverage, Playwright BDD e2e (Chromium)</td>
+              </tr>
+              <tr>
+                <td><code>pages.yml</code></td>
+                <td>Push to <code>main</code></td>
+                <td>Deploy <code>landing/</code> to GitHub Pages</td>
+              </tr>
+              <tr>
+                <td><code>deploy-sst.yml</code></td>
+                <td>Push to <code>main</code> / manual</td>
+                <td>Deploy Django app to AWS via SST v3</td>
+              </tr>
+            </tbody>
+          </table>
+          <p>Required GitHub secrets for deployment: <code>AWS_ACCESS_KEY_ID</code>, <code>AWS_SECRET_ACCESS_KEY</code>, <code>DJANGO_SECRET_KEY</code>, <code>STRIPE_SECRET_KEY</code>, <code>STRIPE_WEBHOOK_SECRET</code>, <code>XERO_CLIENT_SECRET</code>.</p>
+        </section>
+
+        <section id="deployment" class="docs-section" aria-labelledby="deploy-heading">
+          <h2 id="deploy-heading">AWS deployment</h2>
+          <p>
+            Production deploys to <strong>AWS eu-west-2 (London)</strong> using
+            <a href="https://sst.dev/" target="_blank" rel="noopener noreferrer">SST v3</a>.
+            See <code>docs/DEPLOYMENT.md</code> in the repository for the full guide.
+          </p>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Component</th>
+                <th>Staging</th>
+                <th>Production</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Compute</td>
+                <td>ECS Fargate (1 task)</td>
+                <td>ECS Fargate (2–6 tasks)</td>
+              </tr>
+              <tr>
+                <td>Database</td>
+                <td>Aurora Serverless v2</td>
+                <td>Aurora Serverless v2 (scaled)</td>
+              </tr>
+              <tr>
+                <td>Static files</td>
+                <td>S3 + CloudFront</td>
+                <td>S3 + CloudFront</td>
+              </tr>
+              <tr>
+                <td>Domain</td>
+                <td><code>staging.roux.care</code></td>
+                <td><code>app.roux.care</code></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h3>First deploy</h3>
+          <div class="code-block"><code>npm install
+npx sst secret set SecretKey "&lt;django-secret&gt;" --stage staging
+npx sst secret set StripeSecretKey "sk_test_..." --stage staging
+npm run deploy:staging</code></div>
+
+          <h3>Post-deploy checklist</h3>
+          <ol>
+            <li>Run migrations: <code>npx sst shell --stage staging -- python manage.py migrate</code></li>
+            <li>Seed demo data on staging: <code>npx sst shell --stage staging -- python manage.py seed_demo</code></li>
+            <li>Configure Stripe webhook: <code>https://&lt;domain&gt;/dashboard/webhooks/stripe/</code></li>
+            <li>Configure Xero redirect: <code>https://&lt;domain&gt;/dashboard/finance/xero/callback/</code></li>
+          </ol>
+
+          <h3>Docker (local)</h3>
+          <div class="code-block"><code>docker build -t roux .
+docker run -p 8000:8000 -e SECRET_KEY=dev -e DEBUG=True roux</code></div>
+        </section>
+
+        <section id="extending" class="docs-section" aria-labelledby="extending-heading">
+          <h2 id="extending-heading">Extending Roux</h2>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Goal</th>
+                <th>Where to start</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>New CMS block type</td>
+                <td><code>cms/models.py</code> → <code>cms/block_forms.py</code> → <code>cms/block_renderer.py</code></td>
+              </tr>
+              <tr>
+                <td>New user role</td>
+                <td><code>accounts/models.py</code> → <code>accounts/decorators.py</code></td>
+              </tr>
+              <tr>
+                <td>New payment integration</td>
+                <td><code>billing/services.py</code> (follow existing Stripe pattern)</td>
+              </tr>
+              <tr>
+                <td>New API endpoint</td>
+                <td><code>api/serializers.py</code> → <code>api/views.py</code> → <code>api/urls.py</code></td>
+              </tr>
+              <tr>
+                <td>New email notification</td>
+                <td><code>templates/emails/</code> → <code>notifications/services.py</code></td>
+              </tr>
+              <tr>
+                <td>New dashboard feature</td>
+                <td>Add views in <code>dashboard/</code> or <code>operations/</code>, register in <code>dashboard/urls.py</code></td>
+              </tr>
+              <tr>
+                <td>New e2e scenario</td>
+                <td><code>e2e/features/*.feature</code> → <code>e2e/steps/</code> → register in <code>e2e/test_bdd.py</code></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="docs-callout">
+            <strong>Contributing</strong>
+            <p>
+              Run <code>pre-commit run --all-files</code> before pushing. CI runs lint, unit tests,
+              and Playwright e2e on every push to <code>main</code> and <code>skynet/**</code> branches.
+            </p>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <p><small>© 2026 Roux · Open source wraparound care platform</small></p>
+      <ul class="footer-links" aria-label="Footer">
+        <li><a href="https://github.com/kurtisrogers/Roux">GitHub</a></li>
+        <li><a href="docs.html">Documentation</a></li>
+        <li><a href="./#features">Features</a></li>
+        <li><a href="#main-content">Back to top</a></li>
+      </ul>
+    </div>
+  </footer>
+</body>
+</html>
