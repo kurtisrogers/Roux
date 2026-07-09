@@ -1,19 +1,25 @@
 {% extends "base/dashboard.html" %}
 {% block page_title %}Bookings{% endblock %}
 {% block content %}
-<h1>Bookings</h1>
-<table>
-  <thead><tr><th>Child</th><th>Session</th><th>Date</th><th>Status</th><th>Payment</th></tr></thead>
-  <tbody>
-    {% for booking in bookings %}
-    <tr>
-      <td>{{ booking.child.full_name }}</td>
-      <td>{{ booking.session.session_type.name }}</td>
-      <td>{{ booking.session.date|date:"j M Y" }}</td>
-      <td>{{ booking.get_status_display }}</td>
-      <td>{{ booking.get_payment_status_display }}</td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
+<div class="page-header">
+  <div><h1>Bookings</h1><p class="lede">All session bookings across your organisation.</p></div>
+</div>
+<div class="table-wrap">
+  <table>
+    <thead><tr><th>Child</th><th>Session</th><th>Date</th><th>Status</th><th>Payment</th></tr></thead>
+    <tbody>
+      {% for booking in bookings %}
+      <tr>
+        <td><strong>{{ booking.child.full_name }}</strong></td>
+        <td>{{ booking.session.session_type.name }}</td>
+        <td>{{ booking.session.date|date:"j M Y" }}</td>
+        <td><span class="status-pill">{{ booking.get_status_display }}</span></td>
+        <td>{{ booking.get_payment_status_display }}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="5"><div class="empty-state">No bookings yet.</div></td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
 {% endblock %}

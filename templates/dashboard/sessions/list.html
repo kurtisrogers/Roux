@@ -1,26 +1,30 @@
 {% extends "base/dashboard.html" %}
 {% block page_title %}Sessions{% endblock %}
 {% block content %}
-<hgroup>
-  <h1>Sessions</h1>
-  <a href="{% url 'dashboard:session_create' %}" role="button">Add Session</a>
-</hgroup>
-<table>
-  <thead>
-    <tr><th>Type</th><th>Site</th><th>Date</th><th>Time</th><th>Booked</th><th>Status</th><th></th></tr>
-  </thead>
-  <tbody>
-    {% for session in sessions %}
-    <tr>
-      <td>{{ session.session_type.name }}</td>
-      <td>{{ session.site.name }}</td>
-      <td>{{ session.date|date:"j M Y" }}</td>
-      <td>{{ session.start_time|time:"H:i" }}–{{ session.end_time|time:"H:i" }}</td>
-      <td>{{ session.booked_count }}/{{ session.session_type.capacity }}</td>
-      <td>{{ session.get_status_display }}</td>
-      <td><a href="{% url 'dashboard:session_detail' session.pk %}">Manage</a></td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
+<div class="page-header">
+  <div><h1>Sessions</h1><p class="lede">Manage breakfast, after-school, and holiday sessions.</p></div>
+  <div class="page-actions"><a href="{% url 'dashboard:session_create' %}" role="button">Add session</a></div>
+</div>
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr><th>Type</th><th>Site</th><th>Date</th><th>Time</th><th>Booked</th><th>Status</th><th></th></tr>
+    </thead>
+    <tbody>
+      {% for session in sessions %}
+      <tr>
+        <td><strong>{{ session.session_type.name }}</strong></td>
+        <td>{{ session.site.name }}</td>
+        <td>{{ session.date|date:"j M Y" }}</td>
+        <td>{{ session.start_time|time:"H:i" }}–{{ session.end_time|time:"H:i" }}</td>
+        <td>{{ session.booked_count }}/{{ session.session_type.capacity }}</td>
+        <td><span class="status-pill">{{ session.get_status_display }}</span></td>
+        <td><a href="{% url 'dashboard:session_detail' session.pk %}">Manage</a></td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="7"><div class="empty-state">No sessions yet. Create your first session to start taking bookings.</div></td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
 {% endblock %}

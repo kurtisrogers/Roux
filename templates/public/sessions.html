@@ -1,25 +1,28 @@
 {% extends "base/public.html" %}
 {% block title %}Sessions – {{ current_organisation.name }}{% endblock %}
 {% block content %}
-<h1>Available Sessions</h1>
+<div class="public-hero">
+  <h1>Available sessions</h1>
+  <p class="public-lede">Book breakfast, after-school, and holiday clubs for {{ current_organisation.name }}.</p>
+</div>
 {% if sessions %}
-<div class="grid">
+<div class="session-card-grid">
   {% for session in sessions %}
-  <article>
+  <article class="session-card">
     <header><strong>{{ session.session_type.name }}</strong></header>
-    <p>{{ session.date|date:"l j F Y" }}</p>
-    <p>{{ session.start_time|time:"H:i" }} – {{ session.end_time|time:"H:i" }}</p>
-    <p>{{ session.site.name }}</p>
-    <p>£{{ session.session_type.price }} · {{ session.spaces_remaining }} spaces left</p>
+    <p class="meta">{{ session.date|date:"l j F Y" }}</p>
+    <p class="meta">{{ session.start_time|time:"H:i" }} – {{ session.end_time|time:"H:i" }}</p>
+    <p class="meta">{{ session.site.name }}</p>
+    <p class="price">£{{ session.session_type.price }} · {{ session.spaces_remaining }} spaces left</p>
     {% if user.is_authenticated %}
-      <a href="{% url 'public:book_session' session.pk %}" role="button" {% if session.is_full %}aria-disabled="true" class="disabled"{% endif %}>Book Now</a>
+      <a href="{% url 'public:book_session' session.pk %}" role="button" {% if session.is_full %}aria-disabled="true" class="disabled"{% endif %}>Book now</a>
     {% else %}
-      <a href="{% url 'accounts:login' %}?next={% url 'public:book_session' session.pk %}" role="button">Login to Book</a>
+      <a href="{% url 'accounts:login' %}?next={% url 'public:book_session' session.pk %}" role="button">Login to book</a>
     {% endif %}
   </article>
   {% endfor %}
 </div>
 {% else %}
-<p>No upcoming sessions. Please check back soon.</p>
+<div class="empty-state">No upcoming sessions. Please check back soon.</div>
 {% endif %}
 {% endblock %}

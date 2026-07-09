@@ -1,23 +1,27 @@
 {% extends "base/public.html" %}
 {% block title %}Book a session — {{ organisation.name }}{% endblock %}
 {% block content %}
-<h1>Book a session</h1>
-<p class="muted">Choose an available session for {{ organisation.name }}.</p>
-<div class="card-grid">
+<div class="public-hero">
+  <h1>Book a session</h1>
+  <p class="public-lede">Choose an available session for {{ organisation.name }}.</p>
+</div>
+{% if sessions %}
+<div class="session-card-grid">
   {% for session in sessions %}
-  <article class="card">
-    <h2>{{ session.session_type.name }}</h2>
-    <p>{{ session.date|date:"l j F Y" }}</p>
-    <p>{{ session.start_time|time:"H:i" }} – {{ session.end_time|time:"H:i" }}</p>
-    <p><strong>£{{ session.session_type.price }}</strong> · {{ session.available_spaces }} spaces left</p>
+  <article class="session-card">
+    <header><strong>{{ session.session_type.name }}</strong></header>
+    <p class="meta">{{ session.date|date:"l j F Y" }}</p>
+    <p class="meta">{{ session.start_time|time:"H:i" }} – {{ session.end_time|time:"H:i" }}</p>
+    <p class="price">£{{ session.session_type.price }} · {{ session.available_spaces }} spaces left</p>
     {% if session.available_spaces > 0 %}
-    <a class="btn" href="{% url 'public:book_session' session.pk %}">Book now</a>
+    <a href="{% url 'public:book_session' session.pk %}" role="button">Book now</a>
     {% else %}
-    <a class="btn btn-secondary" href="{% url 'public:join_waitlist' session.pk %}">Join waitlist</a>
+    <a href="{% url 'public:join_waitlist' session.pk %}" role="button" class="outline">Join waitlist</a>
     {% endif %}
   </article>
-  {% empty %}
-  <p>No upcoming sessions are open for booking.</p>
   {% endfor %}
 </div>
+{% else %}
+<div class="empty-state">No upcoming sessions are open for booking.</div>
+{% endif %}
 {% endblock %}

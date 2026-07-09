@@ -1,21 +1,25 @@
 {% extends "base/dashboard.html" %}
 {% block page_title %}Users{% endblock %}
 {% block content %}
-<hgroup>
-  <h1>Users</h1>
-  <a href="{% url 'dashboard:user_create' %}" role="button">Add User</a>
-</hgroup>
-<table>
-  <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Active</th></tr></thead>
-  <tbody>
-    {% for u in users %}
-    <tr>
-      <td>{{ u.get_full_name|default:u.username }}</td>
-      <td>{{ u.email }}</td>
-      <td>{{ u.get_role_display }}</td>
-      <td>{% if u.is_active %}✓{% else %}—{% endif %}</td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
+<div class="page-header">
+  <div><h1>Users</h1><p class="lede">Staff, parents, and administrators.</p></div>
+  <div class="page-actions"><a href="{% url 'dashboard:user_create' %}" role="button">Add user</a></div>
+</div>
+<div class="table-wrap">
+  <table>
+    <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Active</th></tr></thead>
+    <tbody>
+      {% for u in users %}
+      <tr>
+        <td><strong>{{ u.get_full_name|default:u.username }}</strong></td>
+        <td>{{ u.email }}</td>
+        <td>{{ u.get_role_display }}</td>
+        <td>{% if u.is_active %}<span class="badge badge--success">Active</span>{% else %}<span class="status-pill status-pill--muted">Inactive</span>{% endif %}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="4"><div class="empty-state">No users found.</div></td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
 {% endblock %}

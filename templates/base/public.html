@@ -1,6 +1,6 @@
 {% extends "base/base.html" %}
-{% block title %}{% if site_settings.site_name %}{{ site_settings.site_name }}{% else %}{{ current_organisation.name }}{% endif %}{% endblock %}
 {% block body %}
+<div class="public-site">
 <header class="container">
   <nav>
     <ul>
@@ -48,4 +48,5 @@
     {% if site_settings.contact_email %} · {{ site_settings.contact_email }}{% endif %}
   </small>
 </footer>
+</div>
 {% endblock %}

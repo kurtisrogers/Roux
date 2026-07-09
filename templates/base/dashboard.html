@@ -1,24 +1,27 @@
 {% extends "base/base.html" %}
 {% block title %}{% block page_title %}Dashboard{% endblock %} – Roux{% endblock %}
 {% block body %}
-<div class="dashboard-layout" x-data="{ sidebarOpen: true }">
+<div class="dashboard-layout">
   <aside class="dashboard-sidebar">
-    <header>
-      <strong><a href="{% url 'dashboard:home' %}">Roux</a></strong>
-      {% if organisation %}<small>{{ organisation.name }}</small>{% endif %}
-    </header>
-    <nav>
+    <div class="dashboard-brand">
+      <span class="dashboard-brand-mark" aria-hidden="true">R</span>
+      <div>
+        <a href="{% url 'dashboard:home' %}">Roux</a>
+        {% if organisation %}<small>{{ organisation.name }}</small>{% endif %}
+      </div>
+    </div>
+    <nav aria-label="Dashboard">
       <ul>
-        <li><a href="{% url 'dashboard:home' %}">Overview</a></li>
-        <li><a href="{% url 'dashboard:session_list' %}">Sessions</a></li>
-        <li><a href="{% url 'dashboard:booking_calendar' %}">Calendar</a></li>
-        <li><a href="{% url 'dashboard:recurring_list' %}">Recurring</a></li>
-        <li><a href="{% url 'dashboard:waitlist_list' %}">Waitlist</a></li>
-        <li><a href="{% url 'dashboard:session_type_list' %}">Session Types</a></li>
-        <li><a href="{% url 'dashboard:booking_list' %}">Bookings</a></li>
-        <li><a href="{% url 'dashboard:child_list' %}">Children</a></li>
-        <li><a href="{% url 'dashboard:site_list' %}">Sites</a></li>
-        <li><a href="{% url 'dashboard:user_list' %}">Users</a></li>
+        <li><a href="{% url 'dashboard:home' %}" class="{% if request.resolver_match.url_name == 'home' %}is-active{% endif %}">Overview</a></li>
+        <li><a href="{% url 'dashboard:session_list' %}" class="{% if 'session' in request.resolver_match.url_name %}is-active{% endif %}">Sessions</a></li>
+        <li><a href="{% url 'dashboard:booking_calendar' %}" class="{% if request.resolver_match.url_name == 'booking_calendar' %}is-active{% endif %}">Calendar</a></li>
+        <li><a href="{% url 'dashboard:recurring_list' %}" class="{% if 'recurring' in request.resolver_match.url_name %}is-active{% endif %}">Recurring</a></li>
+        <li><a href="{% url 'dashboard:waitlist_list' %}" class="{% if request.resolver_match.url_name == 'waitlist_list' %}is-active{% endif %}">Waitlist</a></li>
+        <li><a href="{% url 'dashboard:session_type_list' %}" class="{% if 'session_type' in request.resolver_match.url_name %}is-active{% endif %}">Session Types</a></li>
+        <li><a href="{% url 'dashboard:booking_list' %}" class="{% if request.resolver_match.url_name == 'booking_list' %}is-active{% endif %}">Bookings</a></li>
+        <li><a href="{% url 'dashboard:child_list' %}" class="{% if 'child' in request.resolver_match.url_name %}is-active{% endif %}">Children</a></li>
+        <li><a href="{% url 'dashboard:site_list' %}" class="{% if 'site' in request.resolver_match.url_name %}is-active{% endif %}">Sites</a></li>
+        <li><a href="{% url 'dashboard:user_list' %}" class="{% if 'user' in request.resolver_match.url_name %}is-active{% endif %}">Users</a></li>
       </ul>
       {% if user.role == 'super_admin' %}
       <details open>
@@ -32,35 +35,35 @@
       <details open>
         <summary>Operations</summary>
         <ul>
-          <li><a href="{% url 'dashboard:rota_list' %}">Staff Rota</a></li>
-          <li><a href="{% url 'dashboard:visitor_list' %}">Visitors</a></li>
-          <li><a href="{% url 'dashboard:medication_list' %}">Medication Log</a></li>
-          <li><a href="{% url 'dashboard:staff_compliance_list' %}">Staff Compliance</a></li>
-          <li><a href="{% url 'dashboard:safeguarding_list' %}">Safeguarding</a></li>
-          <li><a href="{% url 'dashboard:bulk_sessions' %}">Bulk Sessions</a></li>
-          <li><a href="{% url 'dashboard:programme_list' %}">Programme Planner</a></li>
-          <li><a href="{% url 'dashboard:activity_list' %}">Activities</a></li>
-          <li><a href="{% url 'dashboard:week_pack_list' %}">Week Packs</a></li>
-          <li><a href="{% url 'dashboard:closure_list' %}">Closures</a></li>
+          <li><a href="{% url 'dashboard:rota_list' %}" class="{% if 'rota' in request.resolver_match.url_name %}is-active{% endif %}">Staff Rota</a></li>
+          <li><a href="{% url 'dashboard:visitor_list' %}" class="{% if 'visitor' in request.resolver_match.url_name %}is-active{% endif %}">Visitors</a></li>
+          <li><a href="{% url 'dashboard:medication_list' %}" class="{% if 'medication' in request.resolver_match.url_name %}is-active{% endif %}">Medication Log</a></li>
+          <li><a href="{% url 'dashboard:staff_compliance_list' %}" class="{% if 'compliance' in request.resolver_match.url_name %}is-active{% endif %}">Staff Compliance</a></li>
+          <li><a href="{% url 'dashboard:safeguarding_list' %}" class="{% if 'safeguarding' in request.resolver_match.url_name %}is-active{% endif %}">Safeguarding</a></li>
+          <li><a href="{% url 'dashboard:bulk_sessions' %}" class="{% if request.resolver_match.url_name == 'bulk_sessions' %}is-active{% endif %}">Bulk Sessions</a></li>
+          <li><a href="{% url 'dashboard:programme_list' %}" class="{% if 'programme' in request.resolver_match.url_name %}is-active{% endif %}">Programme Planner</a></li>
+          <li><a href="{% url 'dashboard:activity_list' %}" class="{% if 'activity' in request.resolver_match.url_name %}is-active{% endif %}">Activities</a></li>
+          <li><a href="{% url 'dashboard:week_pack_list' %}" class="{% if 'week_pack' in request.resolver_match.url_name %}is-active{% endif %}">Week Packs</a></li>
+          <li><a href="{% url 'dashboard:closure_list' %}" class="{% if request.resolver_match.url_name == 'closure_list' %}is-active{% endif %}">Closures</a></li>
         </ul>
       </details>
       <details open>
         <summary>Website</summary>
         <ul>
-          <li><a href="{% url 'dashboard:page_list' %}">Pages</a></li>
-          <li><a href="{% url 'dashboard:site_settings' %}">Site Settings</a></li>
-          <li><a href="{% url 'dashboard:contact_list' %}">Contact Messages</a></li>
-          <li><a href="{% url 'public:home' %}" target="_blank">View Site ↗</a></li>
+          <li><a href="{% url 'dashboard:page_list' %}" class="{% if 'page' in request.resolver_match.url_name %}is-active{% endif %}">Pages</a></li>
+          <li><a href="{% url 'dashboard:site_settings' %}" class="{% if request.resolver_match.url_name == 'site_settings' %}is-active{% endif %}">Site Settings</a></li>
+          <li><a href="{% url 'dashboard:contact_list' %}" class="{% if request.resolver_match.url_name == 'contact_list' %}is-active{% endif %}">Contact Messages</a></li>
+          <li><a href="{% url 'public:home' %}" target="_blank" rel="noopener noreferrer">View Site ↗</a></li>
         </ul>
       </details>
       <ul>
-        <li><a href="{% url 'dashboard:billing' %}">Billing (Stripe)</a></li>
-        <li><a href="{% url 'dashboard:finance' %}">Finance (Xero)</a></li>
-        <li><a href="{% url 'dashboard:voucher_list' %}">Childcare Vouchers</a></li>
-        <li><a href="{% url 'dashboard:subsidy_list' %}">Subsidies</a></li>
-        <li><a href="{% url 'dashboard:payment_plan_list' %}">Payment Plans</a></li>
-        <li><a href="{% url 'dashboard:analytics' %}">Analytics</a></li>
-        <li><a href="{% url 'dashboard:ofsted_dashboard' %}">Ofsted & Compliance</a></li>
+        <li><a href="{% url 'dashboard:billing' %}" class="{% if request.resolver_match.url_name == 'billing' %}is-active{% endif %}">Billing (Stripe)</a></li>
+        <li><a href="{% url 'dashboard:finance' %}" class="{% if 'finance' in request.resolver_match.url_name or 'xero' in request.resolver_match.url_name %}is-active{% endif %}">Finance (Xero)</a></li>
+        <li><a href="{% url 'dashboard:voucher_list' %}" class="{% if 'voucher' in request.resolver_match.url_name %}is-active{% endif %}">Childcare Vouchers</a></li>
+        <li><a href="{% url 'dashboard:subsidy_list' %}" class="{% if 'subsidy' in request.resolver_match.url_name %}is-active{% endif %}">Subsidies</a></li>
+        <li><a href="{% url 'dashboard:payment_plan_list' %}" class="{% if 'payment_plan' in request.resolver_match.url_name %}is-active{% endif %}">Payment Plans</a></li>
+        <li><a href="{% url 'dashboard:analytics' %}" class="{% if request.resolver_match.url_name == 'analytics' %}is-active{% endif %}">Analytics</a></li>
+        <li><a href="{% url 'dashboard:ofsted_dashboard' %}" class="{% if 'ofsted' in request.resolver_match.url_name or 'incident' in request.resolver_match.url_name or 'ratio' in request.resolver_match.url_name %}is-active{% endif %}">Ofsted & Compliance</a></li>
       </ul>
     </nav>
     <footer>
@@ -68,7 +71,7 @@
       <a href="{% url 'accounts:logout' %}">Logout</a>
     </footer>
   </aside>
-  <main class="dashboard-main container">
+  <main class="dashboard-main">
     {% if messages %}
       {% for message in messages %}
         <article class="{{ message.tags }}">{{ message }}</article>

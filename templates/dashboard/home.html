@@ -1,7 +1,12 @@
 {% extends "base/dashboard.html" %}
 {% block page_title %}Overview{% endblock %}
 {% block content %}
-<h1>Dashboard</h1>
+<div class="page-header">
+  <div>
+    <h1>Dashboard</h1>
+    {% if organisation %}<p class="lede">Today's overview for {{ organisation.name }}</p>{% endif %}
+  </div>
+</div>
 {% if organisation %}
 <div class="grid stats-grid">
   <article><header>Today's Sessions</header><strong>{{ today_sessions }}</strong></article>
@@ -9,33 +14,50 @@
   <article><header>Active Children</header><strong>{{ total_children }}</strong></article>
   <article><header>Unpaid Bookings</header><strong>{{ unpaid_bookings }}</strong></article>
 </div>
-<div class="grid">
-  <section>
+<div class="panel-grid panel-grid--2">
+  <section class="panel-card">
     <h2>Upcoming Sessions</h2>
-    {% for session in upcoming_sessions %}
-      <p><a href="{% url 'dashboard:session_detail' session.pk %}">{{ session.session_type.name }}</a> – {{ session.date|date:"j M" }} · {{ session.spaces_remaining }} spaces</p>
-    {% empty %}
-      <p>No upcoming sessions.</p>
-    {% endfor %}
+    <ul class="list-rows">
+      {% for session in upcoming_sessions %}
+      <li class="list-row">
+        <div>
+          <strong><a href="{% url 'dashboard:session_detail' session.pk %}">{{ session.session_type.name }}</a></strong>
+          <small>{{ session.date|date:"l j M" }} · {{ session.spaces_remaining }} spaces left</small>
+        </div>
+        <span class="status-pill">{{ session.get_status_display }}</span>
+      </li>
+      {% empty %}
+      <li class="empty-state">No upcoming sessions scheduled.</li>
+      {% endfor %}
+    </ul>
   </section>
-  <section>
+  <section class="panel-card">
     <h2>Recent Bookings</h2>
-    {% for booking in recent_bookings %}
-      <p>{{ booking.child.full_name }} – {{ booking.session.session_type.name }} ({{ booking.get_status_display }})</p>
-    {% empty %}
-      <p>No bookings yet.</p>
-    {% endfor %}
+    <ul class="list-rows">
+      {% for booking in recent_bookings %}
+      <li class="list-row">
+        <div>
+          <strong>{{ booking.child.full_name }}</strong>
+          <small>{{ booking.session.session_type.name }} · {{ booking.session.date|date:"j M" }}</small>
+        </div>
+        <span class="status-pill">{{ booking.get_status_display }}</span>
+      </li>
+      {% empty %}
+      <li class="empty-state">No bookings yet.</li>
+      {% endfor %}
+    </ul>
   </section>
 </div>
 {% elif is_super_admin %}
-<h2>All Organisations</h2>
-<table>
-  <thead><tr><th>Name</th><th>Users</th><th>Children</th></tr></thead>
-  <tbody>
-    {% for org in organisations %}
-    <tr><td>{{ org.name }}</td><td>{{ org.user_count }}</td><td>{{ org.child_count }}</td></tr>
-    {% endfor %}
-  </tbody>
-</table>
+<div class="table-wrap">
+  <table>
+    <thead><tr><th>Name</th><th>Users</th><th>Children</th></tr></thead>
+    <tbody>
+      {% for org in organisations %}
+      <tr><td>{{ org.name }}</td><td>{{ org.user_count }}</td><td>{{ org.child_count }}</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
 {% endif %}
 {% endblock %}

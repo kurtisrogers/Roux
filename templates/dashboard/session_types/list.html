@@ -1,22 +1,26 @@
 {% extends "base/dashboard.html" %}
 {% block page_title %}Session Types{% endblock %}
 {% block content %}
-<hgroup>
-  <h1>Session Types</h1>
-  <a href="{% url 'dashboard:session_type_create' %}" role="button">Add Type</a>
-</hgroup>
-<table>
-  <thead><tr><th>Name</th><th>Category</th><th>Price</th><th>Capacity</th><th>Ages</th></tr></thead>
-  <tbody>
-    {% for st in session_types %}
-    <tr>
-      <td>{{ st.name }}</td>
-      <td>{{ st.get_category_display }}</td>
-      <td>£{{ st.price }}</td>
-      <td>{{ st.capacity }}</td>
-      <td>{{ st.age_min }}–{{ st.age_max }}</td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
+<div class="page-header">
+  <div><h1>Session types</h1><p class="lede">Breakfast, after-school, and holiday session templates.</p></div>
+  <div class="page-actions"><a href="{% url 'dashboard:session_type_create' %}" role="button">Add type</a></div>
+</div>
+<div class="table-wrap">
+  <table>
+    <thead><tr><th>Name</th><th>Category</th><th>Price</th><th>Capacity</th><th>Ages</th></tr></thead>
+    <tbody>
+      {% for st in session_types %}
+      <tr>
+        <td><strong>{{ st.name }}</strong></td>
+        <td>{{ st.get_category_display }}</td>
+        <td>£{{ st.price }}</td>
+        <td>{{ st.capacity }}</td>
+        <td>{{ st.age_min }}–{{ st.age_max }}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="5"><div class="empty-state">No session types yet.</div></td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
 {% endblock %}

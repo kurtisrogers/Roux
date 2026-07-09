@@ -1,6 +1,14 @@
 {% extends "base/dashboard.html" %}
 {% block page_title %}{{ title|default:"Programme" }}{% endblock %}
 {% block content %}
-<h1>{{ title }}</h1>
+<div class="page-header">
+  <div>
+    <h1>{{ title }}</h1>
+    {% block programme_lede %}{% endblock %}
+  </div>
+  <div class="page-actions">
+    {% block programme_actions %}{% endblock %}
+  </div>
+</div>
 {% block programme_content %}{% endblock %}
 {% endblock %}

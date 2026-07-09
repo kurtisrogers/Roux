@@ -1,42 +1,44 @@
 {% extends "base/dashboard.html" %}
 {% block page_title %}Finance{% endblock %}
 {% block content %}
-<h1>Finance & Xero</h1>
-<section>
-  <h2>Xero Connection</h2>
-  {% if xero_connection and xero_connection.is_connected %}
-    <p>Connected to: {{ xero_connection.tenant_name }}</p>
-    <p>Auto-sync invoices: {% if xero_connection.auto_sync_invoices %}On{% else %}Off{% endif %}</p>
+<div class="page-header">
+  <div><h1>Finance & Xero</h1><p class="lede">Accounting integration and synced invoices.</p></div>
+</div>
+<div class="panel-grid panel-grid--2">
+  <section class="panel-card">
+    <h2>Xero connection</h2>
+    {% if xero_connection and xero_connection.is_connected %}
+    <p>Connected to <strong>{{ xero_connection.tenant_name }}</strong></p>
+    <p>Auto-sync invoices: {% if xero_connection.auto_sync_invoices %}<span class="badge badge--success">On</span>{% else %}<span class="status-pill status-pill--muted">Off</span>{% endif %}</p>
     <form method="post" action="{% url 'dashboard:xero_disconnect' %}">
       {% csrf_token %}
       <button type="submit" class="secondary">Disconnect</button>
     </form>
-  {% else %}
+    {% else %}
     <p>Connect your Xero account to sync invoices automatically.</p>
     <a href="{% url 'dashboard:xero_connect' %}" role="button">Connect Xero</a>
-  {% endif %}
-</section>
-<section>
-  <h2>Synced Invoices</h2>
-  <table>
-    <thead><tr><th>Number</th><th>Contact</th><th>Amount</th><th>Status</th><th></th></tr></thead>
-    <tbody>
-      {% for invoice in invoices %}
-      <tr>
-        <td>{{ invoice.invoice_number|default:"—" }}</td>
-        <td>{{ invoice.contact_name }}</td>
-        <td>£{{ invoice.amount }}</td>
-        <td>{{ invoice.get_status_display }}</td>
-        <td>
-          {% if invoice.status == "error" %}
-            <small>{{ invoice.sync_error }}</small>
-          {% endif %}
-        </td>
-      </tr>
-      {% empty %}
-      <tr><td colspan="5">No invoices synced.</td></tr>
-      {% endfor %}
-    </tbody>
-  </table>
-</section>
+    {% endif %}
+  </section>
+  <section class="panel-card">
+    <h2>Synced invoices</h2>
+    <div class="table-wrap" style="border:none;box-shadow:none">
+      <table>
+        <thead><tr><th>Number</th><th>Contact</th><th>Amount</th><th>Status</th><th></th></tr></thead>
+        <tbody>
+          {% for invoice in invoices %}
+          <tr>
+            <td>{{ invoice.invoice_number|default:"—" }}</td>
+            <td>{{ invoice.contact_name }}</td>
+            <td>£{{ invoice.amount }}</td>
+            <td><span class="status-pill">{{ invoice.get_status_display }}</span></td>
+            <td>{% if invoice.status == "error" %}<small class="badge--danger">{{ invoice.sync_error }}</small>{% endif %}</td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="5"><div class="empty-state">No invoices synced.</div></td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
 {% endblock %}
