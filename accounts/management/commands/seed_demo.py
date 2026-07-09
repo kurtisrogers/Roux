@@ -1,10 +1,12 @@
 from datetime import date, time, timedelta
 
-from bookings.models import Child, Session, SessionType
+from billing.models import Payment
+from bookings.models import Attendance, Booking, Child, Session, SessionType
 from cms.models import NavigationItem, Page, PageBlock, SiteSettings
 from django.core.management.base import BaseCommand
 from django.utils import timezone
-from operations.models import AuthorisedCollector, ChildcareVoucher, RecurringBooking
+from ofsted.models import Incident
+from operations.models import AuthorisedCollector, ChildcareVoucher, RecurringBooking, WaitlistEntry
 from organisations.models import Organisation, Site, TermDate
 from programme.models import Activity, Programme, WeekPack, WeekPackBlock
 
@@ -260,7 +262,7 @@ class Command(BaseCommand):
         )
 
         today = timezone.now().date()
-        for day_offset in range(1, 15):
+        for day_offset in range(0, 15):
             session_date = today + timedelta(days=day_offset)
             if session_date.weekday() >= 5:
                 continue
@@ -396,9 +398,359 @@ class Command(BaseCommand):
             },
         )
 
+        self._seed_families_and_bookings(
+            org=org,
+            site=site,
+            staff_user=staff_user,
+            parent=parent,
+            child=child,
+            breakfast=breakfast,
+            after_school=after_school,
+            today=today,
+        )
+
         self.stdout.write(self.style.SUCCESS("Demo data seeded successfully."))
         self.stdout.write("Login credentials:")
         self.stdout.write("  Admin:  admin / admin123  (dashboard)")
         self.stdout.write("  Super:  superadmin / super123  (platform)")
         self.stdout.write("  Staff:  staff1 / staff123")
         self.stdout.write("  Parent: parent1 / parent123")
+
+    def _seed_families_and_bookings(
+        self, *, org, site, staff_user, parent, child, breakfast, after_school, today
+    ):
+        """Populate realistic bookings, attendance, payments, and waitlist data."""
+        families = [
+            (
+                parent,
+                child,
+                [
+                    {
+                        "first_name": "Emily",
+                        "last_name": "Johnson",
+                        "date_of_birth": date(2017, 3, 15),
+                        "allergies": "Peanuts",
+                        "medical_notes": "EpiPen in school office",
+                        "school_year": "Year 4",
+                    },
+                ],
+            ),
+            (
+                self._ensure_parent(
+                    org,
+                    "parent2",
+                    "marcus.williams@example.com",
+                    "Marcus",
+                    "Williams",
+                ),
+                None,
+                [
+                    {
+                        "first_name": "Noah",
+                        "last_name": "Williams",
+                        "date_of_birth": date(2016, 8, 2),
+                        "pupil_premium": True,
+                        "school_year": "Year 5",
+                    },
+                    {
+                        "first_name": "Olivia",
+                        "last_name": "Williams",
+                        "date_of_birth": date(2019, 1, 20),
+                        "school_year": "Year 2",
+                    },
+                ],
+            ),
+            (
+                self._ensure_parent(
+                    org,
+                    "parent3",
+                    "priya.davis@example.com",
+                    "Priya",
+                    "Davis",
+                ),
+                None,
+                [
+                    {
+                        "first_name": "Liam",
+                        "last_name": "Davis",
+                        "date_of_birth": date(2018, 5, 11),
+                        "allergies": "Dairy",
+                        "dietary_requirements": "Dairy-free snacks only",
+                        "fsm_eligible": True,
+                        "school_year": "Year 3",
+                    },
+                ],
+            ),
+            (
+                self._ensure_parent(
+                    org,
+                    "parent4",
+                    "emma.taylor@example.com",
+                    "Emma",
+                    "Taylor",
+                ),
+                None,
+                [
+                    {
+                        "first_name": "Mason",
+                        "last_name": "Taylor",
+                        "date_of_birth": date(2017, 11, 4),
+                        "school_year": "Year 4",
+                    },
+                    {
+                        "first_name": "Grace",
+                        "last_name": "Taylor",
+                        "date_of_birth": date(2015, 6, 30),
+                        "school_year": "Year 6",
+                    },
+                ],
+            ),
+            (
+                self._ensure_parent(
+                    org,
+                    "parent5",
+                    "james.anderson@example.com",
+                    "James",
+                    "Anderson",
+                ),
+                None,
+                [
+                    {
+                        "first_name": "Isla",
+                        "last_name": "Anderson",
+                        "date_of_birth": date(2018, 9, 14),
+                        "medical_notes": "Mild asthma – inhaler with child",
+                        "school_year": "Year 3",
+                    },
+                    {
+                        "first_name": "Harry",
+                        "last_name": "Anderson",
+                        "date_of_birth": date(2016, 2, 8),
+                        "school_year": "Year 5",
+                    },
+                ],
+            ),
+            (
+                self._ensure_parent(
+                    org,
+                    "parent6",
+                    "sofia.martinez@example.com",
+                    "Sofia",
+                    "Martinez",
+                ),
+                None,
+                [
+                    {
+                        "first_name": "Sophia",
+                        "last_name": "Martinez",
+                        "date_of_birth": date(2017, 7, 22),
+                        "pupil_premium": True,
+                        "school_year": "Year 4",
+                    },
+                    {
+                        "first_name": "Jack",
+                        "last_name": "Martinez",
+                        "date_of_birth": date(2019, 4, 3),
+                        "allergies": "Eggs",
+                        "school_year": "Year 1",
+                    },
+                ],
+            ),
+        ]
+
+        children = []
+        for family_parent, existing_child, child_specs in families:
+            for index, spec in enumerate(child_specs):
+                if existing_child and index == 0:
+                    child_obj = existing_child
+                    Child.objects.filter(pk=child_obj.pk).update(
+                        allergies=spec.get("allergies", ""),
+                        medical_notes=spec.get("medical_notes", ""),
+                        dietary_requirements=spec.get("dietary_requirements", ""),
+                        school_year=spec.get("school_year", ""),
+                        pupil_premium=spec.get("pupil_premium", False),
+                        fsm_eligible=spec.get("fsm_eligible", False),
+                    )
+                    child_obj.refresh_from_db()
+                else:
+                    child_obj, _ = Child.objects.get_or_create(
+                        parent=family_parent,
+                        organisation=org,
+                        first_name=spec["first_name"],
+                        last_name=spec["last_name"],
+                        defaults={
+                            "date_of_birth": spec["date_of_birth"],
+                            "emergency_contact_name": family_parent.get_full_name(),
+                            "emergency_contact_phone": "07700900123",
+                            "emergency_contact_relationship": "Parent",
+                            "allergies": spec.get("allergies", ""),
+                            "medical_notes": spec.get("medical_notes", ""),
+                            "dietary_requirements": spec.get("dietary_requirements", ""),
+                            "school_year": spec.get("school_year", ""),
+                            "pupil_premium": spec.get("pupil_premium", False),
+                            "fsm_eligible": spec.get("fsm_eligible", False),
+                            "photo_consent": True,
+                        },
+                    )
+                children.append(child_obj)
+
+        breakfast_sessions = list(
+            Session.objects.filter(
+                organisation=org,
+                session_type=breakfast,
+                date__gte=today,
+                date__lte=today + timedelta(days=10),
+            ).order_by("date", "start_time")
+        )
+        after_school_sessions = list(
+            Session.objects.filter(
+                organisation=org,
+                session_type=after_school,
+                date__gte=today,
+                date__lte=today + timedelta(days=10),
+            ).order_by("date", "start_time")
+        )
+
+        if not breakfast_sessions:
+            return
+
+        register_session = breakfast_sessions[0]
+        now = timezone.now()
+
+        for index, child_obj in enumerate(children):
+            target_sessions = []
+            if index % 2 == 0 and breakfast_sessions:
+                target_sessions.append(breakfast_sessions[index % len(breakfast_sessions)])
+            if after_school_sessions:
+                target_sessions.append(after_school_sessions[index % len(after_school_sessions)])
+            if len(target_sessions) < 2 and len(breakfast_sessions) > 1:
+                target_sessions.append(breakfast_sessions[1])
+
+            for session in target_sessions[:3]:
+                booking, created = Booking.objects.get_or_create(
+                    child=child_obj,
+                    session=session,
+                    defaults={
+                        "booked_by": child_obj.parent,
+                        "status": Booking.Status.CONFIRMED,
+                        "payment_status": Booking.PaymentStatus.PAID
+                        if index % 3 != 0
+                        else Booking.PaymentStatus.UNPAID,
+                        "source": Booking.Source.ONLINE,
+                    },
+                )
+                if created and booking.payment_status == Booking.PaymentStatus.PAID:
+                    Payment.objects.get_or_create(
+                        organisation=org,
+                        booking=booking,
+                        defaults={
+                            "amount": session.session_type.price,
+                            "status": Payment.Status.SUCCEEDED,
+                            "payment_method": Payment.Method.CARD,
+                            "description": f"{session.session_type.name} – {child_obj.full_name}",
+                        },
+                    )
+
+        for index, child_obj in enumerate(children[:9]):
+            booking = Booking.objects.filter(child=child_obj, session=register_session).first()
+            if not booking:
+                booking = Booking.objects.create(
+                    child=child_obj,
+                    session=register_session,
+                    booked_by=child_obj.parent,
+                    status=Booking.Status.CONFIRMED,
+                    payment_status=Booking.PaymentStatus.PAID,
+                    source=Booking.Source.ONLINE,
+                )
+                Payment.objects.get_or_create(
+                    organisation=org,
+                    booking=booking,
+                    defaults={
+                        "amount": register_session.session_type.price,
+                        "status": Payment.Status.SUCCEEDED,
+                        "payment_method": Payment.Method.CARD,
+                        "description": f"Breakfast Club – {child_obj.full_name}",
+                    },
+                )
+
+            attendance, _ = Attendance.objects.get_or_create(booking=booking)
+            check_in_time = now.replace(hour=7, minute=35 + index, second=0, microsecond=0)
+            Attendance.objects.filter(pk=attendance.pk).update(
+                checked_in_at=check_in_time,
+                checked_in_by=staff_user,
+            )
+            if index < 3:
+                Attendance.objects.filter(pk=attendance.pk).update(
+                    checked_out_at=check_in_time + timedelta(minutes=45),
+                    checked_out_by=staff_user,
+                    collection_verified_name="Parent collection",
+                )
+                Booking.objects.filter(pk=booking.pk).update(status=Booking.Status.CHECKED_OUT)
+            else:
+                Booking.objects.filter(pk=booking.pk).update(status=Booking.Status.CHECKED_IN)
+
+        full_session = after_school_sessions[0] if after_school_sessions else None
+        if full_session:
+            for child_obj in children:
+                booking, _ = Booking.objects.get_or_create(
+                    child=child_obj,
+                    session=full_session,
+                    defaults={
+                        "booked_by": child_obj.parent,
+                        "status": Booking.Status.CONFIRMED,
+                        "payment_status": Booking.PaymentStatus.PAID,
+                        "source": Booking.Source.ONLINE,
+                    },
+                )
+                if booking.payment_status == Booking.PaymentStatus.PAID:
+                    Payment.objects.get_or_create(
+                        organisation=org,
+                        booking=booking,
+                        defaults={
+                            "amount": full_session.session_type.price,
+                            "status": Payment.Status.SUCCEEDED,
+                            "payment_method": Payment.Method.CARD,
+                            "description": f"After School Club – {child_obj.full_name}",
+                        },
+                    )
+
+            overflow_children = children[-2:]
+            for position, child_obj in enumerate(overflow_children, start=1):
+                WaitlistEntry.objects.get_or_create(
+                    child=child_obj,
+                    session=full_session,
+                    defaults={"position": position},
+                )
+
+        Incident.objects.get_or_create(
+            organisation=org,
+            child=children[0],
+            incident_type=Incident.Type.ACCIDENT,
+            occurred_at=now - timedelta(days=2),
+            defaults={
+                "session": register_session,
+                "severity": Incident.Severity.LOW,
+                "location": "Playground",
+                "description": "Minor scrape on knee during outdoor play. Cleaned and plaster applied.",
+                "action_taken": "First aid administered; parent informed at collection.",
+                "parent_notified": True,
+                "parent_notified_at": now - timedelta(days=2, hours=2),
+                "reported_by": staff_user,
+            },
+        )
+
+    def _ensure_parent(self, org, username, email, first_name, last_name):
+        user, created = User.objects.get_or_create(
+            username=username,
+            defaults={
+                "email": email,
+                "first_name": first_name,
+                "last_name": last_name,
+                "role": User.Role.PARENT,
+                "organisation": org,
+            },
+        )
+        if created:
+            user.set_password("parent123")
+            user.save()
+        return user
