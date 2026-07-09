@@ -232,11 +232,29 @@ pre-commit run --all-files
 
 Hooks include: ruff lint/format, YAML/TOML checks, Django system check, and migration drift detection.
 
-## GitHub Pages Landing Site
+## GitHub Pages
 
-The marketing landing page lives in `landing/` and deploys automatically to GitHub Pages on push to `main`.
+The marketing landing page lives in `landing/` and developer documentation is built with [MkDocs Material](https://squidfunk.github.io/mkdocs-material/). Both deploy together to GitHub Pages on push to `main`.
 
 Enable GitHub Pages in repository settings: **Source → GitHub Actions**.
+
+### Preview docs locally
+
+```bash
+pip install -r requirements-docs.txt
+mkdocs serve
+```
+
+### Build combined site (landing + docs)
+
+```bash
+mkdir -p _site && cp -r landing/* _site/ && mkdocs build -d _site/docs
+```
+
+Live URLs:
+
+- Landing: `https://kurtisrogers.github.io/Roux/`
+- Docs: `https://kurtisrogers.github.io/Roux/docs/`
 
 ## AWS Deployment (SST)
 

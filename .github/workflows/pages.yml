@@ -16,7 +16,7 @@ concurrency:
 
 jobs:
   deploy:
-    name: Deploy landing page
+    name: Deploy landing page and docs
     runs-on: ubuntu-latest
     environment:
       name: github-pages
@@ -24,13 +24,27 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install MkDocs
+        run: pip install -r requirements-docs.txt
+
+      - name: Build combined site
+        run: |
+          mkdir -p _site
+          cp -r landing/* _site/
+          mkdocs build -d _site/docs
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
-      - name: Upload landing site
+      - name: Upload site
         uses: actions/upload-pages-artifact@v3
         with:
-          path: landing
+          path: _site
 
       - name: Deploy to GitHub Pages
         id: deployment
