@@ -19,3 +19,5 @@ test-results/
 playwright-report/
 e2e/.playwright/
 node_modules/
+_site/
+site/
