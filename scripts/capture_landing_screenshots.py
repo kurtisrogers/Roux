@@ -95,7 +95,7 @@ def capture(base_url: str) -> None:
             page.wait_for_load_state("networkidle")
             page.wait_for_timeout(500)
             output = SCREENSHOT_DIR / filename
-            page.screenshot(path=str(output), full_page=filename != "public-homepage.png")
+            page.screenshot(path=str(output), full_page=False)
             print(f"Saved {output}")
             context.close()
 
