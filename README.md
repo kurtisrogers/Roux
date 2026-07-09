@@ -1,6 +1,7 @@
 # Roux – UK Wraparound Care Platform
 
 [![Deploy GitHub Pages](https://github.com/kurtisrogers/Roux/actions/workflows/pages.yml/badge.svg)](https://github.com/kurtisrogers/Roux/actions/workflows/pages.yml)
+[![CI](https://github.com/kurtisrogers/Roux/actions/workflows/ci.yml/badge.svg)](https://github.com/kurtisrogers/Roux/actions/workflows/ci.yml)
 
 Roux is a Django SaaS platform for UK wraparound care providers (breakfast clubs, after-school clubs, holiday clubs). It competes with existing childcare management products by combining operations, parent booking, CMS-driven websites, and financial integrations in one extensible stack.
 
