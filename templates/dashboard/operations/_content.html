@@ -1,0 +1,308 @@
+{% if form %}
+<section class="form-panel">
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <div class="toolbar">
+      <button type="submit">Save</button>
+      {% if booking %}<a href="{% url 'dashboard:session_register' booking.session_id %}" role="button" class="secondary">Cancel</a>
+      {% elif session %}<a href="{% url 'dashboard:session_register' session.pk %}" role="button" class="secondary">Cancel</a>
+      {% elif payment %}<a href="{% url 'dashboard:finance' %}" role="button" class="secondary">Cancel</a>
+      {% elif staff_user %}<a href="{% url 'dashboard:staff_compliance_list' %}" role="button" class="secondary">Cancel</a>
+      {% else %}<a href="javascript:history.back()" role="button" class="secondary">Cancel</a>{% endif %}
+    </div>
+  </form>
+</section>
+{% endif %}
+
+{% if staff_user and not form %}
+<p class="lede">Compliance record for <strong>{{ staff_user.get_full_name|default:staff_user.username }}</strong></p>
+{% endif %}
+
+{% if child and not booking %}
+<div class="page-header" style="margin-bottom: 1rem;">
+  <div><p class="lede" style="margin:0">Authorised collectors for <strong>{{ child.full_name }}</strong></p></div>
+</div>
+{% endif %}
+
+{% if session %}
+<p class="lede">{{ session.session_type.name }} · {{ session.date|date:"l j F Y" }} · {{ session.site.name }}</p>
+{% endif %}
+
+{% if booking and form %}
+<p class="lede">Checking out <strong>{{ booking.child.full_name }}</strong> from {{ booking.session.session_type.name }}</p>
+{% endif %}
+
+{% if payment and form %}
+<p class="lede">Refund payment of <strong>£{{ payment.amount }}</strong> — {{ payment.description|default:"Booking payment" }}</p>
+{% endif %}
+
+{% if patterns %}
+<div class="table-wrap">
+  <table>
+    <thead><tr><th>Child</th><th>Day</th><th>Session type</th><th>Site</th><th>Active</th></tr></thead>
+    <tbody>
+      {% for p in patterns %}
+      <tr>
+        <td><strong>{{ p.child.full_name }}</strong></td>
+        <td>{{ p.get_weekday_display }}</td>
+        <td>{{ p.session_type.name }}</td>
+        <td>{{ p.site.name|default:"All sites" }}</td>
+        <td>{% if p.is_active %}<span class="badge badge--success">Active</span>{% else %}<span class="status-pill status-pill--muted">Paused</span>{% endif %}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="5"><div class="empty-state">No recurring booking patterns yet.</div></td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+
+{% if entries %}
+<div class="table-wrap">
+  <table>
+    <thead><tr><th>#</th><th>Child</th><th>Session</th><th>Date</th><th>Added</th></tr></thead>
+    <tbody>
+      {% for e in entries %}
+      <tr>
+        <td><span class="status-pill">{{ e.position }}</span></td>
+        <td><strong>{{ e.child.full_name }}</strong></td>
+        <td>{{ e.session.session_type.name }}</td>
+        <td>{{ e.session.date|date:"j M Y" }}</td>
+        <td>{{ e.created_at|date:"j M H:i" }}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="5"><div class="empty-state">No children on the waitlist.</div></td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+
+{% if shifts %}
+<div class="table-wrap">
+  <table>
+    <thead><tr><th>Date</th><th>Staff</th><th>Site</th><th>Start</th><th>End</th><th>Notes</th></tr></thead>
+    <tbody>
+      {% for s in shifts %}
+      <tr>
+        <td>{{ s.date|date:"l j M Y" }}</td>
+        <td><strong>{{ s.user.get_full_name|default:s.user.username }}</strong></td>
+        <td>{{ s.site.name }}</td>
+        <td>{{ s.start_time|time:"H:i" }}</td>
+        <td>{{ s.end_time|time:"H:i" }}</td>
+        <td>{{ s.notes|default:"—" }}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="6"><div class="empty-state">No shifts scheduled yet.</div></td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+
+{% if visitors is not None %}
+<div class="table-wrap">
+  <table>
+    <thead><tr><th>Visitor</th><th>Purpose</th><th>Site</th><th>Signed in</th><th>Status</th><th></th></tr></thead>
+    <tbody>
+      {% for v in visitors %}
+      <tr>
+        <td><strong>{{ v.name }}</strong></td>
+        <td>{{ v.purpose }}</td>
+        <td>{{ v.site.name }}</td>
+        <td>{{ v.signed_in_at|date:"j M H:i" }}</td>
+        <td>{% if v.signed_out_at %}<span class="status-pill status-pill--muted">Signed out</span>{% else %}<span class="badge badge--success">On site</span>{% endif %}</td>
+        <td>
+          {% if not v.signed_out_at %}
+          <form method="post" action="{% url 'dashboard:visitor_sign_out' v.pk %}">{% csrf_token %}<button type="submit" class="outline">Sign out</button></form>
+          {% endif %}
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="6"><div class="empty-state">No visitors signed in today.</div></td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+
+{% if logs %}
+<div class="table-wrap">
+  <table>
+    <thead><tr><th>Time</th><th>Child</th><th>Medication</th><th>Dose</th><th>Session</th></tr></thead>
+    <tbody>
+      {% for l in logs %}
+      <tr>
+        <td>{{ l.administered_at|date:"j M H:i" }}</td>
+        <td><strong>{{ l.child.full_name }}</strong></td>
+        <td>{{ l.medication_name }}</td>
+        <td>{{ l.dose|default:"—" }}</td>
+        <td>{{ l.session.session_type.name|default:"—" }}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="5"><div class="empty-state">No medication administrations logged.</div></td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+
+{% if staff %}
+<div class="table-wrap">
+  <table>
+    <thead><tr><th>Staff member</th><th>Role</th><th></th></tr></thead>
+    <tbody>
+      {% for s in staff %}
+      <tr>
+        <td><strong>{{ s.get_full_name|default:s.username }}</strong></td>
+        <td>{{ s.get_role_display }}</td>
+        <td><a href="{% url 'dashboard:staff_compliance_edit' s.pk %}">View compliance</a></td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="3"><div class="empty-state">No staff members found.</div></td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+
+{% if cases %}
+<div class="table-wrap">
+  <table>
+    <thead><tr><th>Case</th><th>Child</th><th>Status</th><th>Assigned to</th><th>Opened</th></tr></thead>
+    <tbody>
+      {% for c in cases %}
+      <tr>
+        <td><strong>{{ c.title }}</strong></td>
+        <td>{{ c.child.full_name|default:"—" }}</td>
+        <td><span class="status-pill">{{ c.get_status_display }}</span></td>
+        <td>{{ c.assigned_to.get_full_name|default:"Unassigned" }}</td>
+        <td>{{ c.created_at|date:"j M Y" }}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="5"><div class="empty-state">No safeguarding cases on record.</div></td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+
+{% if codes %}
+<div class="table-wrap">
+  <table>
+    <thead><tr><th>Code</th><th>Name</th><th>Discount</th><th>Active</th></tr></thead>
+    <tbody>
+      {% for c in codes %}
+      <tr>
+        <td><code>{{ c.code }}</code></td>
+        <td>{{ c.name }}</td>
+        <td>{% if c.discount_percent %}{{ c.discount_percent }}%{% elif c.fixed_discount %}£{{ c.fixed_discount }}{% else %}—{% endif %}</td>
+        <td>{% if c.is_active %}<span class="badge badge--success">Active</span>{% else %}<span class="status-pill status-pill--muted">Inactive</span>{% endif %}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="4"><div class="empty-state">No subsidy codes configured.</div></td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+
+{% if vouchers %}
+<div class="table-wrap">
+  <table>
+    <thead><tr><th>Reference</th><th>Parent</th><th>Child</th><th>Balance</th><th>Status</th></tr></thead>
+    <tbody>
+      {% for v in vouchers %}
+      <tr>
+        <td><strong>{{ v.reference }}</strong></td>
+        <td>{{ v.parent.get_full_name|default:v.parent.username }}</td>
+        <td>{{ v.child.full_name|default:"—" }}</td>
+        <td>£{{ v.balance }}</td>
+        <td>{% if v.is_active %}<span class="badge badge--success">Active</span>{% else %}<span class="status-pill status-pill--muted">Inactive</span>{% endif %}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="5"><div class="empty-state">No voucher accounts yet.</div></td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+
+{% if plans %}
+<div class="table-wrap">
+  <table>
+    <thead><tr><th>Plan</th><th>Child</th><th>Total</th><th>Instalments</th><th>Status</th></tr></thead>
+    <tbody>
+      {% for p in plans %}
+      <tr>
+        <td><strong>{{ p.name }}</strong></td>
+        <td>{{ p.child.full_name }}</td>
+        <td>£{{ p.total_amount }}</td>
+        <td>{{ p.instalment_count }}</td>
+        <td><span class="status-pill">{{ p.get_status_display }}</span></td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="5"><div class="empty-state">No payment plans created.</div></td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+
+{% if collectors %}
+<div class="table-wrap">
+  <table>
+    <thead><tr><th>Name</th><th>Relationship</th><th>Phone</th><th>Active</th></tr></thead>
+    <tbody>
+      {% for c in collectors %}
+      <tr>
+        <td><strong>{{ c.name }}</strong></td>
+        <td>{{ c.relationship }}</td>
+        <td>{{ c.phone|default:"—" }}</td>
+        <td>{% if c.is_active %}<span class="badge badge--success">Active</span>{% else %}<span class="status-pill status-pill--muted">Inactive</span>{% endif %}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="4"><div class="empty-state">No authorised collectors yet.</div></td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+
+{% if onboarding %}
+<ul class="list-rows">
+  {% for t in onboarding %}
+  <li class="list-row">
+    <div>
+      <strong>{{ t.label }}</strong>
+      {% if t.completed_at %}<small>Completed {{ t.completed_at|date:"j M Y" }}</small>{% else %}<small>Pending</small>{% endif %}
+    </div>
+    {% if t.completed_at %}
+    <span class="badge badge--success">Done</span>
+    {% else %}
+    <form method="post">{% csrf_token %}<input type="hidden" name="task_id" value="{{ t.pk }}"><button type="submit" class="outline">Mark complete</button></form>
+    {% endif %}
+  </li>
+  {% endfor %}
+</ul>
+{% endif %}
+
+{% if events_json %}
+<div class="panel-card">
+  <div id="booking-calendar" class="booking-calendar" data-events='{{ events_json|safe }}'></div>
+  <p class="toolbar" style="margin-top:1rem;margin-bottom:0"><a href="{% url 'dashboard:session_list' %}" role="button" class="outline">View session list</a></p>
+</div>
+{% endif %}
+
+{% if items %}
+<div class="table-wrap">
+  <table>
+    <tbody>
+      {% for item in items %}
+      <tr><td>{{ item }}</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}

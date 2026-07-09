@@ -1,23 +1,25 @@
 {% extends "base/dashboard.html" %}
 {% block page_title %}Register – {{ session.session_type.name }}{% endblock %}
 {% block content %}
-<hgroup>
-  <h1>Session Register</h1>
-  <p>{{ session.session_type.name }} · {{ session.date|date:"l j F Y" }} · {{ session.site.name }}</p>
-</hgroup>
-<div class="grid">
-  <a href="{% url 'dashboard:export_register' session.pk %}" class="outline" role="button">Export CSV</a>
-  {% if not is_closed %}
-  <form method="post" action="{% url 'dashboard:bulk_check_in' session.pk %}">{% csrf_token %}<button type="submit">Check in all</button></form>
-  <a href="{% url 'dashboard:walk_in_booking' session.pk %}" role="button" class="outline">Add walk-in</a>
-  {% endif %}
+<div class="page-header">
+  <div>
+    <h1>Session register</h1>
+    <p class="lede">{{ session.session_type.name }} · {{ session.date|date:"l j F Y" }} · {{ session.site.name }}</p>
+  </div>
+  <div class="page-actions toolbar">
+    <a href="{% url 'dashboard:export_register' session.pk %}" class="outline" role="button">Export CSV</a>
+    {% if not is_closed %}
+    <form method="post" action="{% url 'dashboard:bulk_check_in' session.pk %}">{% csrf_token %}<button type="submit">Check in all</button></form>
+    <a href="{% url 'dashboard:walk_in_booking' session.pk %}" role="button" class="outline">Add walk-in</a>
+    {% endif %}
+  </div>
 </div>
 {% if ratio %}
-<p><small>Last ratio check: {% if ratio.compliant %}Compliant{% else %}Non-compliant{% endif %} ({{ ratio.child_count }} children, {{ ratio.staff_count }} staff)</small></p>
+<p><span class="status-pill {% if not ratio.compliant %}badge--danger{% endif %}">Ratio: {% if ratio.compliant %}Compliant{% else %}Non-compliant{% endif %} · {{ ratio.child_count }} children · {{ ratio.staff_count }} staff</span></p>
 {% endif %}
 {% if programme_blocks %}
-<details open>
-  <summary>Today's programme{% if programme_week %} ({{ programme_week }}){% endif %}</summary>
+<details open class="panel-card">
+  <summary><strong>Today's programme</strong>{% if programme_week %} ({{ programme_week }}){% endif %}</summary>
   <ul class="programme-run-sheet">
     {% for block in programme_blocks %}
     <li class="{% if not block.is_running_period %}break-slot{% endif %}">
@@ -28,53 +30,50 @@
     {% endfor %}
   </ul>
 </details>
-<style>
-.programme-run-sheet { list-style: none; padding: 0; display: grid; gap: 0.35rem; margin: 0.5rem 0 1rem; }
-.programme-run-sheet li { padding: 0.35rem 0.5rem; border-left: 3px solid var(--pico-primary); background: var(--pico-card-background-color); }
-.programme-run-sheet li.break-slot { border-left-color: var(--pico-muted-color); opacity: 0.85; }
-</style>
 {% elif programme_blocks is None and programme_week %}
 <p><em>Programme: closed today{% if programme_week %} ({{ programme_week }}){% endif %}.</em></p>
 {% endif %}
 {% if is_closed %}
 <article class="success">Register closed {{ session.register_closed_at|date:"j M Y H:i" }}{% if session.register_notes %} — {{ session.register_notes }}{% endif %}</article>
 {% endif %}
-<table>
-  <thead>
-    <tr><th>Child</th><th>Allergies</th><th>Status</th><th>Payment</th><th>In</th><th>Out</th><th></th></tr>
-  </thead>
-  <tbody>
-    {% for row in rows %}
-    <tr>
-      <td>
-        <strong>{{ row.child.full_name }}</strong>
-        {% if row.child.pupil_premium %}<mark>PP</mark>{% endif %}
-        {% if row.child.fsm_eligible %}<mark>FSM</mark>{% endif %}
-        {% if row.allergies %}<br><small class="error">{{ row.allergies }}</small>{% endif %}
-      </td>
-      <td>{{ row.medical|default:"—" }}</td>
-      <td>{{ row.booking.get_status_display }}</td>
-      <td>{{ row.booking.get_payment_status_display }}</td>
-      <td>{% if row.attendance.checked_in_at %}{{ row.attendance.checked_in_at|time:"H:i" }}{% else %}—{% endif %}</td>
-      <td>{% if row.attendance.checked_out_at %}{{ row.attendance.checked_out_at|time:"H:i" }}{% else %}—{% endif %}</td>
-      <td>
-        {% if not is_closed %}
-        {% if row.booking.status == 'confirmed' %}
-        <form method="post" action="{% url 'dashboard:check_in' row.booking.pk %}" style="display:inline">{% csrf_token %}<button type="submit" class="outline">In</button></form>
-        {% elif row.booking.status == 'checked_in' %}
-        <a href="{% url 'dashboard:checkout_collector' row.booking.pk %}" class="outline">Out</a>
-        {% endif %}
-        <form method="post" action="{% url 'dashboard:mark_no_show' row.booking.pk %}" style="display:inline">{% csrf_token %}<button type="submit" class="outline secondary">No show</button></form>
-        {% endif %}
-      </td>
-    </tr>
-    {% empty %}
-    <tr><td colspan="7">No children on this register yet.</td></tr>
-    {% endfor %}
-  </tbody>
-</table>
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr><th>Child</th><th>Medical</th><th>Status</th><th>Payment</th><th>In</th><th>Out</th><th></th></tr>
+    </thead>
+    <tbody>
+      {% for row in rows %}
+      <tr>
+        <td>
+          <strong>{{ row.child.full_name }}</strong>
+          {% if row.child.pupil_premium %}<mark class="tag">PP</mark>{% endif %}
+          {% if row.child.fsm_eligible %}<mark class="tag badge--warning">FSM</mark>{% endif %}
+          {% if row.allergies %}<br><small class="badge--danger">{{ row.allergies }}</small>{% endif %}
+        </td>
+        <td>{{ row.medical|default:"—" }}</td>
+        <td><span class="status-pill">{{ row.booking.get_status_display }}</span></td>
+        <td>{{ row.booking.get_payment_status_display }}</td>
+        <td>{% if row.attendance.checked_in_at %}{{ row.attendance.checked_in_at|time:"H:i" }}{% else %}—{% endif %}</td>
+        <td>{% if row.attendance.checked_out_at %}{{ row.attendance.checked_out_at|time:"H:i" }}{% else %}—{% endif %}</td>
+        <td class="table-actions">
+          {% if not is_closed %}
+          {% if row.booking.status == 'confirmed' %}
+          <form method="post" action="{% url 'dashboard:check_in' row.booking.pk %}">{% csrf_token %}<button type="submit" class="outline">In</button></form>
+          {% elif row.booking.status == 'checked_in' %}
+          <a href="{% url 'dashboard:checkout_collector' row.booking.pk %}" class="outline" role="button">Out</a>
+          {% endif %}
+          <form method="post" action="{% url 'dashboard:mark_no_show' row.booking.pk %}">{% csrf_token %}<button type="submit" class="outline secondary">No show</button></form>
+          {% endif %}
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="7"><div class="empty-state">No children on this register yet.</div></td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
 {% if not is_closed %}
-<form method="post" action="{% url 'dashboard:close_register' session.pk %}">
+<form method="post" action="{% url 'dashboard:close_register' session.pk %}" class="form-panel">
   {% csrf_token %}
   <label>Close register notes <input type="text" name="notes" placeholder="Optional notes"></label>
   <button type="submit">Close register</button>

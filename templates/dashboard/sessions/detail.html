@@ -1,31 +1,45 @@
 {% extends "base/dashboard.html" %}
 {% block page_title %}{{ session.session_type.name }}{% endblock %}
 {% block content %}
-<h1>{{ session.session_type.name }} – {{ session.date|date:"l j F Y" }}</h1>
-<p>{{ session.site.name }} · {{ session.start_time|time:"H:i" }}–{{ session.end_time|time:"H:i" }}</p>
-<form method="post" action="{% url 'dashboard:ratio_check_session' session.pk %}" style="display:inline">
-  {% csrf_token %}
-  <button type="submit" class="outline">Run Ratio Check</button>
-</form>
-<a href="{% url 'dashboard:session_register' session.pk %}" role="button">Open Register</a>
-<a href="{% url 'dashboard:walk_in_booking' session.pk %}" class="outline">Walk-in</a>
+<div class="page-header">
+  <div>
+    <h1>{{ session.session_type.name }}</h1>
+    <p class="lede">{{ session.date|date:"l j F Y" }} · {{ session.site.name }} · {{ session.start_time|time:"H:i" }}–{{ session.end_time|time:"H:i" }}</p>
+  </div>
+  <div class="page-actions toolbar">
+    <form method="post" action="{% url 'dashboard:ratio_check_session' session.pk %}" style="display:inline">{% csrf_token %}<button type="submit" class="outline">Run ratio check</button></form>
+    <a href="{% url 'dashboard:session_register' session.pk %}" role="button">Open register</a>
+    <a href="{% url 'dashboard:walk_in_booking' session.pk %}" role="button" class="outline">Walk-in</a>
+  </div>
+</div>
+
 {% if programme_blocks %}
-<h2>Today's programme</h2>
-<ul>
-  {% for block in programme_blocks %}
-  <li>{{ block.start_time|time:"H:i" }}–{{ block.end_time|time:"H:i" }} {{ block.display_name }}</li>
-  {% endfor %}
-</ul>
-{% endif %}
-<h2>Bookings ({{ bookings|length }}/{{ session.session_type.capacity }})</h2>
-<table>
-  <thead><tr><th>Child</th><th>Parent</th><th>Status</th><th>Payment</th><th>Actions</th></tr></thead>
-  <tbody id="booking-rows">
-    {% for booking in bookings %}
-      {% include "dashboard/partials/booking_row.html" %}
-    {% empty %}
-    <tr><td colspan="5">No bookings.</td></tr>
+<details open class="panel-card">
+  <summary><strong>Today's programme</strong></summary>
+  <ul class="programme-run-sheet">
+    {% for block in programme_blocks %}
+    <li class="{% if not block.is_running_period %}break-slot{% endif %}">
+      <time>{{ block.start_time|time:"H:i" }}–{{ block.end_time|time:"H:i" }}</time>
+      <strong>{{ block.display_name }}</strong>
+    </li>
     {% endfor %}
-  </tbody>
-</table>
+  </ul>
+</details>
+{% endif %}
+
+<section class="panel-card">
+  <h2>Bookings ({{ bookings|length }}/{{ session.session_type.capacity }})</h2>
+  <div class="table-wrap" style="border:none;box-shadow:none">
+    <table>
+      <thead><tr><th>Child</th><th>Parent</th><th>Status</th><th>Payment</th><th>Actions</th></tr></thead>
+      <tbody id="booking-rows">
+        {% for booking in bookings %}
+          {% include "dashboard/partials/booking_row.html" %}
+        {% empty %}
+        <tr><td colspan="5"><div class="empty-state">No bookings for this session.</div></td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
 {% endblock %}

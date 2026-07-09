@@ -1,13 +1,20 @@
 {% extends "base/dashboard.html" %}
 {% block page_title %}Contact Messages{% endblock %}
 {% block content %}
-<h1>Contact Messages</h1>
-{% for contact in contacts %}
-<article>
-  <header><strong>{{ contact.name }}</strong> – {{ contact.email }} · {{ contact.created_at|date:"j M Y H:i" }}</header>
-  <p>{{ contact.message }}</p>
-</article>
-{% empty %}
-<p>No messages.</p>
-{% endfor %}
+<div class="page-header">
+  <div><h1>Contact messages</h1><p class="lede">Enquiries from your public website.</p></div>
+</div>
+<div class="panel-grid">
+  {% for contact in contacts %}
+  <article class="panel-card">
+    <header style="margin-bottom:0.5rem">
+      <strong>{{ contact.name }}</strong>
+      <small style="display:block;color:var(--pico-muted-color)">{{ contact.email }} · {{ contact.created_at|date:"j M Y H:i" }}</small>
+    </header>
+    <p style="margin:0">{{ contact.message }}</p>
+  </article>
+  {% empty %}
+  <div class="empty-state">No messages yet.</div>
+  {% endfor %}
+</div>
 {% endblock %}

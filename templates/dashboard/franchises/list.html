@@ -1,28 +1,32 @@
 {% extends "base/dashboard.html" %}
 {% block page_title %}Franchises{% endblock %}
 {% block content %}
-<hgroup>
-  <h1>Franchises</h1>
-  <a href="{% url 'dashboard:franchise_create' %}" role="button">Provision Franchise</a>
-</hgroup>
-<p>Each franchise runs in its own isolated database with separate Stripe, Xero, and organisation data.</p>
-<table>
-  <thead>
-    <tr><th>Name</th><th>Slug</th><th>Status</th><th>Database</th><th>Domain</th><th></th></tr>
-  </thead>
-  <tbody>
-    {% for franchise in franchises %}
-    <tr>
-      <td>{{ franchise.name }}</td>
-      <td>{{ franchise.slug }}</td>
-      <td>{{ franchise.get_status_display }}</td>
-      <td><code>{{ franchise.database_alias }}</code></td>
-      <td>{% with d=franchise.domains.first %}{{ d.hostname|default:"—" }}{% endwith %}</td>
-      <td><a href="{% url 'dashboard:franchise_detail' franchise.pk %}">Manage</a></td>
-    </tr>
-    {% empty %}
-    <tr><td colspan="6">No franchises yet. Provision one to get started.</td></tr>
-    {% endfor %}
-  </tbody>
-</table>
+<div class="page-header">
+  <div>
+    <h1>Franchises</h1>
+    <p class="lede">Each franchise runs in its own isolated database with separate Stripe, Xero, and organisation data.</p>
+  </div>
+  <div class="page-actions"><a href="{% url 'dashboard:franchise_create' %}" role="button">Provision franchise</a></div>
+</div>
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr><th>Name</th><th>Slug</th><th>Status</th><th>Database</th><th>Domain</th><th></th></tr>
+    </thead>
+    <tbody>
+      {% for franchise in franchises %}
+      <tr>
+        <td><strong>{{ franchise.name }}</strong></td>
+        <td>{{ franchise.slug }}</td>
+        <td><span class="status-pill">{{ franchise.get_status_display }}</span></td>
+        <td><code>{{ franchise.database_alias }}</code></td>
+        <td>{% with d=franchise.domains.first %}{{ d.hostname|default:"—" }}{% endwith %}</td>
+        <td><a href="{% url 'dashboard:franchise_detail' franchise.pk %}">Manage</a></td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="6"><div class="empty-state">No franchises yet. Provision one to get started.</div></td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
 {% endblock %}

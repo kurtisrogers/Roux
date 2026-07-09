@@ -1,61 +1,93 @@
 {% extends "base/dashboard.html" %}
 {% block page_title %}Ofsted & Compliance{% endblock %}
 {% block content %}
-<h1>Ofsted & Compliance</h1>
-<div class="grid stats-grid">
-  <article><header>Non-compliant Checks</header><strong>{{ non_compliant_count }}</strong></article>
+<div class="page-header">
+  <div>
+    <h1>Ofsted & Compliance</h1>
+    <p class="lede">Incidents, ratio checks, and inspection-ready reports.</p>
+  </div>
+  <div class="page-actions toolbar">
+    <a href="{% url 'dashboard:incident_create' %}" role="button">Record incident</a>
+    <a href="{% url 'dashboard:ratio_overview' %}" role="button" class="outline">Today's ratios</a>
+  </div>
 </div>
 
-<div class="grid">
-  <section>
-    <h2>Quick Actions</h2>
-    <ul>
-      <li><a href="{% url 'dashboard:incident_create' %}" role="button">Record Incident</a></li>
-      <li><a href="{% url 'dashboard:ratio_overview' %}" role="button" class="outline">Today's Ratios</a></li>
-      <li><a href="{% url 'dashboard:export_incidents' %}?start={{ month_start }}&end={{ today }}" class="outline">Export Incidents CSV</a></li>
-      <li><a href="{% url 'dashboard:export_ratios' %}?start={{ month_start }}&end={{ today }}" class="outline">Export Ratio Checks CSV</a></li>
+<div class="grid stats-grid">
+  <article><header>Non-compliant checks</header><strong>{{ non_compliant_count }}</strong></article>
+  <article><header>Recent incidents</header><strong>{{ incidents|length }}</strong></article>
+  <article><header>Ratio checks</header><strong>{{ recent_checks|length }}</strong></article>
+</div>
+
+<div class="panel-grid panel-grid--2">
+  <section class="panel-card">
+    <h2>Quick actions</h2>
+    <ul class="list-rows">
+      <li class="list-row"><div><strong>Export incidents</strong><small>CSV for the current month</small></div><a href="{% url 'dashboard:export_incidents' %}?start={{ month_start }}&end={{ today }}" class="outline" role="button">Export</a></li>
+      <li class="list-row"><div><strong>Export ratio checks</strong><small>CSV for the current month</small></div><a href="{% url 'dashboard:export_ratios' %}?start={{ month_start }}&end={{ today }}" class="outline" role="button">Export</a></li>
     </ul>
-    <form method="post" action="{% url 'dashboard:generate_report' %}">
+    <form method="post" action="{% url 'dashboard:generate_report' %}" class="toolbar" style="margin-top:1rem">
       {% csrf_token %}
       <label>Period start <input type="date" name="period_start" value="{{ month_start|date:'Y-m-d' }}"></label>
       <label>Period end <input type="date" name="period_end" value="{{ today|date:'Y-m-d' }}"></label>
-      <button type="submit">Generate Monthly Report</button>
+      <button type="submit">Generate monthly report</button>
     </form>
   </section>
-  <section>
-    <h2>Recent Incidents</h2>
-    {% for inc in incidents %}
-      <p><strong>{{ inc.get_incident_type_display }}</strong> – {{ inc.occurred_at|date:"j M Y" }}
-        {% if inc.ofsted_notifiable %}<mark>Ofsted notifiable</mark>{% endif %}</p>
-    {% empty %}
-      <p>No incidents recorded.</p>
-    {% endfor %}
-    <a href="{% url 'dashboard:incident_list' %}">View all incidents</a>
+  <section class="panel-card">
+    <h2>Recent incidents</h2>
+    <ul class="list-rows">
+      {% for inc in incidents %}
+      <li class="list-row">
+        <div>
+          <strong>{{ inc.get_incident_type_display }}</strong>
+          <small>{{ inc.occurred_at|date:"j M Y" }}{% if inc.ofsted_notifiable %} · Ofsted notifiable{% endif %}</small>
+        </div>
+        {% if inc.ofsted_notifiable %}<span class="badge badge--warning">Notify</span>{% endif %}
+      </li>
+      {% empty %}
+      <li class="empty-state">No incidents recorded.</li>
+      {% endfor %}
+    </ul>
+    <p style="margin-top:1rem"><a href="{% url 'dashboard:incident_list' %}">View all incidents</a></p>
   </section>
 </div>
 
-<h2>Recent Ratio Checks</h2>
-<table>
-  <thead><tr><th>Session</th><th>Children</th><th>Staff</th><th>Required</th><th>Status</th><th>When</th></tr></thead>
-  <tbody>
-    {% for check in recent_checks %}
-    <tr>
-      <td>{{ check.session }}</td>
-      <td>{{ check.child_count }}</td>
-      <td>{{ check.staff_count }}</td>
-      <td>{{ check.required_staff }}</td>
-      <td>{% if check.compliant %}✓{% else %}<strong>FAIL</strong>{% endif %}</td>
-      <td>{{ check.checked_at|date:"j M H:i" }}</td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
+<section class="panel-card">
+  <h2>Recent ratio checks</h2>
+  <div class="table-wrap" style="border:none;box-shadow:none">
+    <table>
+      <thead><tr><th>Session</th><th>Children</th><th>Staff</th><th>Required</th><th>Status</th><th>When</th></tr></thead>
+      <tbody>
+        {% for check in recent_checks %}
+        <tr>
+          <td>{{ check.session }}</td>
+          <td>{{ check.child_count }}</td>
+          <td>{{ check.staff_count }}</td>
+          <td>{{ check.required_staff }}</td>
+          <td>{% if check.compliant %}<span class="badge badge--success">OK</span>{% else %}<span class="badge badge--danger">Fail</span>{% endif %}</td>
+          <td>{{ check.checked_at|date:"j M H:i" }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6"><div class="empty-state">No ratio checks recorded yet.</div></td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
 
-<h2>Generated Reports</h2>
-{% for report in reports %}
-  <p>{{ report.get_report_type_display }}: {{ report.period_start }} – {{ report.period_end }}
-    (compliance: {{ report.data.compliance_rate }}%)</p>
-{% empty %}
-  <p>No reports generated yet.</p>
-{% endfor %}
+<section class="panel-card">
+  <h2>Generated reports</h2>
+  <ul class="list-rows">
+    {% for report in reports %}
+    <li class="list-row">
+      <div>
+        <strong>{{ report.get_report_type_display }}</strong>
+        <small>{{ report.period_start }} – {{ report.period_end }}</small>
+      </div>
+      <span class="status-pill">{{ report.data.compliance_rate }}% compliant</span>
+    </li>
+    {% empty %}
+    <li class="empty-state">No reports generated yet.</li>
+    {% endfor %}
+  </ul>
+</section>
 {% endblock %}
