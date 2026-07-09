@@ -1,10 +1,10 @@
 from datetime import date, time, timedelta
 
+from billing.models import Payment
 from bookings.models import Attendance, Booking, Child, Session, SessionType
 from cms.models import NavigationItem, Page, PageBlock, SiteSettings
 from django.core.management.base import BaseCommand
 from django.utils import timezone
-from billing.models import Payment
 from ofsted.models import Incident
 from operations.models import AuthorisedCollector, ChildcareVoucher, RecurringBooking, WaitlistEntry
 from organisations.models import Organisation, Site, TermDate
@@ -416,7 +416,9 @@ class Command(BaseCommand):
         self.stdout.write("  Staff:  staff1 / staff123")
         self.stdout.write("  Parent: parent1 / parent123")
 
-    def _seed_families_and_bookings(self, *, org, site, staff_user, parent, child, breakfast, after_school, today):
+    def _seed_families_and_bookings(
+        self, *, org, site, staff_user, parent, child, breakfast, after_school, today
+    ):
         """Populate realistic bookings, attendance, payments, and waitlist data."""
         families = [
             (
@@ -689,7 +691,7 @@ class Command(BaseCommand):
 
         full_session = after_school_sessions[0] if after_school_sessions else None
         if full_session:
-            for index, child_obj in enumerate(children):
+            for child_obj in children:
                 booking, _ = Booking.objects.get_or_create(
                     child=child_obj,
                     session=full_session,
