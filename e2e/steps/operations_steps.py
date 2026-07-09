@@ -113,4 +113,4 @@ def see_snack_on_register(page: Page):
 
 @then("I should see today's programme on the session page")
 def see_programme_on_session(page: Page):
-    expect(page.get_by_role("heading", name="Today's programme")).to_be_visible()
+    expect(page.locator("summary").filter(has_text="Today's programme")).to_be_visible()
