@@ -28,17 +28,13 @@ def resolve_urls() -> dict[str, str]:
     programme_pk = programme.pk if programme else 1
 
     register_session = (
-        Session.objects.filter(session_type__name__icontains="breakfast")
-        .order_by("date")
-        .first()
+        Session.objects.filter(session_type__name__icontains="breakfast").order_by("date").first()
     )
     if not register_session:
         register_session = Session.objects.order_by("date").first()
 
     book_session = (
-        Session.objects.filter(session_type__name__icontains="breakfast")
-        .order_by("date")
-        .first()
+        Session.objects.filter(session_type__name__icontains="breakfast").order_by("date").first()
     )
     if not book_session:
         book_session = Session.objects.order_by("date").first()
@@ -73,14 +69,62 @@ def capture(base_url: str) -> None:
     SCREENSHOT_DIR.mkdir(parents=True, exist_ok=True)
 
     shots = [
-        ("dashboard-home.png", urls["dashboard_home"], "admin", "admin123", {"width": 1280, "height": 800}),
-        ("session-register.png", urls["session_register"], "staff1", "staff123", {"width": 1280, "height": 900}),
-        ("programme-calendar.png", urls["programme_calendar"], "admin", "admin123", {"width": 1280, "height": 800}),
-        ("ofsted-dashboard.png", urls["ofsted_dashboard"], "admin", "admin123", {"width": 1280, "height": 800}),
-        ("operations-analytics.png", urls["operations_analytics"], "admin", "admin123", {"width": 1280, "height": 800}),
-        ("parent-sessions.png", urls["parent_sessions"], "parent1", "parent123", {"width": 390, "height": 844}),
-        ("parent-booking.png", urls["parent_booking"], "parent1", "parent123", {"width": 390, "height": 844}),
-        ("public-homepage.png", urls["public_homepage"], None, None, {"width": 1280, "height": 800}),
+        (
+            "dashboard-home.png",
+            urls["dashboard_home"],
+            "admin",
+            "admin123",
+            {"width": 1280, "height": 800},
+        ),
+        (
+            "session-register.png",
+            urls["session_register"],
+            "staff1",
+            "staff123",
+            {"width": 1280, "height": 900},
+        ),
+        (
+            "programme-calendar.png",
+            urls["programme_calendar"],
+            "admin",
+            "admin123",
+            {"width": 1280, "height": 800},
+        ),
+        (
+            "ofsted-dashboard.png",
+            urls["ofsted_dashboard"],
+            "admin",
+            "admin123",
+            {"width": 1280, "height": 800},
+        ),
+        (
+            "operations-analytics.png",
+            urls["operations_analytics"],
+            "admin",
+            "admin123",
+            {"width": 1280, "height": 800},
+        ),
+        (
+            "parent-sessions.png",
+            urls["parent_sessions"],
+            "parent1",
+            "parent123",
+            {"width": 390, "height": 844},
+        ),
+        (
+            "parent-booking.png",
+            urls["parent_booking"],
+            "parent1",
+            "parent123",
+            {"width": 390, "height": 844},
+        ),
+        (
+            "public-homepage.png",
+            urls["public_homepage"],
+            None,
+            None,
+            {"width": 1280, "height": 800},
+        ),
     ]
 
     with sync_playwright() as playwright:
